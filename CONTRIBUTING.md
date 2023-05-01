@@ -1,116 +1,119 @@
-# Contributing
+# Contributing to Cloudinary React Native library
 
-Contributions are always welcome, no matter how large or small!
+Contributions are welcome and greatly appreciated!
 
-We want this community to be friendly and respectful to each other. Please follow it in all your interactions with the project. Before contributing, please read the [code of conduct](./CODE_OF_CONDUCT.md).
+## Reporting a bug
 
-## Development workflow
+- Make sure that the bug was not already reported by searching in GitHub under [Issues](https://github.com/cloudinary/cloudinary-react-native) and the Cloudinary [Support forms](https://support.cloudinary.com).
+- If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/cloudinary/cloudinary-react-native/issues/new).
+  Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
+- If you need help using `cloudinary-react-native` please [submit a request](https://support.cloudinary.com/hc/en-us/requests/new) on Cloudinary's site.
 
-To get started with the project, run `yarn` in the root directory to install the required dependencies for each package:
+## Requesting a feature
 
-```sh
-yarn
+We would love to receive your requests!
+Please be aware that the library is used in a wide variety of environments and that some features may not be applicable to all users.
+
+- Open a GitHub [issue](https://github.com/cloudinary/cloudinary-react-native) describing the benefits (and possible drawbacks) of the requested feature.
+
+## Fixing a bug / Implementing a new feature
+
+- Follow the instructions detailed in [Code contribution](#code-contribution).
+- Open a new GitHub pull request.
+- Ensure the PR description clearly describes the bug / feature. Include relevant issue number if applicable.
+- Provide test code that covers the new code.
+
+## Code contribution
+
+When contributing code, either to fix a bug or to implement a new feature, please follow these guidelines:
+
+#### Fork the project
+
+Fork the project on [GitHub](https://github.com/cloudinary/cloudinary-react-native) and check your copy.
+
+#### Create a topic branch
+
+Make sure your fork is up-to-date and create a topic branch for your feature or bug fix.
+
 ```
-
-> While it's possible to use [`npm`](https://github.com/npm/cli), the tooling is built around [`yarn`](https://classic.yarnpkg.com/), so you'll have an easier time if you use `yarn` for development.
-
-While developing, you can run the [example app](/example/) to test your changes. Any changes you make in your library's JavaScript code will be reflected in the example app without a rebuild. If you change any native code, then you'll need to rebuild the example app.
-
-To start the packager:
-
-```sh
-yarn example start
+git checkout master
+git pull upstream master
+git checkout -b my-feature-branch
 ```
+#### Rebase
 
-To run the example app on Android:
+If you've been working on a change for a while, rebase with upstream/master.
 
-```sh
-yarn example android
 ```
-
-To run the example app on iOS:
-
-```sh
-yarn example ios
-```
-
-To run the example app on Web:
-
-```sh
-yarn example web
-```
-
-Make sure your code passes TypeScript and ESLint. Run the following to verify:
-
-```sh
-yarn typecheck
-yarn lint
-```
-
-To fix formatting errors, run the following:
-
-```sh
-yarn lint --fix
-```
-
-Remember to add tests for your change if possible. Run the unit tests by:
-
-```sh
-yarn test
+git fetch upstream
+git rebase upstream/master
+git push origin my-feature-branch -f
 ```
 
 
-### Commit message convention
+#### Write tests
 
-We follow the [conventional commits specification](https://www.conventionalcommits.org/en) for our commit messages:
+Try to write a test that reproduces the problem you're trying to fix or describes a feature you would like to build.
 
-- `fix`: bug fixes, e.g. fix crash due to deprecated method.
-- `feat`: new features, e.g. add new method to the module.
-- `refactor`: code refactor, e.g. migrate from class components to hooks.
-- `docs`: changes into documentation, e.g. add usage example for the module..
-- `test`: adding or updating tests, e.g. add integration tests using detox.
-- `chore`: tooling changes, e.g. change CI config.
+We definitely appreciate pull requests that highlight or reproduce a problem, even without a fix.
 
-Our pre-commit hooks verify that your commit message matches this format when committing.
+#### Write code
 
-### Linting and tests
+Implement your feature or bug fix.
+Follow the following React Native coding standards
 
-[ESLint](https://eslint.org/), [Prettier](https://prettier.io/), [TypeScript](https://www.typescriptlang.org/)
+#### Write Documentation
 
-We use [TypeScript](https://www.typescriptlang.org/) for type checking, [ESLint](https://eslint.org/) with [Prettier](https://prettier.io/) for linting and formatting the code, and [Jest](https://jestjs.io/) for testing.
+Document any external behavior in the [README](README.md).
 
-Our pre-commit hooks verify that the linter and tests pass when committing.
+#### Commit Changes
 
-### Publishing to npm
+Make sure git knows your name and email address:
 
-We use [release-it](https://github.com/release-it/release-it) to make it easier to publish new versions. It handles common tasks like bumping version based on semver, creating tags and releases etc.
-
-To publish new versions, run the following:
-
-```sh
-yarn release
+```
+git config --global user.name "Your Name"
+git config --global user.email "contributor@example.com"
 ```
 
-### Scripts
+Writing good commit logs is important. A commit log should describe what changed and why.
 
-The `package.json` file contains various scripts for common tasks:
+```
+git add ...
+git commit
+```
 
-- `yarn bootstrap`: setup project by installing all dependencies and pods.
-- `yarn typecheck`: type-check files with TypeScript.
-- `yarn lint`: lint files with ESLint.
-- `yarn test`: run unit tests with Jest.
-- `yarn example start`: start the Metro server for the example app.
-- `yarn example android`: run the example app on Android.
-- `yarn example ios`: run the example app on iOS.
 
-### Sending a pull request
+> Please squash your commits into a single commit when appropriate. This simplifies future cherry picks and keeps the git log clean.
 
-> **Working on your first pull request?** You can learn how from this _free_ series: [How to Contribute to an Open Source Project on GitHub](https://app.egghead.io/playlists/how-to-contribute-to-an-open-source-project-on-github).
+#### Push
 
-When you're sending a pull request:
+```
+git push origin my-feature-branch
+```
 
-- Prefer small pull requests focused on one change.
-- Verify that linters and tests are passing.
-- Review the documentation to make sure it looks good.
-- Follow the pull request template when opening a pull request.
-- For pull requests that change the API or implementation, discuss with maintainers first by opening an issue.
+#### Make a Pull Request
+
+Go to https://github.com/cloudinary/cloudinary-react-native/compare and select your feature branch. Click the 'Create pull request' button and fill out the form. Pull requests are normally reviewed within a few days.
+Ensure the PR description clearly describes the problem and solution. Include relevant issue number if applicable.
+
+#### Rebase
+
+If you've been working on a change for a while, rebase with upstream/master.
+
+```
+git fetch upstream
+git rebase upstream/master
+git push origin my-feature-branch -f
+```
+
+#### Check on your pull request
+
+Go back to your pull request after a few minutes and see whether it passed muster with Travis-CI. Everything should look green. Otherwise, fix issues and amend your commit as described above.
+
+#### Be patient
+
+It's likely that your change won't merged and that the nitpicky moderators will ask you to do more, or to fix seemingly minor issues. Hang in there!
+
+#### Thank you
+
+Please do know that we really appreciate and value your time and work. We love you, really.
