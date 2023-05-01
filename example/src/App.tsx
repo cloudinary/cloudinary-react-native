@@ -1,18 +1,28 @@
-import * as React from 'react';
-
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'cloudinary-react-native';
+import {AdvancedImage} from 'cloudinary-react-native';
+import {Cloudinary} from '@cloudinary/url-gen';
+import {scale} from "@cloudinary/url-gen/actions/resize";
+import {cartoonify} from "@cloudinary/url-gen/actions/effect";
+import {max} from "@cloudinary/url-gen/actions/roundCorners";
+import React from 'react';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
 
-  React.useEffect(() => {
-    multiply(3, 7).then(setResult);
-  }, []);
-
+  function createMyImage() {
+    const cld = new Cloudinary({
+        cloud: {
+          cloudName: 'demo'
+        },
+        url: {
+          secure: true // force https, set to false to force http
+        }
+      });
+      var myImage = cld.image('sample').resize(scale().width(300)).effect(cartoonify()).roundCorners(max());
+      return myImage
+}
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
     </View>
   );
 }
