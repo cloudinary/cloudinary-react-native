@@ -43,7 +43,7 @@ Here's an example of setting configuration parameters in your React Native appli
 
 ```js
 import { AdvancedImage } from 'cloudinary-react-native';
-import {Cloudinary} from '@cloudinary/url-gen';
+import { Cloudinary } from '@cloudinary/url-gen';
 ```
 
 ### Transform and Optimize Assets
