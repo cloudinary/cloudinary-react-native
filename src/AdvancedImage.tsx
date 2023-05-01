@@ -16,7 +16,7 @@ const AdvancedImage: React.FC<ImageProps> = (props) => {
     } = props;
     return (
         <View>
-            <Image source={{ uri: props.cldImg.toURL() }} {...otherProps} />
+            <Image {...otherProps} source={{ uri: props.cldImg.toURL() }} />
         </View>
     );
 }
