@@ -1,22 +1,17 @@
 import React from 'react';
-import { Image, View} from 'react-native';
+import { Image, ImageProps, View} from 'react-native';
 import type { CloudinaryImage } from '@cloudinary/url-gen';
 import 'react-native-url-polyfill/auto';
 
-type ImageProps = {
-    cldImg: CloudinaryImage;
-    [x: string]: any;
-}
-
-
-const AdvancedImage: React.FC<ImageProps> = (props) => {
+interface AdvancedImageProps extends Exclude<ImageProps, 'source'> { cldImg: CloudinaryImage; }
+const AdvancedImage: React.FC<AdvancedImageProps> = (props) => {
     const {
         cldImg,
-        ...otherProps // Assume any other props are for the base element
+        ...rest // Assume any other props are for the base element
     } = props;
     return (
         <View>
-            <Image {...otherProps} source={{ uri: props.cldImg.toURL() }} />
+            <Image f {...rest} source={{ uri: cldImg.toURL() }} />
         </View>
     );
 }
