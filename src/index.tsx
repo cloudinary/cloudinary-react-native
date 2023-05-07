@@ -1,2 +1,2 @@
 import AdvancedImage from "./AdvancedImage";
-export {AdvancedImage };
+export { AdvancedImage };
