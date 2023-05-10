@@ -1,0 +1,13 @@
+language: node_js
+before_script:
+  - npm install -g npm@latest
+before_install:
+  - npm run
+script:
+  - npm test
+after_success:
+  - coverage
+notifications:
+  email:
+    recipients:
+      - sdk_developers@cloudinary.com
