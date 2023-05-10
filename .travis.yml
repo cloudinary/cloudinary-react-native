@@ -1,17 +1,13 @@
 language: node_js
-notifications:
-  email: false
-node_js:
-  - node
-cache:
-  directories:
-    - ~/.npm
-    - .jest
 before_script:
   - npm install -g npm@latest
 before_install:
-  - npm run env prod
+  - npm run
 script:
   - npm test
 after_success:
   - coverage
+notifications:
+  email:
+    recipients:
+      - sdk_developers@cloudinary.com
