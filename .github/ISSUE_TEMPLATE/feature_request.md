@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-## Feature request for Cloudinary iOS SDK
+## Feature request for Cloudinary React Native SDK
 …(If your feature is for other SDKs, please request them there)
 
 ## Explain your use case
