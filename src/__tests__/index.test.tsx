@@ -13,7 +13,7 @@ describe('AdvancedImage', () => {
     });
 
     it('should forward any other props to the Image', () => {
-        const cldImg = new CloudinaryImage('sample', { cloudName: 'demo' });
+        const cldImg = new CloudinaryImage( 'sample', { cloudName: 'demo' });
         const { getByTestId } = render(<AdvancedImage cldImg={cldImg} testID="my-image" />);
         const image = getByTestId('my-image');
         expect(image).toBeTruthy();
