@@ -2,6 +2,7 @@ import React from 'react';
 import { Image, ImageProps, View} from 'react-native';
 import type { CloudinaryImage } from '@cloudinary/url-gen';
 import 'react-native-url-polyfill/auto';
+import { SDKAnalyticsConstants } from './internal/SDKAnalyticsConstants';
 
 interface AdvancedImageProps extends Omit<ImageProps, 'source'> { cldImg: CloudinaryImage; }
 const AdvancedImage: React.FC<AdvancedImageProps> = (props) => {
@@ -11,7 +12,7 @@ const AdvancedImage: React.FC<AdvancedImageProps> = (props) => {
     } = props;
     return (
         <View>
-            <Image {...rest} source={{ uri: cldImg.toURL() }} />
+            <Image {...rest} source={{ uri: cldImg.toURL({trackedAnalytics: SDKAnalyticsConstants}) }} />
         </View>
     );
 }
