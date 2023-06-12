@@ -22,7 +22,7 @@ Transform and optimize assets. Visit our documentation to learn more about [medi
 ## Version Support
 | SDK Version | React Native Version |
 |-------------|----------------------|
-| 0.0.1       | > 0.6                | 
+| 0.0.2       | > 0.6                | 
 
 ## Installation
 ### Install using your favorite package manager (yarn, npm)

@@ -1,5 +1,5 @@
 import { SDKAnalyticsConstants } from '../internal/SDKAnalyticsConstants';
-import { Platform, Image } from 'react-native';
+import { Image } from 'react-native';
 import AdvancedImage from '../AdvancedImage';
 import { CloudinaryImage } from '@cloudinary/url-gen/assets/CloudinaryImage';
 import { render } from '@testing-library/react-native';
