@@ -6,14 +6,14 @@ import { render } from '@testing-library/react-native';
 import TestRenderer from 'react-test-renderer';
 describe('AdvancedImage', () => {
     it('should render an Image with the correct URI', () => {
-        const cldImg = new CloudinaryImage('sample', { cloudName: 'demo' });
+        const cldImg = new CloudinaryImage('sample', { cloudName: 'demo' }, { analytics: false });
         const component = TestRenderer.create(<AdvancedImage cldImg={cldImg} />);
         const imageComponent = component.root.findByType(Image);
         expect(imageComponent.props.source.uri).toBe(cldImg.toURL());
     });
 
     it('should forward any other props to the Image', () => {
-        const cldImg = new CloudinaryImage('sample', { cloudName: 'demo' });
+        const cldImg = new CloudinaryImage('sample', { cloudName: 'demo'} , { analytics: false });
         const { getByTestId } = render(<AdvancedImage cldImg={cldImg} testID="my-image" />);
         const image = getByTestId('my-image');
         expect(image).toBeTruthy();
