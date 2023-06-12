@@ -1,28 +1,25 @@
 import { APIConfig, apiVersion, defaultResourceType } from "../config/api-config";
-import { FormData } from "node-fetch";
+import { UploadApiOptions } from "../model/params/upload-params"
 import "isomorphic-fetch";
 
-const makeRequest = async (url: string,
+const makeRequest = async (
+  file: any,
   method = 'POST',
   headers: HeadersInit_ | undefined,
-  // data: FormData,
-  params: Record<string, any>,
+  options: UploadApiOptions,
   callback: (error: any | null, response: any) => void
 ) => {
   var config = new APIConfig();
-  var url2 = buildUrl(config.uploadPrefix, apiVersion, 'adimizrahi2', defaultResourceType, 'upload');
-
-  // Build payload
-  const file = require("../__tests__/.resources/logo.png");
+  var url = buildUrl(config.uploadPrefix, apiVersion, 'adimizrahi2', defaultResourceType, 'upload');
+console.log(file)
   const data = new FormData();
   data.append('file', file);
-  for (const [key, value] of Object.entries(params)) {
-    data.append(key, value);
+  for (const key in options) {
+    data.append(key, options[key]);
   }
 
-
   try {
-    const response = await fetch(url2, {
+    const response = await fetch(url, {
       method: method,
       headers: headers,
       body: data
