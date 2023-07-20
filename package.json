@@ -5,7 +5,33 @@
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/index.d.ts",
-  "react-native": "src/index",
+  "react-native": {
+    "lib/commonjs/index": "src/index",
+    "zlib": "browserify-zlib",
+    "console": "console-browserify",
+    "constants": "constants-browserify",
+    "crypto": "react-native-crypto",
+    "dns": "dns.js",
+    "net": "react-native-tcp",
+    "domain": "domain-browser",
+    "http": "@tradle/react-native-http",
+    "https": "https-browserify",
+    "os": "react-native-os",
+    "path": "path-browserify",
+    "querystring": "querystring-es3",
+    "fs": "react-native-level-fs",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "dgram": "react-native-udp",
+    "stream": "stream-browserify",
+    "timers": "timers-browserify",
+    "tty": "tty-browserify",
+    "vm": "vm-browserify",
+    "tls": false
+  },
   "source": "src/index",
   "files": [
     "src",
@@ -71,7 +97,7 @@
     "pod-install": "^0.1.0",
     "prettier": "^2.0.5",
     "react": "^18.2.0",
-    "react-native": "0.71.7",
+    "react-native": "^0.72.3",
     "react-native-builder-bob": "^0.20.0",
     "react-test-renderer": "^18.2.0",
     "release-it": "^15.0.0",
@@ -79,8 +105,43 @@
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.10.0",
+    "@expo/webpack-config": "^18.0.1",
+    "@tradle/react-native-http": "^2.0.1",
+    "assert": "^1.5.0",
+    "axios": "^1.4.0",
+    "base64-js": "^1.5.1",
+    "browserify-zlib": "^0.1.4",
+    "buffer": "^4.9.2",
+    "console-browserify": "^1.2.0",
+    "constants-browserify": "^1.0.0",
+    "dns.js": "^1.0.1",
+    "domain-browser": "^1.2.0",
+    "events": "^1.1.1",
+    "expo-crypto": "^12.4.1",
+    "expo-file-system": "^15.4.2",
+    "expo-random": "^13.2.0",
+    "https-browserify": "^0.0.1",
     "isomorphic-fetch": "^3.0.0",
-    "react-native-url-polyfill": "^1.3.0"
+    "path-browserify": "^0.0.0",
+    "process": "^0.11.10",
+    "punycode": "^1.4.1",
+    "querystring-es3": "^0.2.1",
+    "react-dom": "^18.2.0",
+    "react-native-fs": "^2.20.0",
+    "react-native-level-fs": "^3.0.1",
+    "react-native-os": "^1.2.6",
+    "react-native-tcp": "^3.3.2",
+    "react-native-udp": "^2.7.0",
+    "react-native-url-polyfill": "^1.3.0",
+    "react-native-web": "~0.19.6",
+    "readable-stream": "^1.0.33",
+    "stream-browserify": "^1.0.0",
+    "string_decoder": "^0.10.31",
+    "timers-browserify": "^1.4.2",
+    "tty-browserify": "^0.0.0",
+    "url": "^0.10.3",
+    "util": "^0.10.4",
+    "vm-browserify": "^0.0.4"
   },
   "resolutions": {
     "@types/react": "17.0.21"
@@ -108,7 +169,7 @@
       "node"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native(-.*)?|"
+      "node_modules/(?!@react-native|react-native|react-native-fs)"
     ],
     "moduleNameMapper": {
       "\\.(png|jpg|jpeg|gif)$": "<rootDir>/mocks/image-mock.js"
@@ -174,5 +235,32 @@
         }
       ]
     ]
+  },
+  "browser": {
+    "lib/commonjs/index": "src/index",
+    "zlib": "browserify-zlib",
+    "console": "console-browserify",
+    "constants": "constants-browserify",
+    "crypto": "react-native-crypto",
+    "dns": "dns.js",
+    "net": "react-native-tcp",
+    "domain": "domain-browser",
+    "http": "@tradle/react-native-http",
+    "https": "https-browserify",
+    "os": "react-native-os",
+    "path": "path-browserify",
+    "querystring": "querystring-es3",
+    "fs": "react-native-level-fs",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "dgram": "react-native-udp",
+    "stream": "stream-browserify",
+    "timers": "timers-browserify",
+    "tty": "tty-browserify",
+    "vm": "vm-browserify",
+    "tls": false
   }
 }

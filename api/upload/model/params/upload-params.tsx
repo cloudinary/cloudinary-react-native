@@ -519,6 +519,8 @@ import { Transform } from 'stream';
         disable_promises?: boolean;
         oauth_token?: string;
         use_asset_folder_as_public_id_prefix?: boolean;
+        from_public_id?: string;
+        to_public_id?: string;
 
         [futureKey: string]: any;
     }

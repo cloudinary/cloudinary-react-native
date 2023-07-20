@@ -3,7 +3,6 @@ const escape = require('escape-string-regexp');
 const { getDefaultConfig } = require('@expo/metro-config');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
 const pak = require('../package.json');
-
 const root = path.resolve(__dirname, '..');
 
 const modules = Object.keys({
