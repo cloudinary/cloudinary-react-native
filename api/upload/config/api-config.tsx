@@ -15,11 +15,16 @@ const callbackUrlKey = 'callback_url';
 
 var signature_algorithm = "sha1"
 
+
+
 class APIConfig {
     uploadPrefix:   string = defaultUploadPrefix;
     chunkSize:      number = 0;
     timeout:        number = 0;
     callbackUrl:    string = '';
+    cloudName:      string  = '';
+    apiKey:         string | null = '';
+    apiSecret:      string | null = '';
 }
 
 export { APIConfig }
