@@ -12,7 +12,6 @@ describe("uploader", function () {
     }
     const callback = jest.fn((error, response) => {
       // expect(error).toBe(mockError); // Assert that the error matches the mock error
-      console.log("HERE6")
       console.log(response)
       console.log(error)
       expect(response).toBeDefined(); // Assert that the response matches the mock response
