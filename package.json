@@ -114,6 +114,7 @@
     "dns.js": "^1.0.1",
     "domain-browser": "^1.2.0",
     "events": "^1.1.1",
+    "expo-asset": "^8.10.1",
     "expo-crypto": "^12.4.1",
     "https-browserify": "^0.0.1",
     "isomorphic-fetch": "^3.0.0",

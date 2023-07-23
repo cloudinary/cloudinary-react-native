@@ -5,6 +5,9 @@
   import {cartoonify} from "@cloudinary/url-gen/actions/effect";
   import {max} from "@cloudinary/url-gen/actions/roundCorners";
   import React from 'react';
+  import { UploadApiOptions } from '../../api/upload/model/params/upload-params';
+  import { upload } from '../../api/upload/src/uploader';
+  import { Asset } from 'expo-asset';
 
   const cld = new Cloudinary({
     cloud: {
@@ -16,7 +19,7 @@
   });
   export default function App() {
 
-    // uploadImage();
+    uploadImage();
 
     function createMyImage() {
 
@@ -30,23 +33,23 @@
     );
   }
 
-  // async function uploadImage() {
-  //   const getFilePath = async () => {
-  //     const localAsset = Asset.fromModule(require('../assets/icon.png'));
-  //     try {
-  //       await localAsset.downloadAsync();
-  //       const fileUri = localAsset.localUri;
-  //       return fileUri;
-  //     } catch (error) {
-  //       return null;
-  //     }
-  //   };
-  //   const filePath = await getFilePath();
-  //
-  //   const extraParams: UploadApiOptions = {
-  //      upload_preset: 'ios_sample',
-  //      unsigned: true,
-  //   }
+  async function uploadImage() {
+    const getFilePath = async () => {
+      const localAsset = Asset.fromModule(require('../assets/icon.png'));
+      try {
+        await localAsset.downloadAsync();
+        const fileUri = localAsset.localUri;
+        return fileUri;
+      } catch (error) {
+        return null;
+      }
+    };
+    const filePath = await getFilePath();
+
+    const extraParams: UploadApiOptions = {
+       upload_preset: 'ios_sample',
+       unsigned: true,
+    }
 
     // await uploadBase64({file: file! , options: extraParams, callback: (error: any, response: any) => {
     //     console.log(error)
@@ -62,10 +65,10 @@
     //     console.log(error)
     //     console.log(response)
     // }})
-    // await upload(cld, {file: filePath , options: extraParams, callback: (error: any, response: any) => {
-    //     console.log(error)
-    //     console.log(response)
-    //   }})
+    await upload(cld, {file: filePath , options: extraParams, callback: (error: any, response: any) => {
+        console.log(error)
+        console.log(response)
+      }})
 
     // explicit({public_id: "to", options: {type: "upload", eager: [
     //       {
@@ -86,7 +89,7 @@
     //   console.log(response);
     //   console.log(error)
     // }});
-  // }
+  }
 
   const styles = StyleSheet.create({
     container: {
