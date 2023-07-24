@@ -5,9 +5,6 @@
   import {cartoonify} from "@cloudinary/url-gen/actions/effect";
   import {max} from "@cloudinary/url-gen/actions/roundCorners";
   import React from 'react';
-  import { UploadApiOptions } from '../../api/upload/model/params/upload-params';
-  import { upload } from '../../api/upload/src/uploader';
-  import { Asset } from 'expo-asset';
 
   const cld = new Cloudinary({
     cloud: {
@@ -18,7 +15,6 @@
     }
   });
   export default function App() {
-
     function createMyImage() {
 
         var myImage = cld.image('sample').resize(scale().width(300)).effect(cartoonify()).roundCorners(max());

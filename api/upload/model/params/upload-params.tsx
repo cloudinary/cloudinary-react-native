@@ -1,5 +1,5 @@
 import { Transform } from 'stream';
-    
+
     /****************************** Constants *************************************/
     /****************************** Transformations *******************************/
     type CropMode =
@@ -572,7 +572,7 @@ import { Transform } from 'stream';
     // err is kept for backwards compatibility, it currently will always be undefined
     type ResponseCallback = (err?: any, callResult?: any) => any;
 
-    type UploadResponseCallback = (err?: UploadApiErrorResponse, callResult?: UploadApiResponse) => void;
+    export type UploadResponseCallback = (err?: UploadApiErrorResponse, callResult?: UploadApiResponse) => void;
 
     export interface UploadApiResponse {
         public_id: string;
@@ -689,7 +689,7 @@ import { Transform } from 'stream';
             }
         ]
     }
-    
+
     export interface DatasourceEntry {
         external_id?: string;
         value: string;
