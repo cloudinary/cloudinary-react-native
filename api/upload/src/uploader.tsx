@@ -1,5 +1,4 @@
-import { UploadApiOptions } from '../model/params/upload-params';
-import { UploadResponseCallback } from '../model/params/upload-response';
+import { UploadApiOptions, UploadResponseCallback } from '../model/params/upload-params';
 import { Cloudinary } from '@cloudinary/url-gen';
 import { APIConfig } from '../config/api-config';
 import { buildRequest, makeRequest } from './uploader_utils';
@@ -23,6 +22,12 @@ export async function rename(cloudinary: Cloudinary, {from_public_id, to_public_
   options.from_public_id = from_public_id;
   options.to_public_id = to_public_id;
   const request = await buildRequest(cloudinary, 'rename',{file: undefined, headers: undefined, options, config})
+  return makeRequest(request, callback);
+};
+
+export async function explicit(cloudinary: Cloudinary, {publicId, options = {}, config = null, callback}: {publicId: string, options?: UploadApiOptions, config?: APIConfig | null, callback?: UploadResponseCallback}) {
+  options.public_id = publicId;
+  const request = await buildRequest(cloudinary, 'explicit',{headers: undefined, options, config})
   return makeRequest(request, callback);
 };
 

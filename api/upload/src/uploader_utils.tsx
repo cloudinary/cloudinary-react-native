@@ -2,8 +2,7 @@ import { APIConfig, apiVersion, defaultResourceType } from '../config/api-config
 import { process_request_params } from '../utils';
 import { UploadRequest } from '../model/upload-request';
 import { Cloudinary } from '@cloudinary/url-gen';
-import { UploadApiErrorResponse, UploadApiOptions } from '../model/params/upload-params';
-import { UploadApiResponse, UploadResponseCallback } from '../model/params/upload-response';
+import { UploadApiErrorResponse, UploadApiOptions, UploadResponseCallback, UploadApiResponse } from '../model/params/upload-params';
 import { callApi } from './network-delegate';
 
 type UrlParameters = {prefix: string, apiVersion: string, cloudName: string, resourceType: string, action: string};
@@ -50,11 +49,6 @@ function buildPayload(file: string | undefined, options: UploadApiOptions) {
   return data;
 }
 
-export async function explicit(cloudinary: Cloudinary, {public_id , options = {}, config = null, callback}: {public_id: string, options?: UploadApiOptions,config: APIConfig | null, callback?: UploadResponseCallback}) {
-  options.public_id = public_id;
-  const request = await buildRequest(cloudinary, 'explicit',{file: undefined, headers: undefined, options, config})
-  return makeRequest(request, callback);
-}
 function parseApiResponse(response: any): UploadApiResponse | UploadApiErrorResponse {
   // Check if the response has a "message" property to determine the error response
 
