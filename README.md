@@ -75,6 +75,15 @@ export default function App() {
 The following example performs an unsigned upload of a `string` using the default settings, a request upload callback, and an upload preset (required for unsigned uploads):
 
 ```javascript
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: '<your_cloud_name>'
+    },
+    url: {
+      secure: true
+    }
+  });
+
   const options: UploadApiOptions = {
     upload_preset: 'sample_preset',
     unsigned: true,
