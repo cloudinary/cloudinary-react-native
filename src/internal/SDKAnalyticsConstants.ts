@@ -11,10 +11,10 @@ const getReactNativeVersion = () => {
 
 const getSDKVersion = () => {
   try{
-    const SDKVersionPackageJson = require('cloudinary-react-native/package.json')
+    const SDKVersionPackageJson = require('../../package.json')
     if (SDKVersionPackageJson && SDKVersionPackageJson.version) {
       //return SDKVersionPackageJson.version
-      return 
+      return
     }
   } catch {
     return "0.0.0";
