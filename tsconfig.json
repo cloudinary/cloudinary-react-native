@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "noEmit": false,
+    "emitDeclarationOnly": true,
     "allowJs": true,
     "baseUrl": "./",
     "paths": {

@@ -1,6 +1,4 @@
-import { Transform } from 'stream';
-
-    /****************************** Constants *************************************/
+ /****************************** Constants *************************************/
     /****************************** Transformations *******************************/
     type CropMode =
         | (string & {})
@@ -603,14 +601,11 @@ import { Transform } from 'stream';
     }
 
     export interface UploadApiErrorResponse {
-        message: string;
-        name: string;
-        http_code: number;
+      message: string;
+      name: string;
+      http_code: number;
 
-        [futureKey: string]: any;
-    }
-
-    class UploadStream extends Transform {
+      [futureKey: string]: any;
     }
 
     export interface DeleteApiResponse {
