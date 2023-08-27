@@ -3,4 +3,3 @@ import { UploadApiOptions } from './model/params/upload-params';
 
 export { upload, unsignedUpload, uploadBase64, rename, explicit };
 export { UploadApiOptions };
-
