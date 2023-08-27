@@ -14,7 +14,6 @@
       secure: true
     }
   });
-
   export default function App() {
     function createMyImage() {
 
