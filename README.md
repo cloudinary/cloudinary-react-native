@@ -65,7 +65,7 @@ let img = myCld.image('sample');
 export default function App() {
   return (
     <View style={styles.container}>
-      <AdvancedImage cldImg={createMyImage()} style={{width:300, height:200}}/>
+      <AdvancedImage cldImg={img} style={{width:300, height:200}}/>
     </View>
   );
 };
