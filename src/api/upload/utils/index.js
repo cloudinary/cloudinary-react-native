@@ -11,9 +11,9 @@ export function present(value) {
     return value != null && ("" + value).length > 0;
 }
 
-async function sign_request(params, options = {}) {
-    let apiKey = "117682269726797"
-    let apiSecret = "e49pQnmbp_wu-j5XGIvv8u5Teio"
+async function sign_request(apiConfig, params, options = {}) {
+    let apiKey = apiConfig.apiKey
+    let apiSecret = apiConfig.apiSecret
     params = clear_blank(params);
     params.signature = await api_sign_request(params, apiSecret);
     params.api_key = apiKey;
@@ -31,7 +31,6 @@ async function sign_request(params, options = {}) {
       /*APIConfig().signature_algorithm || */ DEFAULT_SIGNATURE_ALGORITHM,
       'hex'
     );
-
     return Promise.resolve(signature);
   }
 
@@ -74,7 +73,7 @@ async function sign_request(params, options = {}) {
     return hash;
   }
 
-  export async function process_request_params(options) {
+  export async function process_request_params(apiConfig, options) {
     let params = clear_blank(options);
     if ((options.unsigned != null) && options.unsigned) {
       params = clear_blank(options);
@@ -85,7 +84,7 @@ async function sign_request(params, options = {}) {
       params = clear_blank(options);
     } else {
       params.timestamp = timestamp();
-      params = await sign_request(params, options);
+      params = await sign_request(apiConfig, params, options);
     }
     return Promise.resolve(params)
   }

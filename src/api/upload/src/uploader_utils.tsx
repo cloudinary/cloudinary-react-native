@@ -15,7 +15,7 @@ export async function buildRequest(cloudinary: Cloudinary, action: string, { fil
       resourceType: defaultResourceType,
       action: action
     });
-    const params = await process_request_params(options)
+    const params = await process_request_params(apiConfig, options)
     const data = buildPayload(file, params);
     const request: UploadRequest = { url, headers, data };
     return request;
