@@ -26,14 +26,19 @@ const AdvancedVideo = React.forwardRef<VideoRef, AdvancedVideoProps>(
       return '';
     };
     const { videoStyle } = props;
+    const videoUri = getVideoUri();
+
+    if (!videoUri) {
+      console.warn('Video URI is empty. Cannot play the video.');
+    }
+
     return (
       <Video
         ref={ref}
-        source={{ uri: getVideoUri() }}
+        source={{ uri: videoUri }}
         style={videoStyle}
         useNativeControls // Enable native controls
       />
     );
-  }
-);
+  });
 export default AdvancedVideo;
