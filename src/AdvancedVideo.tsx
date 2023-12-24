@@ -5,20 +5,15 @@ import 'react-native-url-polyfill/auto';
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
 import { SDKAnalyticsConstants } from './internal/SDKAnalyticsConstants';
 
-interface CLDVideoPlayerProps {
+interface AdvancedVideoProps {
   videoUrl?: string;
   cldVideo?: CloudinaryVideo;
   videoStyle?: StyleProp<ViewStyle>;
 }
 
-interface CLDVideoPlayerMethods {
-  playVideo: () => Promise<void>;
-  pauseVideo: () => Promise<void>;
-}
-
 type VideoRef = Video | null;
 
-const AdvancedVideo = React.forwardRef<VideoRef, CLDVideoPlayerProps>(
+const AdvancedVideo = React.forwardRef<VideoRef, AdvancedVideoProps>(
   (props, ref) => {
     const getVideoUri = (): string => {
       const { videoUrl, cldVideo } = props;
