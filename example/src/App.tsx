@@ -5,12 +5,12 @@ import {scale} from "@cloudinary/url-gen/actions/resize";
 import {cartoonify} from "@cloudinary/url-gen/actions/effect";
 import {max} from "@cloudinary/url-gen/actions/roundCorners";
 import React, {useRef} from "react";
-import CLDVideoPlayer from '../../src/CldVideoPlayer';
 import { streamingProfile } from '@cloudinary/url-gen/actions/transcode';
+import AdvancedVideo from '../../src/AdvancedVideo';
 
 const cld = new Cloudinary({
   cloud: {
-    cloudName: 'adimizrahi2'
+    cloudName: 'demo'
   },
   url: {
     secure: true
@@ -18,15 +18,14 @@ const cld = new Cloudinary({
 });
 export default function App() {
 
-  const videoPlayer = useRef<CLDVideoPlayer>(null);
+  const videoPlayer = useRef<typeof AdvancedVideo>(null);
   function createMyImage() {
     var myImage = cld.image('sample').resize(scale().width(300)).effect(cartoonify()).roundCorners(max());
     return myImage
   }
 
   function createMyVideoObject() {
-    const myVideo = cld.video('sea_turtle_arkyym.m3u8').transcode(streamingProfile("auto"))
-    console.log(myVideo.toURL())
+    const myVideo = cld.video('sea_turtle.m3u8').transcode(streamingProfile("auto"))
     return myVideo
   };
 
@@ -36,11 +35,10 @@ export default function App() {
       <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
     </View>
       <View style={styles.videoContainer}>
-        <CLDVideoPlayer
+        <AdvancedVideo
           ref={videoPlayer}
-          videoUrl="https://res.cloudinary.com/demo/video/upload/sp_auto:subtitles_(code_en-US;file_docs:narration.vtt)/sea_turtle.m3u8"
           videoStyle={styles.video}
-          // cldVideo={createMyVideoObject()}
+          cldVideo={createMyVideoObject()}
         />
       </View>
     </View>
