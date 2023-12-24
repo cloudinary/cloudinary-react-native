@@ -15,7 +15,10 @@ interface CLDVideoPlayerMethods {
   playVideo: () => Promise<void>;
   pauseVideo: () => Promise<void>;
 }
-const AdvancedVideo = React.forwardRef<any, CLDVideoPlayerProps>(
+
+type VideoRef = Video | null;
+
+const AdvancedVideo = React.forwardRef<VideoRef, CLDVideoPlayerProps>(
   (props, ref) => {
     const getVideoUri = (): string => {
       const { videoUrl, cldVideo } = props;
