@@ -7,6 +7,7 @@ import {max} from "@cloudinary/url-gen/actions/roundCorners";
 import React, {useRef} from "react";
 import { streamingProfile } from '@cloudinary/url-gen/actions/transcode';
 import AdvancedVideo from '../../src/AdvancedVideo';
+import { Video } from 'expo-av';
 
 const cld = new Cloudinary({
   cloud: {
@@ -18,7 +19,7 @@ const cld = new Cloudinary({
 });
 export default function App() {
 
-  const videoPlayer = useRef<typeof AdvancedVideo>(null);
+  const videoPlayer = useRef<Video>(null);
   function createMyImage() {
     var myImage = cld.image('sample').resize(scale().width(300)).effect(cartoonify()).roundCorners(max());
     return myImage
