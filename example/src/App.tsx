@@ -39,8 +39,7 @@ export default function App() {
         <AdvancedVideo
           ref={videoPlayer}
           videoStyle={styles.video}
-          // cldVideo={createMyVideoObject()}
-          videoUrl={''}
+          cldVideo={createMyVideoObject()}
         />
       </View>
     </View>
