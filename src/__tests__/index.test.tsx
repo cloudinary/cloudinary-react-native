@@ -18,13 +18,16 @@ describe('AdvancedImage', () => {
         const image = getByTestId('my-image');
         expect(image).toBeTruthy();
     });
-    // it('should throw an error if not passed a CloudinaryImage prop', () => {
-    //     const cldImg = new CloudinaryImage('myImage');
-    //     jest.spyOn(cldImg, 'toURL').mockImplementation(() => {
-    //         throw new Error('Failed to generate image URL');
-    //     });
-    //     expect(() => render(<AdvancedImage cldImg={cldImg} />)).toThrowError(
-    //         'Failed to generate image URL'
-    //     );
-    // });
+  it('should throw an error if not passed a CloudinaryImage prop', () => {
+    const errorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const cldImg = new CloudinaryImage('myImage');
+    jest.spyOn(cldImg, 'toURL').mockImplementation(() => {
+      throw new Error('Failed to generate image URL');
+    });
+
+    expect(() => render(<AdvancedImage cldImg={cldImg} />)).toThrow(Error);
+
+    errorMock.mockRestore(); // Restore console.error to its original behavior
+  });
 });
