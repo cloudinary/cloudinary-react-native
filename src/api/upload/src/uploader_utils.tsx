@@ -40,13 +40,30 @@ function buildUrl({prefix, apiVersion, cloudName, resourceType, action}: UrlPara
 
 function buildPayload(file: string | undefined, options: UploadApiOptions) {
   const data = new FormData();
+  data.append('type', setMimeType(options.resource_type))
   if(file != undefined) {
     data.append('file', {name: "file", uri: file});
   }
+
   for (const key in options) {
     data.append(key, options[key]);
   }
   return data;
+}
+
+function setMimeType(resource_type: 'image' | 'video' | 'raw' | 'auto' | undefined) {
+  switch(resource_type) {
+    case 'image':
+      return 'image/*';
+    case 'video':
+      return 'video/*';
+    case 'raw':
+      return '*/*';
+    case 'auto':
+      return '*/*';
+    case undefined:
+      return 'image/*';
+  }
 }
 
 function parseApiResponse(response: any): UploadApiResponse | UploadApiErrorResponse {

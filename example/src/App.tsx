@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import {AdvancedImage, upload} from 'cloudinary-react-native';
+import { AdvancedImage, upload, UploadApiOptions } from 'cloudinary-react-native';
 import {Cloudinary} from '@cloudinary/url-gen';
 import {scale} from "@cloudinary/url-gen/actions/resize";
 import {cartoonify} from "@cloudinary/url-gen/actions/effect";
@@ -8,6 +8,7 @@ import React, {useRef} from "react";
 import { streamingProfile } from '@cloudinary/url-gen/actions/transcode';
 import AdvancedVideo from '../../src/AdvancedVideo';
 import { Video } from 'expo-av';
+import { Asset } from 'expo-asset';
 
 const cld = new Cloudinary({
   cloud: {
@@ -18,6 +19,39 @@ const cld = new Cloudinary({
   }
 });
 export default function App() {
+
+
+  async function uploadImage() {
+    const getFilePath = async () => {
+      const localAsset = Asset.fromModule(require('../assets/icon.png'));
+      try {
+        await localAsset.downloadAsync();
+        const fileUri = localAsset.localUri;
+        return fileUri;
+      } catch (error) {
+        return null;
+      }
+    };
+    const filePath = await getFilePath();
+    console.log(filePath)
+    // const file = await getFile();
+    // console.log(file)
+    const options: UploadApiOptions = {
+      upload_preset: 'ios_sample',
+      resource_type: 'image',
+      unsigned: true,
+    }
+    await upload(cld, {
+      file: filePath, options: options,
+      callback: (error: any, response: any) => {
+        console.log(response)
+        console.log(error)
+        //.. handle response
+      }
+    })
+  }
+
+  uploadImage();
 
   const videoPlayer = useRef<Video>(null);
   function createMyImage() {
