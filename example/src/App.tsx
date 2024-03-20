@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import { AdvancedImage } from 'cloudinary-react-native';
+import {AdvancedImage} from 'cloudinary-react-native';
 import {Cloudinary} from '@cloudinary/url-gen';
 import {scale} from "@cloudinary/url-gen/actions/resize";
 import {cartoonify} from "@cloudinary/url-gen/actions/effect";
