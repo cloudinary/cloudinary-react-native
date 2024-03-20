@@ -40,9 +40,8 @@ function buildUrl({prefix, apiVersion, cloudName, resourceType, action}: UrlPara
 
 function buildPayload(file: string | undefined, options: UploadApiOptions) {
   const data = new FormData();
-  data.append('type', setMimeType(options.resource_type))
   if(file != undefined) {
-    data.append('file', {name: "file", uri: file});
+    data.append('file', {name: "file", uri: file, type: setMimeType(options.resource_type)});
   }
 
   for (const key in options) {
