@@ -62,6 +62,8 @@ function setMimeType(resource_type: 'image' | 'video' | 'raw' | 'auto' | undefin
       return '*/*';
     case undefined:
       return 'image/*';
+    default:
+      return 'image/*';
   }
 }
 
