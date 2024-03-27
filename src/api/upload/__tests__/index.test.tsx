@@ -18,7 +18,7 @@ jest.mock('../src/uploader_utils', () => ({
 
 describe('upload function', () => {
   afterEach(() => {
-    jest.clearAllMocks(); // Clear mock calls after each test
+    jest.clearAllMocks();
   });
 
   it('uploads a file with file path', async () => {
@@ -73,7 +73,6 @@ describe('upload function', () => {
 
     await upload(cloudinary, { file: filePath, headers: customHeaders, options: customOptions });
 
-    // Check if buildRequest is called with the correct parameters
     expect(buildRequest).toHaveBeenCalledWith(cloudinary, 'upload', {
       file: filePath,
       headers: expect.objectContaining(customHeaders),
@@ -101,7 +100,7 @@ describe('rename function', () => {
       options: expect.objectContaining({
         from_public_id,
         to_public_id,
-        someOption: 'value' // Check if customOptions exist in the options object
+        someOption: 'value'
       }),
       config: null
     });
@@ -111,7 +110,7 @@ describe('rename function', () => {
 
 describe('explicit function', () => {
   afterEach(() => {
-    jest.clearAllMocks(); // Clear mock calls after each test
+    jest.clearAllMocks();
   });
 
   it('requests explicit transformation for a file', async () => {
@@ -124,8 +123,8 @@ describe('explicit function', () => {
       headers: undefined,
       options: expect.objectContaining({
         public_id: publicId,
-        type: 'upload', // Ensure type is set
-        eager: [{ width: 300, height: 300, crop: 'pad' }] // Check if customOptions exist in the options object
+        type: 'upload',
+        eager: [{ width: 300, height: 300, crop: 'pad' }]
       }),
       config: null
     });
