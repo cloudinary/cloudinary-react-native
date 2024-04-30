@@ -12,7 +12,7 @@ export async function buildRequest(cloudinary: Cloudinary, action: string, { fil
       prefix: apiConfig.uploadPrefix,
       apiVersion,
       cloudName: apiConfig.cloudName,
-      resourceType: defaultResourceType,
+      resourceType: options["resource_type"] != null ? options["resource_type"] : defaultResourceType,
       action: action
     });
     const params = await process_request_params(apiConfig, options)
