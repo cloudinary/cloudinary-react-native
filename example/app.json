@@ -15,10 +15,7 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "Allow access to photos"
-      }
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {

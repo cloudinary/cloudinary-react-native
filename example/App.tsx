@@ -1,13 +1,13 @@
 import { StyleSheet, View } from 'react-native';
-import {AdvancedImage, upload} from 'cloudinary-react-native';
+import {AdvancedImage, AdvancedVideo} from 'cloudinary-react-native';
 import {Cloudinary} from '@cloudinary/url-gen';
 import {scale} from "@cloudinary/url-gen/actions/resize";
 import {cartoonify} from "@cloudinary/url-gen/actions/effect";
 import {max} from "@cloudinary/url-gen/actions/roundCorners";
 import React, {useRef} from "react";
 import { streamingProfile } from '@cloudinary/url-gen/actions/transcode';
-import AdvancedVideo from '../../src/AdvancedVideo';
 import { Video } from 'expo-av';
+import {  } from 'cloudinary-react-native';
 
 const cld = new Cloudinary({
   cloud: {
@@ -33,8 +33,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View>
-      <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
-    </View>
+        <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
+      </View>
       <View style={styles.videoContainer}>
         <AdvancedVideo
           ref={videoPlayer}
