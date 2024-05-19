@@ -1,10 +1,15 @@
-0.3.1 / 2023-07-05
+1.0.0 / 2024-19-05
+==================
+
+* GA release
+
+0.3.1 / 2024-07-05
 ==================
 
 * Fix upload for videos
 * Update analytics token
 
-0.3.0 / 2023-25-03
+0.3.0 / 2024-25-03
 ==================
 
 * Fix upload for Android platform
