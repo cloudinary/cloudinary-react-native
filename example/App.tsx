@@ -5,13 +5,11 @@ import {scale} from "@cloudinary/url-gen/actions/resize";
 import {cartoonify} from "@cloudinary/url-gen/actions/effect";
 import {max} from "@cloudinary/url-gen/actions/roundCorners";
 import React, {useRef} from "react";
-import { streamingProfile } from '@cloudinary/url-gen/actions/transcode';
 import { Video } from 'expo-av';
-import {  } from 'cloudinary-react-native';
 
 const cld = new Cloudinary({
   cloud: {
-    cloudName: 'demo'
+    cloudName: 'mobiledemoapp'
   },
   url: {
     secure: true
@@ -26,7 +24,8 @@ export default function App() {
   }
 
   function createMyVideoObject() {
-    const myVideo = cld.video('sea_turtle.m3u8').transcode(streamingProfile("auto"))
+    const myVideo = cld.video('jnwczzoacujqb4r4loj1')
+    console.log(myVideo.toURL())
     return myVideo
   };
 
