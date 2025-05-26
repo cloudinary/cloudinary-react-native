@@ -11,7 +11,7 @@ const cloudinaryImage = new CloudinaryImage('sample', { cloudName: 'demo' });
 describe('analytics', () => {
   beforeEach(() => {
     SDKAnalyticsConstants.sdkSemver = '1.0.0';
-    SDKAnalyticsConstants.techVersion = '0.0.1';
+    SDKAnalyticsConstants.techVersion = '10.2.5';
     SDKAnalyticsConstants.osType = 'A';
     SDKAnalyticsConstants.osVersion = '30';
   });
