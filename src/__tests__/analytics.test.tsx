@@ -16,10 +16,17 @@ describe('analytics', () => {
     SDKAnalyticsConstants.osVersion = '30';
   });
   it('creates a url with analytics', () => {
-    const element = render(<AdvancedImage cldImg={cloudinaryImage}></AdvancedImage>);
-    const imageComponent = element.root.findByType(Image);
-    expect(imageComponent.props.source.uri).toBe(cloudinaryImage.toURL({trackedAnalytics: SDKAnalyticsConstants}));
+    const testImage = new CloudinaryImage('sample', { cloudName: 'demo' });
+    const expectedUrl = testImage.toURL({ trackedAnalytics: SDKAnalyticsConstants });
+
+    const { getByTestId } = render(
+      <AdvancedImage cldImg={new CloudinaryImage('sample', { cloudName: 'demo' })} testID="cld-image" />
+    );
+
+    const imageComponent = getByTestId('cld-image');
+    expect(imageComponent.props.source.uri).toBe(expectedUrl);
   });
+
 
   it('sets correct osType', () => {
     expect(SDKAnalyticsConstants.osType).toBe('A'); // For Android

@@ -1,13 +1,26 @@
-// Learn more https://docs.expo.io/guides/customizing-metro
-const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
+const { getDefaultConfig } = require('@expo/metro-config');
 
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname);
+const projectRoot = __dirname;
+const workspaceRoot = path.resolve(projectRoot, '..');
 
-const packagePath = "../";
+const config = getDefaultConfig(projectRoot);
 
-config.resolver.nodeModulesPaths.push(packagePath);
+config.watchFolders = [workspaceRoot];
 
-config.watchFolders.push(packagePath);
+config.resolver.nodeModulesPaths = [
+  path.resolve(projectRoot, 'node_modules'),
+  path.resolve(workspaceRoot, 'node_modules'),
+];
+
+config.resolver.extraNodeModules = {
+  'cloudinary-react-native': path.resolve(workspaceRoot),
+};
+
+// 🚫 Exclude nested react-native versions
+config.resolver.blockList = exclusionList([
+  new RegExp(`${workspaceRoot}/node_modules/react-native/.*`),
+]);
 
 module.exports = config;
