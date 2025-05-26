@@ -1,36 +1,10 @@
 {
   "name": "cloudinary-react-native",
   "version": "1.0.1",
-  "description": "Cloudinary is a cloud service that offers a solution to a web application's entire image management pipeline. Upload images to the cloud. Automatically perform smart image resizing, cropping and conversion without installing any complex software. Integrate Facebook or Twitter profile image extraction in a snap, in any dimension and style to match your websiteâs graphics requirements. Images are seamlessly delivered through a fast CDN, and much much more. This Java library allows to easily integrate with Cloudinary in Kotlin applications.",
+  "description": "Cloudinary React Native SDK: upload, transform, and deliver images and videos through Cloudinary's media pipeline.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
-  "react-native": {
-    "zlib": "browserify-zlib",
-    "console": "console-browserify",
-    "constants": "constants-browserify",
-    "crypto": "react-native-crypto",
-    "dns": "dns.js",
-    "net": "react-native-tcp",
-    "domain": "domain-browser",
-    "http": "@tradle/react-native-http",
-    "https": "https-browserify",
-    "os": "react-native-os",
-    "path": "path-browserify",
-    "querystring": "querystring-es3",
-    "fs": "react-native-level-fs",
-    "_stream_transform": "readable-stream/transform",
-    "_stream_readable": "readable-stream/readable",
-    "_stream_writable": "readable-stream/writable",
-    "_stream_duplex": "readable-stream/duplex",
-    "_stream_passthrough": "readable-stream/passthrough",
-    "dgram": "react-native-udp",
-    "stream": "stream-browserify",
-    "timers": "timers-browserify",
-    "tty": "tty-browserify",
-    "vm": "vm-browserify",
-    "tls": false
-  },
   "source": "src/index",
   "files": [
     "lib",
@@ -52,6 +26,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "preinstall": "npx npm-force-resolutions",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "prepack": "bob build",
@@ -83,9 +58,8 @@
     "@testing-library/jest-native": "^5.4.2",
     "@testing-library/react-native": "^12.5.1",
     "@types/jest": "^28.1.2",
-    "@types/react": "~17.0.21",
-    "@types/react-native": "0.70.0",
-    "@types/react-test-renderer": "^18.2.0",
+    "@types/react": "18.2.0",
+    "@types/react-native": "0.72.0",
     "babel-jest": "^29.5.0",
     "del-cli": "^5.0.0",
     "eslint": "^8.4.1",
@@ -98,13 +72,12 @@
     "react": "^18.0.0",
     "react-native": "^0.72.3",
     "react-native-builder-bob": "^0.20.0",
-    "react-test-renderer": "18.0.0",
+    "react-test-renderer": "18.2.0",
     "release-it": "^15.0.0",
     "typescript": "^4.5.2"
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.10.0",
-    "@expo/webpack-config": "^18.0.1",
     "@tradle/react-native-http": "^2.0.1",
     "assert": "^1.5.0",
     "browserify-zlib": "^0.1.4",
@@ -113,11 +86,9 @@
     "dns.js": "^1.0.1",
     "domain-browser": "^1.2.0",
     "events": "^1.1.1",
-    "expo-asset": "^10.0.6",
-    "expo-av": "^14.0.5",
-    "expo-crypto": "^13.0.2",
     "https-browserify": "^0.0.1",
     "isomorphic-fetch": "^3.0.0",
+    "npm-force-resolutions": "^0.0.10",
     "path-browserify": "^0.0.0",
     "process": "^0.11.10",
     "punycode": "^1.4.1",
@@ -139,15 +110,19 @@
     "util": "^0.10.4",
     "vm-browserify": "^0.0.4"
   },
-  "resolutions": {
-    "@types/react": "17.0.21"
-  },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "react": ">=18.0.0",
+    "react-native": ">=0.72.0",
+    "expo": "^50.0.0",
+    "expo-av": "^14.0.0",
+    "expo-modules-core": "1.11.14"
+  },
+  "resolutions": {
+    "@types/react": "18.2.0",
+    "@types/react-native": "0.72.0"
   },
   "engines": {
-    "node": ">= 22.0.0"
+    "node": ">= 18.0.0"
   },
   "packageManager": "^yarn@1.22.15",
   "jest": {

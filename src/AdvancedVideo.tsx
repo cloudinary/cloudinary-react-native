@@ -1,7 +1,6 @@
 import React, { Component, RefObject } from 'react';
 import { ViewStyle, StyleProp } from 'react-native';
 import { Video } from 'expo-av';
-import 'react-native-url-polyfill/auto';
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
 import { SDKAnalyticsConstants } from './internal/SDKAnalyticsConstants';
 
