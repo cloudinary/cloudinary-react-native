@@ -1,7 +1,6 @@
 import React, { Component, RefObject, useRef } from 'react';
 import { ViewStyle, StyleProp } from 'react-native';
 import { AVPlaybackStatus, Video, AVPlaybackStatusSuccess } from 'expo-av';
-import 'react-native-url-polyfill/auto';
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
 import { SDKAnalyticsConstants } from './internal/SDKAnalyticsConstants';
 import VideoAnalyticsAdapter from './widgets/video/analytics/VideoAnalyticsAdapter';
@@ -66,7 +65,6 @@ const AdvancedVideo = React.forwardRef<VideoRef, AdvancedVideoProps>(
     if (!videoUri) {
       console.warn('Video URI is empty. Cannot play the video.');
     }
-console.log("before return")
     return (
       <Video
         ref={ref}
