@@ -1,6 +1,6 @@
 import { SDKAnalyticsConstants } from '../internal/SDKAnalyticsConstants';
 import { Image, Platform } from 'react-native';
-import AdvancedImage from '../AdvancedImage';
+import AdvancedImage from '../widgets/image/AdvancedImage';
 import { CloudinaryImage } from '@cloudinary/url-gen/assets/CloudinaryImage';
 import { render } from '@testing-library/react-native';
 import React from 'react';

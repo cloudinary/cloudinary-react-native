@@ -1,0 +1,242 @@
+import { isMobile } from './utils/platform-detection';
+import { initEventsCollector } from './events-collector';
+import { getVideoViewId, getUserId } from './utils/unique-ids';
+import { sendRequest } from './utils/send-request-react-native';
+import {
+  createRegularVideoViewEndEvent,
+  createLiveStreamViewStartEvent,
+  createLiveStreamViewEndEvent,
+  createRegularVideoViewStartEvent,
+  prepareEvents,
+} from './utils/events';
+import { throwErrorIfInvalid, metadataValidator, mainOptionsValidator, trackingOptionsValidator } from './utils/validators';
+import { expoAVVideoPlayerAdapter } from './player-adapters/expoAVVideoPlayerAdapter';
+import { parseCustomerVideoData } from './utils/customer-data';
+import { createAppStateTracker } from './utils/app-state-events';
+
+const CLD_ANALYTICS_ENDPOINTS_LIST = {
+  production: {
+    default: 'https://video-analytics-api.cloudinary.com/v1/video-analytics',
+    liveStreams: 'https://video-analytics-api.cloudinary.com/v1/live-streams',
+  },
+  development: {
+    default: 'http://localhost:3001/events',
+    liveStreams: 'http://localhost:3001/events',
+  },
+};
+const CLD_ANALYTICS_ENDPOINT = CLD_ANALYTICS_ENDPOINTS_LIST.production;
+
+export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
+  throwErrorIfInvalid(
+      mainOptionsValidator(mainOptions),
+      'Cloudinary video analytics requires proper options object'
+  );
+
+  if (!mainOptions.playerAdapter) {
+    mainOptions.playerAdapter = expoAVVideoPlayerAdapter(videoRef);
+  }
+
+  let videoTrackingSession = null;
+  const userId = getUserId();
+  const { playerAdapter } = mainOptions;
+  const isMobileDetected = isMobile();
+  const createEventsCollector = initEventsCollector(playerAdapter);
+  const clearVideoTracking = () => {
+    if (videoTrackingSession) {
+      videoTrackingSession.clear();
+      videoTrackingSession = null;
+    }
+  };
+  const viewId = {
+    _value: getVideoViewId(),
+    getValue: () => viewId._value,
+    regenerateValue: () => {
+      viewId._value = getVideoViewId();
+
+      if (videoTrackingSession) {
+        videoTrackingSession.viewId = viewId._value;
+      }
+
+      return viewId._value;
+    },
+  };
+
+  const startManualTracking = (metadata, options = {}) => {
+    if (videoTrackingSession?.type === 'auto') {
+      throw 'Cloudinary video analytics auto tracking is already connected with this Video component, to start manual tracking you need to stop auto tracking';
+    }
+
+    throwErrorIfInvalid(
+        metadataValidator(metadata),
+        'Cloudinary video analytics manual tracking called without necessary data'
+    );
+    throwErrorIfInvalid(
+        trackingOptionsValidator(options),
+        'Cloudinary video analytics manual tracking called with invalid options'
+    );
+
+    clearVideoTracking();
+
+    if (metadata.type === 'live') {
+      _startManualTrackingLiveStream(metadata, options);
+    } else {
+      options.customVideoUrlFallback = options.customVideoUrlFallback || (() => metadata);
+      _startManualTrackingRegularVideo(metadata, options);
+    }
+  };
+
+  const _startManualTrackingRegularVideo = (metadata, options) => {
+    const sendData = (data) => {
+      return sendRequest(CLD_ANALYTICS_ENDPOINT.default, data);
+    };
+    const videoViewEventCollector = createEventsCollector();
+    const finishVideoTracking = () => {
+      // multiple events can be triggered one by one for specific platforms but we don't have guarantee which ones
+      // in this case send data for first event and for rest just skip it to avoid empty payload
+      if (videoViewEventCollector.getCollectedEventsCount() > 0) {
+        videoViewEventCollector.addEvent(createRegularVideoViewEndEvent());
+        const events = prepareEvents([...videoViewEventCollector.flushEvents()]);
+        sendData({
+          userId,
+          viewId: viewId.getValue(),
+          events,
+        });
+        videoViewEventCollector.destroy();
+      }
+    };
+
+    const appStateRemoval = createAppStateTracker({
+      onAppForeground: () => {
+        viewId.regenerateValue();
+
+        videoViewEventCollector.start(viewId.getValue());
+        videoViewEventCollector.addEvent(
+            createRegularVideoViewStartEvent({
+              videoUrl: playerAdapter.getCurrentSrc(),
+              trackingType: 'manual',
+            }, options)
+        );
+      },
+      onAppBackground: () => {
+        finishVideoTracking();
+      },
+    });
+
+    videoTrackingSession = {
+      viewId,
+      type: 'manual',
+      subtype: 'default',
+      clear: () => {
+        finishVideoTracking();
+        appStateRemoval();
+      },
+    };
+  };
+
+  const _startManualTrackingLiveStream = (metadata, options) => {
+    const liveStreamData = parseCustomerVideoData(metadata);
+    const sendLiveStreamEvent = (event) => {
+      sendRequest(CLD_ANALYTICS_ENDPOINT.liveStreams, {
+        userId,
+        viewId: viewId.getValue(),
+        events: prepareEvents([event]),
+      });
+    };
+    const appStateRemoval = createAppStateTracker({
+      onAppForeground: () => {
+        viewId.regenerateValue();
+
+        sendLiveStreamEvent(
+            createLiveStreamViewStartEvent({ liveStreamData }, options)
+        );
+      },
+      onAppBackground: () => {
+        sendLiveStreamEvent(
+            createLiveStreamViewEndEvent({ liveStreamData }, options)
+        );
+      },
+    });
+
+    videoTrackingSession = {
+      viewId: viewId.getValue(),
+      type: 'manual',
+      subtype: 'live-stream',
+      clear: () => {
+        appStateRemoval();
+      },
+    };
+  };
+
+  const startAutoTracking = (options = {}) => {
+    if (videoTrackingSession) {
+      throw 'Cloudinary video analytics tracking is already connected with this Video component';
+    }
+
+    throwErrorIfInvalid(
+        trackingOptionsValidator(options),
+        'Cloudinary video analytics auto tracking called with invalid options'
+    );
+    const sendData = (data) => {
+      return sendRequest(CLD_ANALYTICS_ENDPOINT.default, data);
+    };
+    const videoViewEventCollector = createEventsCollector();
+
+    const finishVideoTracking = () => {
+      // Check if the session was actually started before trying to finish it
+      if (videoTrackingSession && videoViewEventCollector.getCollectedEventsCount() > 0) {
+        videoViewEventCollector.addEvent(createRegularVideoViewEndEvent());
+        const events = prepareEvents([...videoViewEventCollector.flushEvents()]);
+        sendData({
+          userId,
+          viewId: viewId.getValue(),
+          events,
+        });
+        videoViewEventCollector.destroy();
+      }
+    };
+
+    const startVideoTracking = () => {
+      const sourceUrl = playerAdapter.getCurrentSrc();
+      if (!sourceUrl) {
+        return null;
+      }
+
+      viewId.regenerateValue();
+      videoViewEventCollector.start(viewId.getValue());
+      videoViewEventCollector.addEvent(
+          createRegularVideoViewStartEvent({
+            videoUrl: sourceUrl,
+            trackingType: 'auto',
+          }, options)
+      );
+
+      videoTrackingSession = {
+        viewId,
+        type: 'auto',
+        clear: () => {
+          finishVideoTracking();
+        },
+      };
+    };
+
+    createAppStateTracker({
+      onAppForeground: () => startVideoTracking(),
+      onAppBackground: () => {
+        // Only try to finish tracking if a session exists
+        if (videoTrackingSession) {
+          finishVideoTracking();
+        }
+      },
+    });
+
+    // Listen for video load events to start tracking
+    playerAdapter.onLoadStart(() => !videoTrackingSession && startVideoTracking());
+    playerAdapter.onEmptied(() => clearVideoTracking());
+  };
+
+  return {
+    startManualTracking,
+    stopManualTracking: clearVideoTracking,
+    startAutoTracking,
+  };
+};
