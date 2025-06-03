@@ -1,16 +1,21 @@
+dist: focal  # Use Ubuntu 20.04 to get glibc >= 2.31
 language: node_js
 node_js:
   - "18"
+
+cache:
+  directories:
+    - ~/.npm
+
 install:
-  - npm ci
-before_script:
-  - npm install
-before_install:
-  - npm run
+  - npm ci  # Use lockfile for consistent clean install
+
 script:
-  - npm test
+  - npm test  # Run your tests
+
 after_success:
-  - coverage
+  - npm run coverage  # Assumes you have a "coverage" script defined
+
 notifications:
   email:
     recipients:
