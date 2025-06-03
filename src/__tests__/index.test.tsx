@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image } from 'react-native';
 import { CloudinaryImage } from '@cloudinary/url-gen';
-import AdvancedImage from '../widgets/image/AdvancedImage';
+import AdvancedImage from '../AdvancedImage';
 import { render } from '@testing-library/react-native';
 
 describe('AdvancedImage', () => {

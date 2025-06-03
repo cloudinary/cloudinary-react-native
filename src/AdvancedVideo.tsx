@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ViewStyle, StyleProp } from 'react-native';
 import { AVPlaybackStatus, Video, AVPlaybackStatusSuccess } from 'expo-av';
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
-import { SDKAnalyticsConstants } from '../../internal/SDKAnalyticsConstants';
+import { SDKAnalyticsConstants } from './internal/SDKAnalyticsConstants';
 
 interface AdvancedVideoProps {
   videoUrl?: string;
@@ -90,8 +90,8 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
 
     try {
       // Dynamically import analytics modules to avoid initial load issues
-      const { connectCloudinaryAnalytics } = await import('./analytics/cloudinary-analytics-react-native');
-      const { processExpoAVStatus } = await import('./analytics/player-adapters/expoAVVideoPlayerAdapter');
+      const { connectCloudinaryAnalytics } = await import('./widgets/video/analytics/cloudinary-analytics-react-native');
+      const { processExpoAVStatus } = await import('./widgets/video/analytics/player-adapters/expoAVVideoPlayerAdapter');
       
       const connector = connectCloudinaryAnalytics(this.videoRef.current);
       
