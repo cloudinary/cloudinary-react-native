@@ -126,6 +126,7 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
       viewId,
       type: 'manual',
       subtype: 'default',
+      eventCollector: videoViewEventCollector,
       clear: () => {
         finishVideoTracking();
         appStateRemoval();
@@ -197,27 +198,46 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
 
     const startVideoTracking = () => {
       const sourceUrl = playerAdapter.getCurrentSrc();
+      console.log('startVideoTracking called, sourceUrl:', sourceUrl);
+      
       if (!sourceUrl) {
+        // If we don't have a source URL, wait for it but keep the session active for custom events
+        console.log('No source URL available yet, keeping session active for custom events');
         return null;
       }
 
-      viewId.regenerateValue();
-      videoViewEventCollector.start(viewId.getValue());
-      videoViewEventCollector.addEvent(
-          createRegularVideoViewStartEvent({
-            videoUrl: sourceUrl,
-            trackingType: 'auto',
-          }, options)
-      );
-
-      videoTrackingSession = {
-        viewId,
-        type: 'auto',
-        clear: () => {
-          finishVideoTracking();
-        },
-      };
+      // Only start view tracking if we haven't already
+      if (!videoTrackingSession.viewStarted) {
+        console.log('Starting video view tracking');
+        viewId.regenerateValue();
+        videoViewEventCollector.start(viewId.getValue());
+        videoViewEventCollector.addEvent(
+            createRegularVideoViewStartEvent({
+              videoUrl: sourceUrl,
+              trackingType: 'auto',
+            }, options)
+        );
+        videoTrackingSession.viewStarted = true;
+      }
     };
+
+    // Create the tracking session immediately, even before video loads
+    // This allows custom events to be added right away
+    videoTrackingSession = {
+      viewId,
+      type: 'auto',
+      eventCollector: videoViewEventCollector,
+      viewStarted: false,
+      clear: () => {
+        finishVideoTracking();
+      },
+    };
+
+    console.log('Auto tracking session created:', {
+      hasSession: !!videoTrackingSession,
+      sessionType: videoTrackingSession.type,
+      hasEventCollector: !!videoTrackingSession.eventCollector
+    });
 
     createAppStateTracker({
       onAppForeground: () => startVideoTracking(),
@@ -230,13 +250,95 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
     });
 
     // Listen for video load events to start tracking
-    playerAdapter.onLoadStart(() => !videoTrackingSession && startVideoTracking());
+    playerAdapter.onLoadStart(() => {
+      console.log('onLoadStart triggered');
+      startVideoTracking();
+    });
     playerAdapter.onEmptied(() => clearVideoTracking());
+    
+    // Try to start tracking immediately if video source is already available
+    setTimeout(() => {
+      console.log('Delayed startVideoTracking attempt');
+      startVideoTracking();
+    }, 100);
+  };
+
+  // Add this new function to expose custom event capability
+  const addCustomEvent = (eventName, eventDetails = {}) => {
+    console.log('Adding custom event:', { 
+      eventName, 
+      eventDetails, 
+      hasSession: !!videoTrackingSession, 
+      sessionType: videoTrackingSession?.type,
+      hasEventCollector: !!videoTrackingSession?.eventCollector,
+      viewStarted: videoTrackingSession?.viewStarted
+    });
+    
+    // If no session exists, create a minimal one for custom events
+    if (!videoTrackingSession) {
+      console.log('No tracking session exists, creating minimal session for custom events');
+      try {
+        // Create a minimal tracking session just for custom events
+        const videoViewEventCollector = createEventsCollector();
+        viewId.regenerateValue();
+        videoViewEventCollector.start(viewId.getValue());
+        
+        videoTrackingSession = {
+          viewId,
+          type: 'custom-events-only',
+          eventCollector: videoViewEventCollector,
+          viewStarted: true,
+          clear: () => {
+            if (videoViewEventCollector.getCollectedEventsCount() > 0) {
+              // Send any pending events when clearing
+              const events = prepareEvents([...videoViewEventCollector.flushEvents()]);
+              sendRequest(CLD_ANALYTICS_ENDPOINT.default, {
+                userId,
+                viewId: viewId.getValue(),
+                events,
+              });
+            }
+            videoViewEventCollector.destroy();
+          },
+        };
+        console.log('Minimal tracking session created for custom events');
+      } catch (error) {
+        console.warn('Failed to create minimal tracking session:', error);
+        return;
+      }
+    }
+    
+    if (!videoTrackingSession || !videoTrackingSession.eventCollector) {
+      console.warn('No active analytics tracking session. Start tracking first.');
+      return;
+    }
+
+    try {
+      // For auto tracking, start the event collector if it hasn't been started yet
+      if (videoTrackingSession.type === 'auto' && !videoTrackingSession.viewStarted) {
+        // Initialize the event collector if it hasn't been started yet
+        viewId.regenerateValue();
+        videoTrackingSession.eventCollector.start(viewId.getValue());
+        videoTrackingSession.viewStarted = true;
+        console.log('Event collector started for custom events');
+      }
+      
+      videoTrackingSession.eventCollector.addEvent({
+        eventName,
+        eventDetails,
+        timestamp: Date.now()
+      });
+      console.log('Custom event added successfully:', eventName);
+    } catch (error) {
+      console.warn('Failed to add custom event:', error);
+      console.warn('Error details:', error.message);
+    }
   };
 
   return {
     startManualTracking,
     stopManualTracking: clearVideoTracking,
     startAutoTracking,
+    addCustomEvent,
   };
 };

@@ -1,10 +1,25 @@
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform, Dimensions } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import {AdvancedImage, AdvancedVideo} from 'cloudinary-react-native';
 import {Cloudinary} from '@cloudinary/url-gen';
 import {scale} from "@cloudinary/url-gen/actions/resize";
 import {cartoonify} from "@cloudinary/url-gen/actions/effect";
 import {max} from "@cloudinary/url-gen/actions/roundCorners";
 import React, {useRef, useState} from "react";
+
+const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
+
+// Calculate safe area padding based on screen dimensions
+const getTopPadding = () => {
+  if (Platform.OS === 'ios') {
+    // For iPhone X and newer (with notch), screen height is typically 812+ or width 390+
+    if (screenHeight >= 812 || screenWidth >= 390) {
+      return 60; // Devices with notch
+    }
+    return 40; // Older devices
+  }
+  return 35; // Android
+};
 
 const cld = new Cloudinary({
   cloud: {
@@ -31,10 +46,17 @@ export default function App() {
   };
 
   const toggleAnalytics = () => {
-    setAnalyticsEnabled(!analyticsEnabled);
+    const newAnalyticsState = !analyticsEnabled;
+    setAnalyticsEnabled(newAnalyticsState);
+    
+    // Auto-enable tracking when analytics are enabled for better UX
+    if (newAnalyticsState && !autoTracking) {
+      setAutoTracking(true);
+    }
+    
     Alert.alert(
       'Analytics', 
-      `Analytics ${!analyticsEnabled ? 'enabled' : 'disabled'}. Reload the video to see changes.`
+      `Analytics ${newAnalyticsState ? 'enabled' : 'disabled'}.${newAnalyticsState && !autoTracking ? ' Auto tracking also enabled.' : ''} Reload the video to see changes.`
     );
   };
 
@@ -91,81 +113,96 @@ export default function App() {
     }
   };
 
+  const addCustomEventToVideo = () => {
+    if (videoPlayer.current && videoPlayer.current.addCustomEvent) {
+      videoPlayer.current.addCustomEvent('user_interaction', {
+        action: 'button_clicked',
+        buttonName: 'share',
+        videoPosition: 30.5, // seconds
+        customData: {
+          userId: 'demo-user-123',
+          sessionId: 'session-456'
+        }
+      });
+      Alert.alert('Custom Event', 'Custom analytics event sent!');
+    } else {
+      Alert.alert('Error', 'Custom events not available');
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <View>
-        <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
-      </View>
-      
-      {/* Analytics Controls */}
-      <View style={styles.controlsContainer}>
-        <Text style={styles.title}>Analytics Testing</Text>
-        
-        <TouchableOpacity style={styles.button} onPress={toggleAnalytics}>
-          <Text style={styles.buttonText}>
-            {analyticsEnabled ? 'Disable Analytics' : 'Enable Analytics'}
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.button} onPress={toggleAutoTracking}>
-          <Text style={styles.buttonText}>
-            {autoTracking ? 'Disable Auto Tracking' : 'Enable Auto Tracking'}
-          </Text>
-        </TouchableOpacity>
-        
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={[styles.button, styles.smallButton]} onPress={startManualTracking}>
-            <Text style={styles.buttonText}>Start Manual</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={[styles.button, styles.smallButton]} onPress={stopManualTracking}>
-            <Text style={styles.buttonText}>Stop Manual</Text>
-          </TouchableOpacity>
+    <View style={styles.safeArea}>
+      <StatusBar style="auto" />
+      <View style={styles.container}>
+        <View>
+          <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
         </View>
         
-        <TouchableOpacity style={styles.button} onPress={startAutoTrackingManually}>
-          <Text style={styles.buttonText}>Start Auto Manually</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Analytics Controls */}
+        <View style={styles.controlsContainer}>
+          <Text style={styles.title}>Analytics Testing</Text>
+          
+          <TouchableOpacity style={styles.button} onPress={toggleAnalytics}>
+            <Text style={styles.buttonText}>
+              {analyticsEnabled ? 'Disable Analytics' : 'Enable Analytics'}
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.button} onPress={toggleAutoTracking}>
+            <Text style={styles.buttonText}>
+              {autoTracking ? 'Disable Auto Tracking' : 'Enable Auto Tracking'}
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.button} onPress={addCustomEventToVideo}>
+            <Text style={styles.buttonText}>Send Custom Event</Text>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.videoContainer}>
-        <AdvancedVideo
-          ref={videoPlayer}
-          videoStyle={styles.video}
-          cldVideo={createMyVideoObject()}
-          enableAnalytics={true}
-          autoTrackAnalytics={true}
-          analyticsOptions={{
-            customData: {
-              userId: 'demo-user-123',
-              appVersion: '1.0.0',
-              platform: 'react-native'
-            },
-            videoPlayerType: 'expo-av',
-            videoPlayerVersion: '14.0.0'
-          }}
-        />
-      </View>
-      
-      {/* Status Display */}
-      <View style={styles.statusContainer}>
-        <Text style={styles.statusText}>
-          Analytics: {analyticsEnabled ? '✅ Enabled' : '❌ Disabled'}
-        </Text>
-        <Text style={styles.statusText}>
-          Auto Tracking: {autoTracking ? '✅ Enabled' : '❌ Disabled'}
-        </Text>
+        <View style={styles.videoContainer}>
+          <AdvancedVideo
+            ref={videoPlayer}
+            videoStyle={styles.video}
+            cldVideo={createMyVideoObject()}
+            enableAnalytics={analyticsEnabled}
+            autoTrackAnalytics={autoTracking}
+            analyticsOptions={{
+              customData: {
+                userId: 'demo-user-123',
+                appVersion: '1.0.0',
+                platform: 'react-native'
+              },
+              videoPlayerType: 'expo-av',
+              videoPlayerVersion: '14.0.0'
+            }}
+          />
+        </View>
+        
+        {/* Status Display */}
+        <View style={styles.statusContainer}>
+          <Text style={styles.statusText}>
+            Analytics: {analyticsEnabled ? '✅ Enabled' : '❌ Disabled'}
+          </Text>
+          <Text style={styles.statusText}>
+            Auto Tracking: {autoTracking ? '✅ Enabled' : '❌ Disabled'}
+          </Text>
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingTop: getTopPadding(),
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 50,
+    paddingHorizontal: 20,
   },
   controlsContainer: {
     width: '90%',

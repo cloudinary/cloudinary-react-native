@@ -34,6 +34,7 @@ export interface AdvancedVideoRef extends Video {
   startAnalyticsTracking: (metadata?: any, options?: any) => void;
   stopAnalyticsTracking: () => void;
   startAutoAnalyticsTracking: (options?: any) => void;
+  addCustomEvent: (eventName: string, eventDetails?: any) => void;
 }
 
 class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
@@ -51,9 +52,12 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   }
 
   componentDidMount() {
-    if (this.props.enableAnalytics && this.videoRef.current) {
-      this.initializeAnalytics();
-    }
+    // Use setTimeout to ensure the ref is properly mounted
+    setTimeout(() => {
+      if (this.props.enableAnalytics && this.videoRef.current) {
+        this.initializeAnalytics();
+      }
+    }, 100);
   }
 
   componentDidUpdate(prevProps: AdvancedVideoProps) {
@@ -89,14 +93,28 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
     }
 
     try {
+      console.log('Initializing analytics...');
+      
       // Dynamically import analytics modules to avoid initial load issues
       const { connectCloudinaryAnalytics } = await import('./widgets/video/analytics/cloudinary-analytics-react-native');
       const { processExpoAVStatus } = await import('./widgets/video/analytics/player-adapters/expoAVVideoPlayerAdapter');
       
+      // Store the current URI for analytics BEFORE creating the connector
+      const videoUri = this.getVideoUri();
+      console.log('Video URI for analytics:', videoUri);
+      
+      if (this.videoRef.current) {
+        if (!this.videoRef.current._currentStatus) {
+          this.videoRef.current._currentStatus = {};
+        }
+        this.videoRef.current._currentStatus.uri = videoUri;
+      }
+      
       const connector = connectCloudinaryAnalytics(this.videoRef.current);
       
-      // Auto-start tracking if enabled
+      // Auto-start tracking if enabled - do this after URI is set
       if (this.props.autoTrackAnalytics) {
+        console.log('Starting auto tracking...');
         connector.startAutoTracking(this.props.analyticsOptions || {});
       }
 
@@ -107,13 +125,7 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         analyticsInitialized: true,
       });
 
-      // Store the current URI for analytics
-      if (this.videoRef.current) {
-        if (!this.videoRef.current._currentStatus) {
-          this.videoRef.current._currentStatus = {};
-        }
-        this.videoRef.current._currentStatus.uri = this.getVideoUri();
-      }
+      console.log('Analytics initialization complete');
     } catch (error) {
       console.warn('Failed to initialize Cloudinary analytics:', error);
     }
@@ -193,6 +205,38 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
       }
     } else {
       console.warn('Analytics not enabled or not initialized. Set enableAnalytics=true and wait for initialization.');
+    }
+  };
+
+  public addCustomEvent = (eventName: string, eventDetails: any = {}) => {
+    console.log('Adding custom event:', { eventName, eventDetails, 
+      analyticsConnector: !!this.state.analyticsConnector, 
+      analyticsInitialized: this.state.analyticsInitialized,
+      enableAnalytics: this.props.enableAnalytics 
+    });
+    
+    if (!this.props.enableAnalytics) {
+      console.warn('Analytics not enabled. Set enableAnalytics=true to use custom events.');
+      return;
+    }
+    
+    if (!this.state.analyticsInitialized) {
+      console.warn('Analytics not yet initialized. Please wait for initialization to complete.');
+      return;
+    }
+    
+    if (this.state.analyticsConnector && this.state.analyticsInitialized) {
+      try {
+        if (this.state.analyticsConnector.addCustomEvent) {
+          this.state.analyticsConnector.addCustomEvent(eventName, eventDetails);
+        } else {
+          console.warn('Custom events not supported by current analytics connector');
+        }
+      } catch (error) {
+        console.warn('Failed to add custom analytics event:', error);
+      }
+    } else {
+      console.warn('Analytics connector not available. Please ensure analytics are properly initialized.');
     }
   };
 
