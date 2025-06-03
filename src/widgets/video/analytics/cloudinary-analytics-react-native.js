@@ -91,8 +91,6 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
     };
     const videoViewEventCollector = createEventsCollector();
     const finishVideoTracking = () => {
-      // multiple events can be triggered one by one for specific platforms but we don't have guarantee which ones
-      // in this case send data for first event and for rest just skip it to avoid empty payload
       if (videoViewEventCollector.getCollectedEventsCount() > 0) {
         videoViewEventCollector.addEvent(createRegularVideoViewEndEvent());
         const events = prepareEvents([...videoViewEventCollector.flushEvents()]);
@@ -183,7 +181,6 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
     const videoViewEventCollector = createEventsCollector();
 
     const finishVideoTracking = () => {
-      // Check if the session was actually started before trying to finish it
       if (videoTrackingSession && videoViewEventCollector.getCollectedEventsCount() > 0) {
         videoViewEventCollector.addEvent(createRegularVideoViewEndEvent());
         const events = prepareEvents([...videoViewEventCollector.flushEvents()]);
@@ -198,17 +195,14 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
 
     const startVideoTracking = () => {
       const sourceUrl = playerAdapter.getCurrentSrc();
-      console.log('startVideoTracking called, sourceUrl:', sourceUrl);
-      
-      if (!sourceUrl) {
-        // If we don't have a source URL, wait for it but keep the session active for custom events
-        console.log('No source URL available yet, keeping session active for custom events');
+      if (!videoTrackingSession) {
         return null;
       }
-
-      // Only start view tracking if we haven't already
+      
+      if (!sourceUrl) {
+        return null;
+      }
       if (!videoTrackingSession.viewStarted) {
-        console.log('Starting video view tracking');
         viewId.regenerateValue();
         videoViewEventCollector.start(viewId.getValue());
         videoViewEventCollector.addEvent(
@@ -221,8 +215,6 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
       }
     };
 
-    // Create the tracking session immediately, even before video loads
-    // This allows custom events to be added right away
     videoTrackingSession = {
       viewId,
       type: 'auto',
@@ -233,52 +225,31 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
       },
     };
 
-    console.log('Auto tracking session created:', {
-      hasSession: !!videoTrackingSession,
-      sessionType: videoTrackingSession.type,
-      hasEventCollector: !!videoTrackingSession.eventCollector
-    });
-
     createAppStateTracker({
       onAppForeground: () => startVideoTracking(),
       onAppBackground: () => {
-        // Only try to finish tracking if a session exists
         if (videoTrackingSession) {
           finishVideoTracking();
         }
       },
     });
 
-    // Listen for video load events to start tracking
     playerAdapter.onLoadStart(() => {
-      console.log('onLoadStart triggered');
-      startVideoTracking();
+      if (videoTrackingSession) {
+        startVideoTracking();
+      }
     });
     playerAdapter.onEmptied(() => clearVideoTracking());
     
-    // Try to start tracking immediately if video source is already available
     setTimeout(() => {
-      console.log('Delayed startVideoTracking attempt');
       startVideoTracking();
     }, 100);
   };
 
-  // Add this new function to expose custom event capability
   const addCustomEvent = (eventName, eventDetails = {}) => {
-    console.log('Adding custom event:', { 
-      eventName, 
-      eventDetails, 
-      hasSession: !!videoTrackingSession, 
-      sessionType: videoTrackingSession?.type,
-      hasEventCollector: !!videoTrackingSession?.eventCollector,
-      viewStarted: videoTrackingSession?.viewStarted
-    });
     
-    // If no session exists, create a minimal one for custom events
     if (!videoTrackingSession) {
-      console.log('No tracking session exists, creating minimal session for custom events');
       try {
-        // Create a minimal tracking session just for custom events
         const videoViewEventCollector = createEventsCollector();
         viewId.regenerateValue();
         videoViewEventCollector.start(viewId.getValue());
@@ -290,7 +261,6 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
           viewStarted: true,
           clear: () => {
             if (videoViewEventCollector.getCollectedEventsCount() > 0) {
-              // Send any pending events when clearing
               const events = prepareEvents([...videoViewEventCollector.flushEvents()]);
               sendRequest(CLD_ANALYTICS_ENDPOINT.default, {
                 userId,
@@ -301,7 +271,6 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
             videoViewEventCollector.destroy();
           },
         };
-        console.log('Minimal tracking session created for custom events');
       } catch (error) {
         console.warn('Failed to create minimal tracking session:', error);
         return;
@@ -314,13 +283,10 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
     }
 
     try {
-      // For auto tracking, start the event collector if it hasn't been started yet
       if (videoTrackingSession.type === 'auto' && !videoTrackingSession.viewStarted) {
-        // Initialize the event collector if it hasn't been started yet
         viewId.regenerateValue();
         videoTrackingSession.eventCollector.start(viewId.getValue());
         videoTrackingSession.viewStarted = true;
-        console.log('Event collector started for custom events');
       }
       
       videoTrackingSession.eventCollector.addEvent({
@@ -328,7 +294,6 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
         eventDetails,
         timestamp: Date.now()
       });
-      console.log('Custom event added successfully:', eventName);
     } catch (error) {
       console.warn('Failed to add custom event:', error);
       console.warn('Error details:', error.message);

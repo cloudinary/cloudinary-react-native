@@ -57,6 +57,16 @@ describe('Video Analytics', () => {
   let mockVideoRef;
   let mockPlayerAdapter;
 
+  beforeAll(() => {
+    // Use fake timers to control setTimeout calls
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    // Restore real timers after all tests
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     mockVideoRef = {};
     mockPlayerAdapter = {
@@ -84,7 +94,9 @@ describe('Video Analytics', () => {
   });
 
   afterEach(() => {
+    // Clear all mocks and pending timers after each test
     jest.clearAllMocks();
+    jest.clearAllTimers();
   });
 
   describe('Unique IDs', () => {
@@ -528,8 +540,17 @@ describe('Video Analytics', () => {
         analytics = connectCloudinaryAnalytics(mockVideoRef, { playerAdapter: mockPlayerAdapter });
       });
 
+      afterEach(() => {
+        // Clear any remaining timers and stop tracking
+        if (analytics && analytics.stopManualTracking) {
+          analytics.stopManualTracking();
+        }
+      });
+
       it('should start auto tracking', () => {
         expect(() => analytics.startAutoTracking()).not.toThrow();
+        // Fast-forward any setTimeout calls to prevent them from running after test
+        jest.runAllTimers();
       });
 
       it('should throw with invalid options', () => {
@@ -544,6 +565,9 @@ describe('Video Analytics', () => {
         loadStartCallback();
         
         expect(() => analytics.startAutoTracking()).toThrow();
+        
+        // Fast-forward any setTimeout calls
+        jest.runAllTimers();
       });
     });
 
@@ -554,9 +578,16 @@ describe('Video Analytics', () => {
         analytics = connectCloudinaryAnalytics(mockVideoRef, { playerAdapter: mockPlayerAdapter });
       });
 
+      afterEach(() => {
+        // Clear any remaining timers
+        jest.runAllTimers();
+      });
+
       it('should stop tracking', () => {
         analytics.startAutoTracking();
         expect(() => analytics.stopManualTracking()).not.toThrow();
+        // Fast-forward any setTimeout calls
+        jest.runAllTimers();
       });
 
       it('should not throw when stopping non-active tracking', () => {
