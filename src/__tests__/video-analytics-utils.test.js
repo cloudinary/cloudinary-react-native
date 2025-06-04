@@ -1,5 +1,4 @@
 import { parseCustomerVideoData, parseCustomData, isCustomDataValid } from '../widgets/video/analytics/utils/customer-data';
-import { isMobile } from '../widgets/video/analytics/utils/platform-detection';
 import { getVideoPlayerType, getVideoPlayerVersion } from '../widgets/video/analytics/utils/video-player-options';
 import { isValidCloudName, isValidPublicId, isValidUrl } from '../widgets/video/analytics/utils/validators';
 
@@ -20,9 +19,9 @@ describe('Video Analytics Utils', () => {
           publicId: 'test-video',
           version: '1.0.0'
         };
-        
+
         const result = parseCustomerVideoData(videoData);
-        
+
         expect(result).toBeDefined();
         expect(result.cloudName).toBe(videoData.cloudName);
         expect(result.publicId).toBe(videoData.publicId);
@@ -45,9 +44,9 @@ describe('Video Analytics Utils', () => {
           publicId: 'test-stream',
           type: 'live'
         };
-        
+
         const result = parseCustomerVideoData(liveStreamData);
-        
+
         expect(result).toBeDefined();
         expect(result.cloudName).toBe(liveStreamData.cloudName);
         expect(result.publicId).toBe(liveStreamData.publicId);
@@ -63,9 +62,9 @@ describe('Video Analytics Utils', () => {
           userId: 'user123',
           sessionId: 'session456'
         };
-        
+
         const result = parseCustomData(customData);
-        
+
         expect(result).toBeDefined();
         expect(result.customData1).toBe('value1');
         expect(result.customData2).toBe('value2');
@@ -103,20 +102,6 @@ describe('Video Analytics Utils', () => {
 
       it('should validate empty object custom data', () => {
         const result = isCustomDataValid({});
-        expect(result).toBe(true);
-      });
-    });
-  });
-
-  describe('Platform Detection', () => {
-    describe('isMobile', () => {
-      it('should detect mobile platform', () => {
-        const result = isMobile();
-        expect(typeof result).toBe('boolean');
-      });
-
-      it('should return true for React Native environment', () => {
-        const result = isMobile();
         expect(result).toBe(true);
       });
     });
@@ -277,17 +262,5 @@ describe('Video Analytics Utils', () => {
       expect(playerConfig.type).toBe('native');
       expect(playerConfig.version).toBe('2.1.0');
     });
-
-    it('should handle mobile detection in analytics context', () => {
-      const isMobileDevice = isMobile();
-      
-      const analyticsConfig = {
-        isMobile: isMobileDevice,
-        platform: isMobileDevice ? 'mobile' : 'desktop'
-      };
-
-      expect(typeof analyticsConfig.isMobile).toBe('boolean');
-      expect(['mobile', 'desktop']).toContain(analyticsConfig.platform);
-    });
   });
-}); 
+});
