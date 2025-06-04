@@ -1,4 +1,3 @@
-import { isMobile } from './utils/platform-detection';
 import { initEventsCollector } from './events-collector';
 import { getVideoViewId, getUserId } from './utils/unique-ids';
 import { sendRequest } from './utils/send-request-react-native';
@@ -39,7 +38,6 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
   let videoTrackingSession = null;
   const userId = getUserId();
   const { playerAdapter } = mainOptions;
-  const isMobileDetected = isMobile();
   const createEventsCollector = initEventsCollector(playerAdapter);
   const clearVideoTracking = () => {
     if (videoTrackingSession) {
@@ -198,7 +196,7 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
       if (!videoTrackingSession) {
         return null;
       }
-      
+
       if (!sourceUrl) {
         return null;
       }
@@ -240,20 +238,20 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
       }
     });
     playerAdapter.onEmptied(() => clearVideoTracking());
-    
+
     setTimeout(() => {
       startVideoTracking();
     }, 100);
   };
 
   const addCustomEvent = (eventName, eventDetails = {}) => {
-    
+
     if (!videoTrackingSession) {
       try {
         const videoViewEventCollector = createEventsCollector();
         viewId.regenerateValue();
         videoViewEventCollector.start(viewId.getValue());
-        
+
         videoTrackingSession = {
           viewId,
           type: 'custom-events-only',
@@ -276,7 +274,7 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
         return;
       }
     }
-    
+
     if (!videoTrackingSession || !videoTrackingSession.eventCollector) {
       console.warn('No active analytics tracking session. Start tracking first.');
       return;
@@ -288,7 +286,7 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
         videoTrackingSession.eventCollector.start(viewId.getValue());
         videoTrackingSession.viewStarted = true;
       }
-      
+
       videoTrackingSession.eventCollector.addEvent({
         eventName,
         eventDetails,

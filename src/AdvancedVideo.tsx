@@ -93,28 +93,23 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
     }
 
     try {
-      console.log('Initializing analytics...');
-      
       // Dynamically import analytics modules to avoid initial load issues
       const { connectCloudinaryAnalytics } = await import('./widgets/video/analytics/cloudinary-analytics-react-native');
       const { processExpoAVStatus } = await import('./widgets/video/analytics/player-adapters/expoAVVideoPlayerAdapter');
-      
-      // Store the current URI for analytics BEFORE creating the connector
+
       const videoUri = this.getVideoUri();
-      console.log('Video URI for analytics:', videoUri);
-      
+
       if (this.videoRef.current) {
         if (!this.videoRef.current._currentStatus) {
           this.videoRef.current._currentStatus = {};
         }
         this.videoRef.current._currentStatus.uri = videoUri;
       }
-      
+
       const connector = connectCloudinaryAnalytics(this.videoRef.current);
-      
+
       // Auto-start tracking if enabled - do this after URI is set
       if (this.props.autoTrackAnalytics) {
-        console.log('Starting auto tracking...');
         connector.startAutoTracking(this.props.analyticsOptions || {});
       }
 
@@ -124,8 +119,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         analyticsConnector: connector,
         analyticsInitialized: true,
       });
-
-      console.log('Analytics initialization complete');
     } catch (error) {
       console.warn('Failed to initialize Cloudinary analytics:', error);
     }
@@ -135,21 +128,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
       if (!status.isLoaded) return;
 
       const successStatus = status as AVPlaybackStatusSuccess;
-      const position = successStatus.positionMillis / 1000;
-
-      if (successStatus.durationMillis) {
-        const duration = successStatus.durationMillis / 1000;
-      }
-
-      if (successStatus.isPlaying) {
-      // Video is playing
-      } else if (!successStatus.isPlaying && !successStatus.didJustFinish) {
-      // Video is paused
-      }
-
-      if (successStatus.didJustFinish) {
-      // Video ended
-    }
 
     // Process analytics events if enabled and initialized
     if (this.props.enableAnalytics && this.videoRef.current && this.state.analyticsInitialized) {
@@ -162,7 +140,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         uri: this.getVideoUri()
       };
 
-      // Process status changes for analytics
       try {
         if (this.processExpoAVStatus) {
           this.processExpoAVStatus(this.videoRef.current, successStatus, this.state.previousStatus);
@@ -209,22 +186,17 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   };
 
   public addCustomEvent = (eventName: string, eventDetails: any = {}) => {
-    console.log('Adding custom event:', { eventName, eventDetails, 
-      analyticsConnector: !!this.state.analyticsConnector, 
-      analyticsInitialized: this.state.analyticsInitialized,
-      enableAnalytics: this.props.enableAnalytics 
-    });
-    
+
     if (!this.props.enableAnalytics) {
       console.warn('Analytics not enabled. Set enableAnalytics=true to use custom events.');
       return;
     }
-    
+
     if (!this.state.analyticsInitialized) {
       console.warn('Analytics not yet initialized. Please wait for initialization to complete.');
       return;
     }
-    
+
     if (this.state.analyticsConnector && this.state.analyticsInitialized) {
       try {
         if (this.state.analyticsConnector.addCustomEvent) {
