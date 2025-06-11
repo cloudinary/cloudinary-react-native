@@ -12,19 +12,21 @@ export function present(value) {
 }
 
 async function sign_request(apiConfig, params, options = {}) {
-  let apiKey = apiConfig.apiKey;
-  let apiSecret = apiConfig.apiSecret;
+  const apiKey = apiConfig.apiKey;
+  const apiSecret = apiConfig.apiSecret;
+  const escapePattern = /[&=%+#]/;
 
   params = clear_blank(params);
 
-  // Early check: return null if any param value contains '&'
+  // Early check: return null if any param value contains escaping characters
   for (let key in params) {
     const value = params[key];
+
     if (Array.isArray(value)) {
-      if (value.some(v => typeof v === 'string' && v.includes('&'))) {
+      if (value.some(v => typeof v === 'string' && escapePattern.test(v))) {
         return null;
       }
-    } else if (typeof value === 'string' && value.includes('&')) {
+    } else if (typeof value === 'string' && escapePattern.test(value)) {
       return null;
     }
   }
@@ -33,6 +35,7 @@ async function sign_request(apiConfig, params, options = {}) {
   params.api_key = apiKey;
   return params;
 }
+
 
   async function api_sign_request(params_to_sign, api_secret) {
     let to_sign = entries(params_to_sign).filter(
