@@ -12,13 +12,27 @@ export function present(value) {
 }
 
 async function sign_request(apiConfig, params, options = {}) {
-    let apiKey = apiConfig.apiKey
-    let apiSecret = apiConfig.apiSecret
-    params = clear_blank(params);
-    params.signature = await api_sign_request(params, apiSecret);
-    params.api_key = apiKey;
-    return params;
+  let apiKey = apiConfig.apiKey;
+  let apiSecret = apiConfig.apiSecret;
+
+  params = clear_blank(params);
+
+  // Early check: return null if any param value contains '&'
+  for (let key in params) {
+    const value = params[key];
+    if (Array.isArray(value)) {
+      if (value.some(v => typeof v === 'string' && v.includes('&'))) {
+        return null;
+      }
+    } else if (typeof value === 'string' && value.includes('&')) {
+      return null;
+    }
   }
+
+  params.signature = await api_sign_request(params, apiSecret);
+  params.api_key = apiKey;
+  return params;
+}
 
   async function api_sign_request(params_to_sign, api_secret) {
     let to_sign = entries(params_to_sign).filter(
