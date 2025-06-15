@@ -12,13 +12,29 @@ export function present(value) {
 }
 
 async function sign_request(apiConfig, params, options = {}) {
-    let apiKey = apiConfig.apiKey
-    let apiSecret = apiConfig.apiSecret
-    params = clear_blank(params);
-    params.signature = await api_sign_request(params, apiSecret);
-    params.api_key = apiKey;
-    return params;
+  const apiKey = apiConfig.apiKey;
+  const apiSecret = apiConfig.apiSecret;
+
+  params = clear_blank(params);
+
+  for (let key in params) {
+    const value = params[key];
+
+    if (Array.isArray(value)) {
+      params[key] = value.map(v =>
+        typeof v === 'string' ? v.replace(/&/g, '%26') : v
+      );
+    } else if (typeof value === 'string') {
+      params[key] = value.replace(/&/g, '%26');
+    }
   }
+
+  params.signature = await api_sign_request(params, apiSecret);
+  params.api_key = apiKey;
+  return params;
+}
+
+
 
   async function api_sign_request(params_to_sign, api_secret) {
     let to_sign = entries(params_to_sign).filter(
