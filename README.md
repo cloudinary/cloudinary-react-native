@@ -33,7 +33,7 @@ npm install cloudinary-react-native
 ```
 Or
 ```bash
-yarn add cloudinary-react-native --save
+yarn add cloudinary-react-native
 ```
 
 ## Usage
