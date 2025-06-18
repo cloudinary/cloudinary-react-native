@@ -14,18 +14,21 @@ export function present(value) {
 async function sign_request(apiConfig, params, options = {}) {
   const apiKey = apiConfig.apiKey;
   const apiSecret = apiConfig.apiSecret;
+  const signatureVersion = apiConfig.signatureVersion;
 
   params = clear_blank(params);
 
-  for (let key in params) {
-    const value = params[key];
+  if (signatureVersion === 2) {
+    for (let key in params) {
+      const value = params[key];
 
-    if (Array.isArray(value)) {
-      params[key] = value.map(v =>
-        typeof v === 'string' ? v.replace(/&/g, '%26') : v
-      );
-    } else if (typeof value === 'string') {
-      params[key] = value.replace(/&/g, '%26');
+      if (Array.isArray(value)) {
+        params[key] = value.map(v =>
+          typeof v === 'string' ? v.replace(/&/g, '%26') : v
+        );
+      } else if (typeof value === 'string') {
+        params[key] = value.replace(/&/g, '%26');
+      }
     }
   }
 
@@ -33,6 +36,7 @@ async function sign_request(apiConfig, params, options = {}) {
   params.api_key = apiKey;
   return params;
 }
+
 
 
 
