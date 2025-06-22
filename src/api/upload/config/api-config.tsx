@@ -4,6 +4,7 @@ export const defaultResourceType = 'image';
 export const defaultChunckSize = 20 * 1024 * 1024;
 export const defaultTimeout = 60;
 export const defaultUploadPrefix = 'https://api.cloudinary.com';
+export const defaultSignatureVersion = 2;
 
 export
 
@@ -25,6 +26,7 @@ class APIConfig {
     cloudName:      string  = '';
     apiKey:         string | null = '';
     apiSecret:      string | null = '';
+    signatureVersion: number = defaultSignatureVersion;
 }
 
 export { APIConfig }
