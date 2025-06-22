@@ -1,6 +1,6 @@
 {
   "name": "cloudinary-react-native",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Cloudinary React Native SDK: upload, transform, and deliver images and videos through Cloudinary's media pipeline.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
