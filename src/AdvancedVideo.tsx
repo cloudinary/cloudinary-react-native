@@ -8,7 +8,7 @@ interface AdvancedVideoProps {
   videoUrl?: string;
   cldVideo?: CloudinaryVideo;
   videoStyle?: StyleProp<ViewStyle>;
-  // Analytics props - all optional to maintain backward compatibility
+  onPlaybackStatusUpdate?: (status: AVPlaybackStatus) => void;
   enableAnalytics?: boolean;
   autoTrackAnalytics?: boolean;
   analyticsOptions?: {
@@ -30,11 +30,15 @@ interface AdvancedVideoState {
   analyticsInitialized: boolean;
 }
 
-export interface AdvancedVideoRef extends Video {
+export interface AdvancedVideoRef {
   startAnalyticsTracking: (metadata?: any, options?: any) => void;
   stopAnalyticsTracking: () => void;
   startAutoAnalyticsTracking: (options?: any) => void;
   addCustomEvent: (eventName: string, eventDetails?: any) => void;
+  playAsync: () => Promise<void>;
+  pauseAsync: () => Promise<void>;
+  setIsMutedAsync: (isMuted: boolean) => Promise<void>;
+  setPositionAsync: (positionMillis: number) => Promise<void>;
 }
 
 class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
@@ -149,6 +153,11 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         console.warn('Error processing analytics status:', error);
       }
     }
+
+    // Forward the callback to the parent component
+    if (this.props.onPlaybackStatusUpdate) {
+      this.props.onPlaybackStatusUpdate(status);
+    }
   };
 
   public startAnalyticsTracking = (metadata?: any, options?: any) => {
@@ -212,6 +221,47 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
     }
   };
 
+  // Playback control methods
+  public playAsync = async () => {
+    if (this.videoRef.current) {
+      try {
+        await this.videoRef.current.playAsync();
+      } catch (error) {
+        console.warn('Failed to play video:', error);
+      }
+    }
+  };
+
+  public pauseAsync = async () => {
+    if (this.videoRef.current) {
+      try {
+        await this.videoRef.current.pauseAsync();
+      } catch (error) {
+        console.warn('Failed to pause video:', error);
+      }
+    }
+  };
+
+  public setIsMutedAsync = async (isMuted: boolean) => {
+    if (this.videoRef.current) {
+      try {
+        await this.videoRef.current.setIsMutedAsync(isMuted);
+      } catch (error) {
+        console.warn('Failed to set muted state:', error);
+      }
+    }
+  };
+
+  public setPositionAsync = async (positionMillis: number) => {
+    if (this.videoRef.current) {
+      try {
+        await this.videoRef.current.setPositionAsync(positionMillis);
+      } catch (error) {
+        console.warn('Failed to set position:', error);
+      }
+    }
+  };
+
   render() {
     const videoUri = this.getVideoUri();
 
@@ -224,7 +274,7 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         ref={this.videoRef}
         source={{ uri: videoUri }}
         style={this.props.videoStyle}
-        useNativeControls
+        useNativeControls={false}
         onPlaybackStatusUpdate={this.onPlaybackStatusUpdate}
       />
     );

@@ -1,11 +1,9 @@
-import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Platform, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import {AdvancedImage, AdvancedVideo} from 'cloudinary-react-native';
-import {Cloudinary} from '@cloudinary/url-gen';
-import {scale} from "@cloudinary/url-gen/actions/resize";
-import {cartoonify} from "@cloudinary/url-gen/actions/effect";
-import {max} from "@cloudinary/url-gen/actions/roundCorners";
-import React, {useRef, useState} from "react";
+import AdvancedImageDemo from './AdvancedImageDemo';
+import AdvancedVideoDemo from './AdvancedVideoDemo';
+import VideoLayerDemo from './VideoLayerDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -21,173 +19,88 @@ const getTopPadding = () => {
   return 35; // Android
 };
 
-const cld = new Cloudinary({
-  cloud: {
-    cloudName: 'demo'
-  },
-  url: {
-    secure: true
-  }
-});
+type CurrentScreen = 'home' | 'image' | 'video' | 'videoLayer';
 
 export default function App() {
-  const videoPlayer = useRef<any>(null);
-  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
-  const [autoTracking, setAutoTracking] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
 
-  function createMyImage() {
-    var myImage = cld.image('sample').resize(scale().width(300)).effect(cartoonify()).roundCorners(max());
-    return myImage
-  }
-
-  function createMyVideoObject() {
-    const myVideo = cld.video('sea_turtle')
-    return myVideo
+  const navigateToScreen = (screen: CurrentScreen) => {
+    setCurrentScreen(screen);
   };
 
-  const toggleAnalytics = () => {
-    const newAnalyticsState = !analyticsEnabled;
-    setAnalyticsEnabled(newAnalyticsState);
-    
-    // Auto-enable tracking when analytics are enabled for better UX
-    if (newAnalyticsState && !autoTracking) {
-      setAutoTracking(true);
-    }
-    
-    Alert.alert(
-      'Analytics', 
-      `Analytics ${newAnalyticsState ? 'enabled' : 'disabled'}.${newAnalyticsState && !autoTracking ? ' Auto tracking also enabled.' : ''} Reload the video to see changes.`
-    );
+  const navigateHome = () => {
+    setCurrentScreen('home');
   };
 
-  const toggleAutoTracking = () => {
-    setAutoTracking(!autoTracking);
-    Alert.alert(
-      'Auto Tracking', 
-      `Auto tracking ${!autoTracking ? 'enabled' : 'disabled'}. Reload the video to see changes.`
-    );
-  };
-
-  const startManualTracking = () => {
-    if (videoPlayer.current && videoPlayer.current.startAnalyticsTracking) {
-      videoPlayer.current.startAnalyticsTracking(
-        {
-          publicId: 'jnwczzoacujqb4r4loj1',
-          cloudName: 'mobiledemoapp',
-          type: 'video'
-        },
-        {
-          customData: {
-            userId: 'test-user-123',
-            sessionId: 'test-session-456',
-            category: 'demo-video'
-          }
-        }
-      );
-      Alert.alert('Manual Tracking', 'Manual analytics tracking started!');
-    } else {
-      Alert.alert('Error', 'Video ref not available or analytics not enabled');
+  const renderCurrentScreen = () => {
+    switch (currentScreen) {
+      case 'image':
+        return <AdvancedImageDemo />;
+      case 'video':
+        return <AdvancedVideoDemo />;
+      case 'videoLayer':
+        return <VideoLayerDemo />;
+      default:
+        return renderHomeScreen();
     }
   };
 
-  const stopManualTracking = () => {
-    if (videoPlayer.current && videoPlayer.current.stopAnalyticsTracking) {
-      videoPlayer.current.stopAnalyticsTracking();
-      Alert.alert('Manual Tracking', 'Manual analytics tracking stopped!');
-    } else {
-      Alert.alert('Error', 'Video ref not available');
-    }
-  };
+  const renderHomeScreen = () => (
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>Cloudinary React Native SDK</Text>
+        <Text style={styles.subtitle}>Widget Examples</Text>
+      </View>
+      
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={[styles.button, styles.imageButton]}
+          onPress={() => navigateToScreen('image')}
+        >
+          <Text style={styles.buttonTitle}>📸 Advanced Image</Text>
+          <Text style={styles.buttonDescription}>
+            Showcase image transformations and effects
+          </Text>
+        </TouchableOpacity>
 
-  const startAutoTrackingManually = () => {
-    if (videoPlayer.current && videoPlayer.current.startAutoAnalyticsTracking) {
-      videoPlayer.current.startAutoAnalyticsTracking({
-        customData: {
-          userId: 'test-user-123',
-          source: 'manual-trigger'
-        }
-      });
-      Alert.alert('Auto Tracking', 'Auto analytics tracking started manually!');
-    } else {
-      Alert.alert('Error', 'Video ref not available or analytics not enabled');
-    }
-  };
+        <TouchableOpacity
+          style={[styles.button, styles.videoButton]}
+          onPress={() => navigateToScreen('video')}
+        >
+          <Text style={styles.buttonTitle}>🎥 Advanced Video</Text>
+          <Text style={styles.buttonDescription}>
+            Video playback with analytics and controls
+          </Text>
+        </TouchableOpacity>
 
-  const addCustomEventToVideo = () => {
-    if (videoPlayer.current && videoPlayer.current.addCustomEvent) {
-      videoPlayer.current.addCustomEvent('user_interaction', {
-        action: 'button_clicked',
-        buttonName: 'share',
-        videoPosition: 30.5, // seconds
-        customData: {
-          userId: 'demo-user-123',
-          sessionId: 'session-456'
-        }
-      });
-      Alert.alert('Custom Event', 'Custom analytics event sent!');
-    } else {
-      Alert.alert('Error', 'Custom events not available');
-    }
-  };
+        <TouchableOpacity
+          style={[styles.button, styles.videoLayerButton]}
+          onPress={() => navigateToScreen('videoLayer')}
+        >
+          <Text style={styles.buttonTitle}>🎬 Video Layer</Text>
+          <Text style={styles.buttonDescription}>
+            Full-screen video with overlay controls
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.footerContainer}>
+        <Text style={styles.footerText}>
+          Built with Cloudinary React Native SDK
+        </Text>
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.safeArea}>
       <StatusBar style="auto" />
-      <View style={styles.container}>
-        <View>
-          <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
-        </View>
-        
-        {/* Analytics Controls */}
-        <View style={styles.controlsContainer}>
-          <Text style={styles.title}>Analytics Testing</Text>
-          
-          <TouchableOpacity style={styles.button} onPress={toggleAnalytics}>
-            <Text style={styles.buttonText}>
-              {analyticsEnabled ? 'Disable Analytics' : 'Enable Analytics'}
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.button} onPress={toggleAutoTracking}>
-            <Text style={styles.buttonText}>
-              {autoTracking ? 'Disable Auto Tracking' : 'Enable Auto Tracking'}
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.button} onPress={addCustomEventToVideo}>
-            <Text style={styles.buttonText}>Send Custom Event</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.videoContainer}>
-          <AdvancedVideo
-            ref={videoPlayer}
-            videoStyle={styles.video}
-            cldVideo={createMyVideoObject()}
-            enableAnalytics={analyticsEnabled}
-            autoTrackAnalytics={autoTracking}
-            analyticsOptions={{
-              customData: {
-                userId: 'demo-user-123',
-                appVersion: '1.0.0',
-                platform: 'react-native'
-              },
-              videoPlayerType: 'expo-av',
-              videoPlayerVersion: '14.0.0'
-            }}
-          />
-        </View>
-        
-        {/* Status Display */}
-        <View style={styles.statusContainer}>
-          <Text style={styles.statusText}>
-            Analytics: {analyticsEnabled ? '✅ Enabled' : '❌ Disabled'}
-          </Text>
-          <Text style={styles.statusText}>
-            Auto Tracking: {autoTracking ? '✅ Enabled' : '❌ Disabled'}
-          </Text>
-        </View>
-      </View>
+      {currentScreen !== 'home' && (
+        <TouchableOpacity style={styles.backButton} onPress={navigateHome}>
+          <Text style={styles.backButtonText}>← Back to Home</Text>
+        </TouchableOpacity>
+      )}
+      {renderCurrentScreen()}
     </View>
   );
 }
@@ -200,58 +113,88 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: 20,
+    justifyContent: 'space-between',
   },
-  controlsContainer: {
-    width: '90%',
+  headerContainer: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginTop: 40,
   },
   title: {
-    fontSize: 18,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 15,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#666',
+    textAlign: 'center',
+  },
+  buttonsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingVertical: 20,
   },
   button: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 20,
+    marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  imageButton: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#4CAF50',
+  },
+  videoButton: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#2196F3',
+  },
+  videoLayerButton: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF9800',
+  },
+  buttonTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  buttonDescription: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+  },
+  footerContainer: {
+    paddingBottom: 20,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+  },
+  backButton: {
     backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 8,
-    marginVertical: 5,
-    minWidth: 200,
-    alignItems: 'center',
+    margin: 16,
+    alignSelf: 'flex-start',
   },
-  smallButton: {
-    minWidth: 90,
-    marginHorizontal: 5,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  buttonText: {
+  backButtonText: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
-  },
-  videoContainer: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  video: {
-    width: 400,
-    height: 220,
-  },
-  statusContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  statusText: {
-    fontSize: 14,
-    marginVertical: 2,
   },
 });
