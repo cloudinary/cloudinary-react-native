@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   iconText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '400',
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 1 },
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   },
   centerPlayIcon: {
     color: '#1a1a1a',
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '500',
     marginLeft: 2, // Slight offset for play icon visual balance
     textShadowColor: 'rgba(255, 255, 255, 0.3)',
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   playPauseIcon: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '500',
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 1 },
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   },
   volumeIcon: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '500',
     textShadowColor: 'rgba(0, 0, 0, 0.5)',
     textShadowOffset: { width: 0, height: 1 },
