@@ -77,14 +77,14 @@
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.10.0",
+    "expo-av": "^14.0.0",
     "expo-crypto": "^14.1.5",
     "isomorphic-fetch": "^3.0.0",
     "util": "^0.10.4"
   },
   "peerDependencies": {
-    "expo": "^50.0.0",
-    "expo-av": "^14.0.0",
-    "expo-modules-core": "1.11.14",
+    "expo": ">=50.0.0",
+    "expo-modules-core": ">=1.11.14",
     "react": ">=18.0.0",
     "react-native": ">=0.72.0"
   },
