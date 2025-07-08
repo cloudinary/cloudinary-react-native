@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import AdvancedImageDemo from './AdvancedImageDemo';
 import AdvancedVideoDemo from './AdvancedVideoDemo';
 import VideoLayerDemo from './VideoLayerDemo';
+import FullScreenPlayerDemo from './FullScreenPlayerDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -19,7 +20,7 @@ const getTopPadding = () => {
   return 35; // Android
 };
 
-type CurrentScreen = 'home' | 'image' | 'video' | 'videoLayer';
+type CurrentScreen = 'home' | 'image' | 'video' | 'videoLayer' | 'fullScreenPlayer';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
@@ -40,6 +41,8 @@ export default function App() {
         return <AdvancedVideoDemo />;
       case 'videoLayer':
         return <VideoLayerDemo />;
+      case 'fullScreenPlayer':
+        return <FullScreenPlayerDemo />;
       default:
         return renderHomeScreen();
     }
@@ -80,6 +83,16 @@ export default function App() {
           <Text style={styles.buttonTitle}>🎬 Video Layer</Text>
           <Text style={styles.buttonDescription}>
             Full-screen video with overlay controls
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.fullScreenPlayerButton]}
+          onPress={() => navigateToScreen('fullScreenPlayer')}
+        >
+          <Text style={styles.buttonTitle}>🎭 Full Screen Player With Layer</Text>
+          <Text style={styles.buttonDescription}>
+            Immersive full-screen player with interactive layers
           </Text>
         </TouchableOpacity>
       </View>
@@ -163,6 +176,10 @@ const styles = StyleSheet.create({
   videoLayerButton: {
     borderLeftWidth: 4,
     borderLeftColor: '#FF9800',
+  },
+  fullScreenPlayerButton: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#9C27B0',
   },
   buttonTitle: {
     fontSize: 20,
