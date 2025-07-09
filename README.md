@@ -36,6 +36,17 @@ Or
 yarn add cloudinary-react-native --save
 ```
 
+### For Video Player functionality
+If you want to use the video player features, you need to install `expo-av`:
+
+```bash
+npm install expo-av
+```
+Or
+```bash
+yarn add expo-av
+```
+
 ## Usage
 ### Setup
 The `Cloudinary` class is the main entry point for using the library. Your `cloud_name` is required to create an instance of this class. Your `api_key` and `api_secret` are also needed to perform secure API calls to Cloudinary (e.g., image and video uploads). Setting the configuration parameters can be done either programmatically using an appropriate constructor of the Cloudinary class or globally using an environment variable. You can find your account-specific configuration parameters in the **Dashboard** page of your [account console](https://cloudinary.com/console).
@@ -66,6 +77,70 @@ export default function App() {
   return (
     <View style={styles.container}>
       <AdvancedImage cldImg={img} style={{width:300, height:200}}/>
+    </View>
+  );
+};
+```
+
+### Video Player
+The `AdvancedVideo` component provides video playback capabilities with optional analytics tracking. **Note: This requires `expo-av` to be installed.**
+
+```tsx
+import { AdvancedVideo } from 'cloudinary-react-native';
+import {Cloudinary} from '@cloudinary/url-gen';
+
+const myCld = new Cloudinary({
+  cloud: {
+    cloudName: "demo",
+  },
+});
+
+let video = myCld.video('sea_turtle');
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <AdvancedVideo 
+        cldVideo={video} 
+        videoStyle={{width: 400, height: 220}}
+      />
+    </View>
+  );
+};
+```
+
+#### Video Player with Analytics
+Enable analytics tracking for detailed video performance insights:
+
+```tsx
+import { AdvancedVideo } from 'cloudinary-react-native';
+import {Cloudinary} from '@cloudinary/url-gen';
+
+const myCld = new Cloudinary({
+  cloud: {
+    cloudName: "demo",
+  },
+});
+
+let video = myCld.video('sea_turtle');
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <AdvancedVideo 
+        cldVideo={video} 
+        videoStyle={{width: 400, height: 220}}
+        enableAnalytics={true}
+        autoTrackAnalytics={true}
+        analyticsOptions={{
+          customData: {
+            userId: 'user-123',
+            appVersion: '1.0.0'
+          },
+          videoPlayerType: 'expo-av',
+          videoPlayerVersion: '14.0.0'
+        }}
+      />
     </View>
   );
 };
