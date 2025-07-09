@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Animated, Easing, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Animated, Easing, Platform, PanResponder, Dimensions } from 'react-native';
 import { AVPlaybackStatusSuccess } from 'expo-av';
 import AdvancedVideo, { AdvancedVideoRef } from '../../AdvancedVideo'
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
@@ -17,19 +17,54 @@ interface CLDVideoLayerState {
   status: AVPlaybackStatusSuccess | null;
   isControlsVisible: boolean;
   fadeAnim: Animated.Value;
+  isSeeking: boolean;
+  seekingPosition: number;
+  lastSeekPosition: number;
+  isSeekingComplete: boolean;
 }
 
 export class CLDVideoLayer extends Component<CLDVideoLayerProps, CLDVideoLayerState> {
   private videoRef: React.RefObject<AdvancedVideo>;
+  private seekbarRef: React.RefObject<View>;
+  private panResponder: any;
+  private seekTimeoutId: NodeJS.Timeout | null = null;
+  private lastSeekTime: number = 0;
 
   constructor(props: CLDVideoLayerProps) {
     super(props);
     this.videoRef = React.createRef<AdvancedVideo>();
+    this.seekbarRef = React.createRef<View>();
     this.state = {
       status: null,
       isControlsVisible: true,
       fadeAnim: new Animated.Value(1),
+      isSeeking: false,
+      seekingPosition: 0,
+      lastSeekPosition: 0,
+      isSeekingComplete: false,
     };
+
+    this.panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        this.handleSeekStart(evt);
+      },
+      onPanResponderMove: (evt) => {
+        this.handleSeekMove(evt);
+      },
+      onPanResponderRelease: (evt) => {
+        this.handleSeekEnd(evt);
+      },
+    });
+  }
+
+  componentWillUnmount() {
+    // Clean up seek timeout
+    if (this.seekTimeoutId) {
+      clearTimeout(this.seekTimeoutId);
+      this.seekTimeoutId = null;
+    }
   }
 
   toggleControls = () => {
@@ -43,7 +78,25 @@ export class CLDVideoLayer extends Component<CLDVideoLayerProps, CLDVideoLayerSt
   };
 
   handleStatusUpdate = (s: any) => {
-    if (s.isLoaded) this.setState({ status: s });
+    if (s.isLoaded) {
+      // Check if we need to clear the seeking complete state
+      if (this.state.isSeekingComplete && this.state.lastSeekPosition > 0) {
+        const currentVideoPosition = s.positionMillis || 0;
+        const seekPositionDiff = Math.abs(currentVideoPosition - this.state.lastSeekPosition);
+        
+        // If video position is within 500ms of our seek position, clear seeking state
+        if (seekPositionDiff < 500) {
+          this.setState({ 
+            status: s,
+            isSeekingComplete: false,
+            lastSeekPosition: 0
+          });
+          return;
+        }
+      }
+      
+      this.setState({ status: s });
+    }
   };
 
   formatTime = (milliseconds: number): string => {
@@ -77,9 +130,133 @@ export class CLDVideoLayer extends Component<CLDVideoLayerProps, CLDVideoLayerSt
     }
   };
 
+  handleSeekStart = (evt: any) => {
+    this.setState({ isSeeking: true });
+  };
+
+  handleSeekMove = (evt: any) => {
+    if (this.seekbarRef.current && this.state.status) {
+      // Extract pageX before async measure call to avoid synthetic event pooling issues
+      const touchPageX = evt.nativeEvent.pageX;
+      this.seekbarRef.current.measure((x, y, width, height, pageX, pageY) => {
+        const touchX = touchPageX - pageX;
+        const progress = Math.max(0, Math.min(1, touchX / width));
+        const seekPosition = progress * (this.state.status?.durationMillis || 0);
+        this.setState({ seekingPosition: seekPosition });
+      });
+    }
+  };
+
+  handleSeekEnd = (evt: any) => {
+    if (this.seekbarRef.current && this.state.status) {
+      // Extract pageX before async measure call to avoid synthetic event pooling issues
+      const touchPageX = evt.nativeEvent.pageX;
+      this.seekbarRef.current.measure((x, y, width, height, pageX, pageY) => {
+        const touchX = touchPageX - pageX;
+        const progress = Math.max(0, Math.min(1, touchX / width));
+        const duration = this.state.status?.durationMillis || 0;
+        const seekPosition = progress * duration;
+        
+        // Validate seek position before calling setPositionAsync
+        if (this.videoRef.current && this.state.status && duration > 0) {
+          // Ensure seekPosition is within valid bounds with some buffer
+          const validSeekPosition = Math.max(0, Math.min(seekPosition, duration - 100));
+          
+          // Only seek if the position is significantly different from current position
+          const currentPosition = this.state.status.positionMillis || 0;
+          const positionDiff = Math.abs(validSeekPosition - currentPosition);
+          
+          // Add debouncing to prevent rapid seek operations
+          const now = Date.now();
+          const timeSinceLastSeek = now - this.lastSeekTime;
+          
+          // Only seek if difference is more than 100ms and enough time has passed since last seek
+          if (positionDiff > 100 && timeSinceLastSeek > 200) {
+            // Additional validation: ensure video is in a seekable state
+            if (this.state.status.isLoaded && 
+                this.state.status.durationMillis && 
+                this.state.status.durationMillis > 0 &&
+                validSeekPosition >= 0 && 
+                validSeekPosition < this.state.status.durationMillis) {
+              
+              this.lastSeekTime = now;
+              this.videoRef.current.setPositionAsync(validSeekPosition).catch((error) => {
+                console.warn('Seek failed:', error);
+                // Reset seeking state on failure
+                this.setState({ 
+                  isSeeking: false, 
+                  seekingPosition: 0,
+                  lastSeekPosition: 0,
+                  isSeekingComplete: false
+                });
+              });
+            }
+          }
+          
+          // Set state and let the getProgress method handle switching back to video position
+          this.setState({ 
+            isSeeking: false, 
+            seekingPosition: validSeekPosition,
+            lastSeekPosition: validSeekPosition,
+            isSeekingComplete: true
+          });
+        } else {
+          // If validation fails, just stop seeking without changing position
+          this.setState({ 
+            isSeeking: false, 
+            seekingPosition: 0,
+            lastSeekPosition: 0,
+            isSeekingComplete: false
+          });
+        }
+      });
+    }
+  };
+
+  getProgress = (): number => {
+    if (!this.state.status) return 0;
+    
+    const duration = this.state.status?.durationMillis || 1;
+    const currentVideoPosition = this.state.status?.positionMillis || 0;
+    
+    // If actively seeking, use the seeking position
+    if (this.state.isSeeking) {
+      return this.state.seekingPosition / duration;
+    }
+    
+    // If we just finished seeking and haven't switched back yet, use the seek position
+    if (this.state.isSeekingComplete && this.state.lastSeekPosition > 0) {
+      return this.state.lastSeekPosition / duration;
+    }
+    
+    // Otherwise use the video's current position
+    return currentVideoPosition / duration;
+  };
+
+  getCurrentPosition = (): number => {
+    if (!this.state.status) return 0;
+    
+    const currentVideoPosition = this.state.status?.positionMillis || 0;
+    
+    // If actively seeking, use the seeking position
+    if (this.state.isSeeking) {
+      return this.state.seekingPosition;
+    }
+    
+    // If we just finished seeking and haven't switched back yet, use the seek position
+    if (this.state.isSeekingComplete && this.state.lastSeekPosition > 0) {
+      return this.state.lastSeekPosition;
+    }
+    
+    // Otherwise use the video's current position
+    return currentVideoPosition;
+  };
+
   render() {
     const { cldVideo, videoUrl, onBack, onShare } = this.props;
     const { status, fadeAnim } = this.state;
+    const progress = this.getProgress();
+    const currentPosition = this.getCurrentPosition();
 
     return (
       <TouchableOpacity
@@ -132,12 +309,26 @@ export class CLDVideoLayer extends Component<CLDVideoLayerProps, CLDVideoLayerSt
               
               {/* Seekbar */}
               <View style={styles.seekbarContainer}>
-                <TouchableOpacity style={styles.seekbar}>
-                  <View style={styles.seekbarProgress} />
-                  <View style={styles.seekbarHandle} />
-                </TouchableOpacity>
+                <View 
+                  ref={this.seekbarRef}
+                  style={styles.seekbar}
+                  {...this.panResponder.panHandlers}
+                >
+                  <View 
+                    style={[
+                      styles.seekbarProgress, 
+                      { width: `${progress * 100}%` }
+                    ]} 
+                  />
+                  <View 
+                    style={[
+                      styles.seekbarHandle, 
+                      { left: `${progress * 100}%` }
+                    ]} 
+                  />
+                </View>
                 <Text style={styles.timeText}>
-                  {this.formatTime(status?.positionMillis || 0)} / {this.formatTime(status?.durationMillis || 0)}
+                  {this.formatTime(currentPosition)} / {this.formatTime(status?.durationMillis || 0)}
                 </Text>
               </View>
             </View>
@@ -298,26 +489,33 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   seekbar: {
-    height: 4,
+    height: 20, // Increased height for better touch target
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 2,
+    borderRadius: 10,
     position: 'relative',
     marginBottom: 5,
+    justifyContent: 'center',
   },
   seekbarProgress: {
     height: 4,
     backgroundColor: '#007AFF',
     borderRadius: 2,
-    width: '30%', // This will be dynamic based on video progress
+    position: 'absolute',
+    top: 8, // Center within the 20px height
   },
   seekbarHandle: {
     position: 'absolute',
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
     backgroundColor: '#007AFF',
-    top: -4,
-    left: '30%', // This will be dynamic based on video progress
+    top: 2, // Center within the 20px height
+    marginLeft: -8, // Half of width to center properly
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   },
   timeText: {
     color: 'white',
