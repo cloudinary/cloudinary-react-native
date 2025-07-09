@@ -2877,7 +2877,6 @@
   "version" "1.1.0"
   dependencies:
     "@cloudinary/url-gen" "^1.10.0"
-    "cloudinary-react-native" "^1.0.0"
     "expo-crypto" "^14.1.5"
     "isomorphic-fetch" "^3.0.0"
     "util" "^0.10.4"
@@ -3522,11 +3521,6 @@
     "expo-file-system" "~16.0.0"
     "invariant" "^2.2.4"
     "md5-file" "^3.2.3"
-
-"expo-av@14.0.7":
-  "integrity" "sha512-FvKZxyy+2/qcCmp+e1GTK3s4zH8ZO1RfjpqNxh7ARlS1oH8HPtk1AyZAMo52tHz3yQ3UIqxQ2YbI9CFb4065lA=="
-  "resolved" "https://cloudinary-232482882421.d.codeartifact.us-east-1.amazonaws.com/npm/cld-npm-store/expo-av/-/expo-av-14.0.7.tgz"
-  "version" "14.0.7"
 
 "expo-constants@~15.4.0":
   "integrity" "sha512-vizE69dww2Vl0PTWWvDmK0Jo2/J+WzdcMZlA05YEnEYofQuhKxTVsiuipf79mSOmFavt4UQYC1UnzptzKyfmiQ=="
