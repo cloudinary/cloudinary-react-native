@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Animated, Easing, Platform, PanResponder, Dimensions } from 'react-native';
 import { AVPlaybackStatusSuccess } from 'expo-av';
 import AdvancedVideo, { AdvancedVideoRef } from '../../AdvancedVideo'
@@ -11,6 +11,7 @@ interface CLDVideoLayerProps {
   muted?: boolean;
   onBack?: () => void;
   onShare?: () => void;
+  hideControls?: boolean;
 }
 
 interface CLDVideoLayerState {
@@ -23,7 +24,7 @@ interface CLDVideoLayerState {
   isSeekingComplete: boolean;
 }
 
-export class CLDVideoLayer extends Component<CLDVideoLayerProps, CLDVideoLayerState> {
+export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoLayerState> {
   private videoRef: React.RefObject<AdvancedVideo>;
   private seekbarRef: React.RefObject<View>;
   private panResponder: any;
@@ -275,12 +276,16 @@ export class CLDVideoLayer extends Component<CLDVideoLayerProps, CLDVideoLayerSt
         <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
           {/* Top Controls Bar */}
           <View style={styles.topControlsBar}>
-            <TouchableOpacity style={styles.topButton} onPress={onBack}>
-              <Text style={styles.iconText}>✕</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.topButton} onPress={onShare}>
-              <Text style={styles.iconText}>⤴</Text>
-            </TouchableOpacity>
+            {onBack && (
+              <TouchableOpacity style={styles.topButton} onPress={onBack}>
+                <Text style={styles.iconText}>✕</Text>
+              </TouchableOpacity>
+            )}
+            {onShare && (
+              <TouchableOpacity style={styles.topButton} onPress={onShare}>
+                <Text style={styles.iconText}>⤴</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Center Play/Pause Button */}

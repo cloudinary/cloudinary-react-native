@@ -40,7 +40,7 @@ export default function App() {
       case 'video':
         return <AdvancedVideoDemo />;
       case 'videoLayer':
-        return <VideoLayerDemo />;
+        return <VideoLayerDemo onBack={navigateHome} />;
       case 'fullScreenPlayer':
         return <FullScreenPlayerDemo />;
       default:
@@ -105,6 +105,15 @@ export default function App() {
     </View>
   );
 
+  if (currentScreen === 'videoLayer') {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <StatusBar style="auto" />
+        <VideoLayerDemo onBack={navigateHome} />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.safeArea}>
       <StatusBar style="auto" />
@@ -123,6 +132,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: getTopPadding(),
+  },
+  fullScreenContainer: {
+    flex: 1,
+    backgroundColor: '#000',
   },
   container: {
     flex: 1,
