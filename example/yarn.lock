@@ -2121,7 +2121,7 @@
 
 "@react-native/virtualized-lists@0.73.4":
   "integrity" "sha512-HpmLg1FrEiDtrtAbXiwCgXFYyloK/dOIPIuWW3fsqukwJEWAiTzm1nXGJ7xPU5XTHiWZ4sKup5Ebaj8z7iyWog=="
-  "resolved" "https://cloudinary-232482882421.d.codeartifact.us-east-1.amazonaws.com/npm/cld-npm-store/@react-native/virtualized-lists/-/virtualized-lists-0.73.4.tgz"
+  "resolved" "https://registry.npmjs.org/@react-native/virtualized-lists/-/virtualized-lists-0.73.4.tgz"
   "version" "0.73.4"
   dependencies:
     "invariant" "^2.2.4"
@@ -2202,13 +2202,19 @@
   "resolved" "https://cloudinary-232482882421.d.codeartifact.us-east-1.amazonaws.com/npm/cld-npm-store/@types/prop-types/-/prop-types-15.7.12.tgz"
   "version" "15.7.12"
 
-"@types/react@~18.2.45":
-  "integrity" "sha512-RwGAGXPl9kSXwdNTafkOEuFrTBD5SA2B3iEB96xi8+xu5ddUa/cpvyVCSNn+asgLCTHkb5ZxN8gbuibYJi4s1w=="
-  "resolved" "https://cloudinary-232482882421.d.codeartifact.us-east-1.amazonaws.com/npm/cld-npm-store/@types/react/-/react-18.2.79.tgz"
-  "version" "18.2.79"
+"@types/react@18.2.0":
+  "integrity" "sha512-0FLj93y5USLHdnhIhABk83rm8XEGA7kH3cr+YUlvxoUGp1xNt/DINUMvqPxLyOQMzLmZe8i4RTHbvb8MC7NmrA=="
+  "resolved" "https://registry.npmjs.org/@types/react/-/react-18.2.0.tgz"
+  "version" "18.2.0"
   dependencies:
     "@types/prop-types" "*"
+    "@types/scheduler" "*"
     "csstype" "^3.0.2"
+
+"@types/scheduler@*":
+  "integrity" "sha512-WFHp9YUJQ6CKshqoC37iOlHnQSmxNc795UhB26CyBBttrN9svdIrUjl/NjnNmfcwtncN0h/0PPAFWv9ovP8mLA=="
+  "resolved" "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.26.0.tgz"
+  "version" "0.26.0"
 
 "@types/stack-utils@^2.0.0":
   "integrity" "sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw=="
@@ -2877,6 +2883,7 @@
   "version" "1.1.0"
   dependencies:
     "@cloudinary/url-gen" "^1.10.0"
+    "expo-av" "^14.0.0"
     "expo-crypto" "^14.1.5"
     "isomorphic-fetch" "^3.0.0"
     "util" "^0.10.4"
@@ -3521,6 +3528,11 @@
     "expo-file-system" "~16.0.0"
     "invariant" "^2.2.4"
     "md5-file" "^3.2.3"
+
+"expo-av@14.0.7":
+  "integrity" "sha512-FvKZxyy+2/qcCmp+e1GTK3s4zH8ZO1RfjpqNxh7ARlS1oH8HPtk1AyZAMo52tHz3yQ3UIqxQ2YbI9CFb4065lA=="
+  "resolved" "https://registry.npmjs.org/expo-av/-/expo-av-14.0.7.tgz"
+  "version" "14.0.7"
 
 "expo-constants@~15.4.0":
   "integrity" "sha512-vizE69dww2Vl0PTWWvDmK0Jo2/J+WzdcMZlA05YEnEYofQuhKxTVsiuipf79mSOmFavt4UQYC1UnzptzKyfmiQ=="
@@ -5861,10 +5873,10 @@
     "object-assign" "^4.1.1"
     "react-is" "^16.12.0 || ^17.0.0 || ^18.0.0"
 
-"react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@18.2.0":
-  "integrity" "sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ=="
-  "resolved" "https://cloudinary-232482882421.d.codeartifact.us-east-1.amazonaws.com/npm/cld-npm-store/react/-/react-18.2.0.tgz"
-  "version" "18.2.0"
+"react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@18.0.0", "react@18.2.0":
+  "integrity" "sha512-x+VL6wbT4JRVPm7EGxXhZ8w8LTROaxPXOqhlGyVSrv0sB1jkyFGgXxJ8LVoPRLvPR6/CIZGFmfzqUa2NYeMr2A=="
+  "resolved" "https://registry.npmjs.org/react/-/react-18.0.0.tgz"
+  "version" "18.0.0"
   dependencies:
     "loose-envify" "^1.1.0"
 

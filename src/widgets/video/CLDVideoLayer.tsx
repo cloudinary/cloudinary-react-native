@@ -1,6 +1,7 @@
-import * as React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Animated, Easing, Platform, PanResponder, Dimensions } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity, Text, Animated, Easing, Platform, PanResponder, Dimensions, Share } from 'react-native';
 import { AVPlaybackStatusSuccess } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideo, { AdvancedVideoRef } from '../../AdvancedVideo'
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
 
@@ -131,7 +132,19 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     }
   };
 
-  handleSeekStart = (evt: any) => {
+  handleDefaultShare = async () => {
+    try {
+      const videoUrl = this.props.cldVideo.toURL();
+      await Share.share({
+        message: '',
+        url: videoUrl,
+      });
+    } catch (error) {
+      console.warn('Failed to share video:', error);
+    }
+  };
+
+  handleSeekStart = (_evt: any) => {
     this.setState({ isSeeking: true });
   };
 
@@ -139,7 +152,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     if (this.seekbarRef.current && this.state.status) {
       // Extract pageX before async measure call to avoid synthetic event pooling issues
       const touchPageX = evt.nativeEvent.pageX;
-      this.seekbarRef.current.measure((x, y, width, height, pageX, pageY) => {
+      this.seekbarRef.current.measure((_x, _y, width, _height, pageX, _pageY) => {
         const touchX = touchPageX - pageX;
         const progress = Math.max(0, Math.min(1, touchX / width));
         const seekPosition = progress * (this.state.status?.durationMillis || 0);
@@ -152,7 +165,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     if (this.seekbarRef.current && this.state.status) {
       // Extract pageX before async measure call to avoid synthetic event pooling issues
       const touchPageX = evt.nativeEvent.pageX;
-      this.seekbarRef.current.measure((x, y, width, height, pageX, pageY) => {
+      this.seekbarRef.current.measure((_x, _y, width, _height, pageX, _pageY) => {
         const touchX = touchPageX - pageX;
         const progress = Math.max(0, Math.min(1, touchX / width));
         const duration = this.state.status?.durationMillis || 0;
@@ -278,14 +291,12 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
           <View style={styles.topControlsBar}>
             {onBack && (
               <TouchableOpacity style={styles.topButton} onPress={onBack}>
-                <Text style={styles.iconText}>✕</Text>
+                <Ionicons name="close" size={24} color="white" />
               </TouchableOpacity>
             )}
-            {onShare && (
-              <TouchableOpacity style={styles.topButton} onPress={onShare}>
-                <Text style={styles.iconText}>⤴</Text>
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity style={styles.topButton} onPress={onShare || this.handleDefaultShare}>
+              <Ionicons name="share-outline" size={24} color="white" />
+            </TouchableOpacity>
           </View>
 
           {/* Center Play/Pause Button */}
@@ -294,9 +305,12 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
               style={styles.centerPlayButton}
               onPress={this.handlePlayPause}
             >
-              <Text style={styles.centerPlayIcon}>
-                {status?.isPlaying ? '⏸' : '▶'}
-              </Text>
+              <Ionicons 
+                name={status?.isPlaying ? 'pause' : 'play'} 
+                size={32} 
+                color="#1a1a1a"
+                style={{ marginLeft: status?.isPlaying ? 0 : 3 }} // Slight offset for play icon visual balance
+              />
             </TouchableOpacity>
           </View>
 
@@ -307,9 +321,11 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
                 style={styles.playPauseButton}
                 onPress={this.handlePlayPause}
               >
-                <Text style={styles.playPauseIcon}>
-                  {status?.isPlaying ? '⏸' : '▶'}
-                </Text>
+                <Ionicons 
+                  name={status?.isPlaying ? 'pause' : 'play'} 
+                  size={26} 
+                  color="white" 
+                />
               </TouchableOpacity>
               
               {/* Seekbar */}
@@ -319,6 +335,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
                   style={styles.seekbar}
                   {...this.panResponder.panHandlers}
                 >
+                  <View style={styles.seekbarTrack} />
                   <View 
                     style={[
                       styles.seekbarProgress, 
@@ -343,12 +360,14 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
                 style={styles.volumeButton}
                 onPress={this.handleMuteToggle}
               >
-                <Text style={styles.volumeIcon}>
-                  {status?.isMuted ? '⚊' : '♪'}
-                </Text>
+                <Ionicons 
+                  name={status?.isMuted ? 'volume-mute' : 'volume-high'} 
+                  size={26} 
+                  color="white" 
+                />
               </TouchableOpacity>
               <TouchableOpacity style={styles.fullscreenButton}>
-                <Text style={styles.iconText}>⛶</Text>
+                <Ionicons name="expand" size={26} color="white" />
               </TouchableOpacity>
             </View>
           </View>
@@ -447,13 +466,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   playPauseButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 12,
   },
   playPauseIcon: {
     color: 'white',
@@ -464,13 +483,13 @@ const styles = StyleSheet.create({
     textShadowRadius: 1,
   },
   volumeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: 8,
   },
   volumeIcon: {
     color: 'white',
@@ -481,9 +500,9 @@ const styles = StyleSheet.create({
     textShadowRadius: 1,
   },
   fullscreenButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
@@ -491,36 +510,53 @@ const styles = StyleSheet.create({
   // Seekbar
   seekbarContainer: {
     flex: 1,
-    marginRight: 15,
+    marginRight: 18,
+    marginLeft: 8,
   },
   seekbar: {
-    height: 20, // Increased height for better touch target
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    height: 20,
     borderRadius: 10,
     position: 'relative',
-    marginBottom: 5,
+    marginBottom: 8,
     justifyContent: 'center',
+    paddingVertical: 8, // Increase touch area
+  },
+  seekbarTrack: {
+    height: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 1.5,
+    position: 'absolute',
+    top: 8.5,
+    left: 0,
+    right: 0,
   },
   seekbarProgress: {
-    height: 4,
-    backgroundColor: '#007AFF',
-    borderRadius: 2,
+    height: 3,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 1.5,
     position: 'absolute',
-    top: 8, // Center within the 20px height
+    top: 8.5, // Center within the 20px height
+    shadowColor: '#FFFFFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 2,
+    elevation: 2,
   },
   seekbarHandle: {
     position: 'absolute',
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#FFFFFF',
     top: 2, // Center within the 20px height
     marginLeft: -8, // Half of width to center properly
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.9)',
   },
   timeText: {
     color: 'white',

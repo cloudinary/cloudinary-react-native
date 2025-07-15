@@ -47,6 +47,17 @@ Or
 yarn add expo-av
 ```
 
+### For Video Layer with Controls (CLDVideoLayer)
+If you want to use the `CLDVideoLayer` component with UI controls, you need to install additional dependencies:
+
+```bash
+npm install @expo/vector-icons expo-font
+```
+Or
+```bash
+yarn add @expo/vector-icons expo-font
+```
+
 ## Usage
 ### Setup
 The `Cloudinary` class is the main entry point for using the library. Your `cloud_name` is required to create an instance of this class. Your `api_key` and `api_secret` are also needed to perform secure API calls to Cloudinary (e.g., image and video uploads). Setting the configuration parameters can be done either programmatically using an appropriate constructor of the Cloudinary class or globally using an environment variable. You can find your account-specific configuration parameters in the **Dashboard** page of your [account console](https://cloudinary.com/console).
@@ -144,6 +155,62 @@ export default function App() {
     </View>
   );
 };
+```
+
+### Video Layer with Controls
+The `CLDVideoLayer` component provides a full-screen video experience with overlay controls, seekbar, and customizable actions. **Note: This requires `@expo/vector-icons` and `expo-font` to be installed.**
+
+```tsx
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { CLDVideoLayer } from 'cloudinary-react-native';
+import { Cloudinary } from '@cloudinary/url-gen';
+import { useFonts } from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
+
+const myCld = new Cloudinary({
+  cloud: {
+    cloudName: "demo",
+  },
+});
+
+export default function App() {
+  // Preload fonts to prevent warnings
+  const [fontsLoaded] = useFonts({
+    ...Ionicons.font,
+  });
+
+  if (!fontsLoaded) {
+    return null; // or a loading component
+  }
+
+  const video = myCld.video('sea_turtle');
+
+  const handleBack = () => {
+    // Handle back navigation
+  };
+
+  const handleShare = () => {
+    // Handle custom share action
+  };
+
+  return (
+    <View style={styles.container}>
+      <CLDVideoLayer
+        cldVideo={video}
+        onBack={handleBack}
+        onShare={handleShare}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+});
 ```
 
 ### Uploading Assets

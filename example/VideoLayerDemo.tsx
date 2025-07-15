@@ -30,7 +30,6 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
     <View style={styles.container}>
       <CLDVideoLayer
         cldVideo={createMyVideoObject()}
-        onShare={handleShare}
         onBack={onBack}
       />
     </View>
