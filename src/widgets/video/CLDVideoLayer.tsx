@@ -344,7 +344,10 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
           </View>
         )}
 
-        <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
+        <Animated.View 
+          style={[styles.overlay, { opacity: fadeAnim }]}
+          pointerEvents={this.state.isControlsVisible ? 'auto' : 'none'}
+        >
           {/* Top Controls Bar */}
           <View style={styles.topControlsBar}>
             {onBack && (
