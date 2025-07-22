@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Animated, Easing, Platform, PanResponder, Dimensions, Share } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Animated, Easing, Platform, PanResponder, Dimensions, Share, ActivityIndicator } from 'react-native';
 import { AVPlaybackStatusSuccess } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideo, { AdvancedVideoRef } from '../../AdvancedVideo'
@@ -30,6 +30,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   private seekbarRef: React.RefObject<View>;
   private panResponder: any;
   private seekTimeoutId: NodeJS.Timeout | null = null;
+  private autoHideTimeoutId: NodeJS.Timeout | null = null;
   private lastSeekTime: number = 0;
 
   constructor(props: CLDVideoLayerProps) {
@@ -61,22 +62,70 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     });
   }
 
+  componentDidMount() {
+    // Start auto-hide timer since controls are initially visible
+    this.startAutoHideTimer();
+  }
+
   componentWillUnmount() {
     // Clean up seek timeout
     if (this.seekTimeoutId) {
       clearTimeout(this.seekTimeoutId);
       this.seekTimeoutId = null;
     }
+    // Clean up auto-hide timeout
+    if (this.autoHideTimeoutId) {
+      clearTimeout(this.autoHideTimeoutId);
+      this.autoHideTimeoutId = null;
+    }
   }
 
+  startAutoHideTimer = () => {
+    // Clear existing timeout
+    if (this.autoHideTimeoutId) {
+      clearTimeout(this.autoHideTimeoutId);
+    }
+    
+    // Set new timeout to hide controls after 3 seconds
+    this.autoHideTimeoutId = setTimeout(() => {
+      if (this.state.isControlsVisible) {
+        this.setState({ isControlsVisible: false });
+        Animated.timing(this.state.fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }).start();
+      }
+    }, 3000);
+  };
+
+  clearAutoHideTimer = () => {
+    if (this.autoHideTimeoutId) {
+      clearTimeout(this.autoHideTimeoutId);
+      this.autoHideTimeoutId = null;
+    }
+  };
+
   toggleControls = () => {
-    this.setState(prevState => ({ isControlsVisible: !prevState.isControlsVisible }));
+    const newVisibility = !this.state.isControlsVisible;
+    this.setState({ isControlsVisible: newVisibility });
+    
     Animated.timing(this.state.fadeAnim, {
-      toValue: this.state.isControlsVisible ? 0 : 1,
+      toValue: newVisibility ? 1 : 0,
       duration: 300,
       easing: Easing.linear,
       useNativeDriver: true,
     }).start();
+
+    // Handle auto-hide timer based on new visibility state
+    if (newVisibility) {
+      // Controls are now visible, start auto-hide timer
+      this.startAutoHideTimer();
+    } else {
+      // Controls are now hidden, clear auto-hide timer
+      this.clearAutoHideTimer();
+    }
   };
 
   handleStatusUpdate = (s: any) => {
@@ -271,6 +320,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     const { status, fadeAnim } = this.state;
     const progress = this.getProgress();
     const currentPosition = this.getCurrentPosition();
+    const isVideoLoaded = status?.isLoaded === true;
 
     return (
       <TouchableOpacity
@@ -285,6 +335,14 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
           videoStyle={StyleSheet.absoluteFill}
           onPlaybackStatusUpdate={this.handleStatusUpdate}
         />
+
+        {/* Loading Spinner */}
+        {!isVideoLoaded && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="white" />
+            <Text style={styles.loadingText}>Loading video...</Text>
+          </View>
+        )}
 
         <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
           {/* Top Controls Bar */}
@@ -385,6 +443,21 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'space-between',
+  },
+  // Loading styles
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    zIndex: 1,
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 16,
+    marginTop: 16,
+    textAlign: 'center',
+    opacity: 0.9,
   },
   // Top Controls
   topControlsBar: {
