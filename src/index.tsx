@@ -1,6 +1,6 @@
 import AdvancedImage from "./AdvancedImage";
 import AdvancedVideo from './AdvancedVideo';
-import { CLDVideoLayer } from './widgets/video/CLDVideoLayer';
+import { CLDVideoLayer } from './widgets/video/layer';
 export { upload, unsignedUpload, uploadBase64, rename, explicit } from "./api/upload";
 export { UploadApiOptions } from './api/upload/model/params/upload-params';
 

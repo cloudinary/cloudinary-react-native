@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Alert, SafeAreaView } from 'react-native';
-import { CLDVideoLayer } from '../src/widgets/video/CLDVideoLayer';
+import { CLDVideoLayer } from '../src/widgets/video/layer';
 import { Cloudinary } from '@cloudinary/url-gen';
 
 const cld = new Cloudinary({
