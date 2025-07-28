@@ -35,6 +35,7 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
         // Example: Position back button in top-left (NW) and share button in top-right (NE)
         backButtonPosition={ButtonPosition.NW}
         shareButtonPosition={ButtonPosition.SE}
+        showCenterPlayButton={true}
         // Other positioning options:
         // ButtonPosition.N - Top center
         // ButtonPosition.SE - Bottom right (above bottom controls)

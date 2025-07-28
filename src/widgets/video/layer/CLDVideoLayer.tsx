@@ -246,7 +246,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   };
 
   render() {
-    const { cldVideo, videoUrl, onBack, backButtonPosition, shareButtonPosition } = this.props;
+    const { cldVideo, videoUrl, onBack, backButtonPosition, shareButtonPosition, showCenterPlayButton = true } = this.props;
     const { status } = this.state;
     const progress = this.getProgress();
     const currentPosition = this.getCurrentPosition();
@@ -284,7 +284,9 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             backButtonPosition={backButtonPosition}
             shareButtonPosition={shareButtonPosition}
           />
-          <CenterControls status={status} onPlayPause={this.handlePlayPause} />
+          {showCenterPlayButton && (
+            <CenterControls status={status} onPlayPause={this.handlePlayPause} />
+          )}
           <BottomControls
             status={status}
             onPlayPause={this.handlePlayPause}

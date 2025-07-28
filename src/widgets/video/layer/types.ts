@@ -17,6 +17,7 @@ export interface CLDVideoLayerProps {
   onBack?: () => void;
   onShare?: () => void;
   hideControls?: boolean;
+  showCenterPlayButton?: boolean;
   backButtonPosition?: ButtonPosition;
   shareButtonPosition?: ButtonPosition;
 }
