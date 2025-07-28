@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Alert, SafeAreaView } from 'react-native';
-import { CLDVideoLayer } from '../src/widgets/video/layer';
+import { CLDVideoLayer, ButtonPosition } from '../src/widgets/video/layer';
 import { Cloudinary } from '@cloudinary/url-gen';
 
 const cld = new Cloudinary({
@@ -31,6 +31,13 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
       <CLDVideoLayer
         cldVideo={createMyVideoObject()}
         onBack={onBack}
+        onShare={handleShare}
+        // Example: Position back button in top-left (NW) and share button in top-right (NE)
+        backButtonPosition={ButtonPosition.NW}
+        shareButtonPosition={ButtonPosition.SE}
+        // Other positioning options:
+        // ButtonPosition.N - Top center
+        // ButtonPosition.SE - Bottom right (above bottom controls)
       />
     </View>
   );

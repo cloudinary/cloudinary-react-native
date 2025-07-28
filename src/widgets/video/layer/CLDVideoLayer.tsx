@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, PanResponder, ActivityIndicator, Animated, StyleSheet, Easing } from 'react-native';
 import { AVPlaybackStatusSuccess } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideo from '../../../AdvancedVideo';
-import { CLDVideoLayerProps } from './types';
+import { CLDVideoLayerProps, ButtonPosition } from './types';
 import { formatTime, handleDefaultShare } from './utils';
 import { styles } from './styles';
 import { TopControls, CenterControls, BottomControls } from './components';
+import { ICON_SIZES } from './constants';
 
 interface CLDVideoLayerState {
   status: AVPlaybackStatusSuccess | null;
@@ -244,7 +246,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   };
 
   render() {
-    const { cldVideo, videoUrl, onBack } = this.props;
+    const { cldVideo, videoUrl, onBack, backButtonPosition, shareButtonPosition } = this.props;
     const { status } = this.state;
     const progress = this.getProgress();
     const currentPosition = this.getCurrentPosition();
@@ -276,7 +278,12 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
           style={[styles.overlay, { opacity: this.fadeAnim }]}
           pointerEvents={this.state.isControlsVisible ? 'auto' : 'none'}
         >
-          <TopControls onBack={onBack} onShare={this.handleShare} />
+          <TopControls 
+            onBack={onBack} 
+            onShare={this.handleShare}
+            backButtonPosition={backButtonPosition}
+            shareButtonPosition={shareButtonPosition}
+          />
           <CenterControls status={status} onPlayPause={this.handlePlayPause} />
           <BottomControls
             status={status}
@@ -287,8 +294,32 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             getCurrentPosition={this.getCurrentPosition}
             seekbarRef={this.seekbarRef}
             panResponder={this.panResponder}
+            backButtonPosition={backButtonPosition}
+            shareButtonPosition={shareButtonPosition}
           />
         </Animated.View>
+
+        {/* SE positioned buttons - rendered outside animated overlay for proper positioning */}
+        {this.state.isControlsVisible && (
+          <>
+            {onBack && backButtonPosition === ButtonPosition.SE && (
+              <TouchableOpacity 
+                style={[styles.topButton, styles.buttonPositionSE]} 
+                onPress={onBack}
+              >
+                <Ionicons name="close" size={ICON_SIZES.top} color="white" />
+              </TouchableOpacity>
+            )}
+            {shareButtonPosition === ButtonPosition.SE && (
+              <TouchableOpacity 
+                style={[styles.topButton, styles.buttonPositionSE]} 
+                onPress={this.handleShare}
+              >
+                <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
+              </TouchableOpacity>
+            )}
+          </>
+        )}
       </TouchableOpacity>
     );
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { BottomControlsProps } from '../types';
+import { BottomControlsProps, ButtonPosition } from '../types';
 import { styles } from '../styles';
 import { ICON_SIZES } from '../constants';
 import { Seekbar } from './Seekbar';
@@ -15,12 +15,20 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
   getCurrentPosition,
   seekbarRef,
   panResponder,
+  backButtonPosition,
+  shareButtonPosition,
 }) => {
   const progress = getProgress();
   const currentPosition = getCurrentPosition();
-
+  
+  // Check if we need to leave space for SE positioned buttons
+  const hasSEButton = backButtonPosition === ButtonPosition.SE || shareButtonPosition === ButtonPosition.SE;
+  
   return (
-    <View style={styles.bottomControlsBar}>
+    <View style={[
+      styles.bottomControlsBar,
+      hasSEButton && { paddingRight: 80 } // Create space for SE button
+    ]}>
       <View style={styles.bottomLeftControls}>
         <TouchableOpacity 
           style={styles.playPauseButton}
@@ -53,9 +61,6 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
             size={ICON_SIZES.bottomVolume} 
             color="white" 
           />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.fullscreenButton}>
-          <Ionicons name="expand" size={ICON_SIZES.bottomFullscreen} color="white" />
         </TouchableOpacity>
       </View>
     </View>

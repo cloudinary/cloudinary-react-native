@@ -1,3 +1,8 @@
+import { Platform, Dimensions } from 'react-native';
+
+// Get device dimensions for responsive calculations
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
 // Animation and timing constants
 export const CONTROLS_AUTO_HIDE_DELAY = 3000; // 3 seconds
 export const CONTROLS_FADE_DURATION = 300; // 300ms
@@ -6,19 +11,25 @@ export const SEEK_POSITION_THRESHOLD = 100; // 100ms
 export const SEEK_POSITION_TOLERANCE = 500; // 500ms
 export const SEEK_BUFFER_MS = 100; // 100ms buffer from end
 
-// UI dimensions
-export const TOP_BUTTON_SIZE = 44;
-export const CENTER_PLAY_BUTTON_SIZE = 72;
-export const BOTTOM_BUTTON_SIZE = 40;
+// Responsive UI dimensions
+export const TOP_BUTTON_SIZE = Platform.select({ ios: 44, android: 48 });
+export const CENTER_PLAY_BUTTON_SIZE = Math.min(SCREEN_WIDTH * 0.15, 72); // Responsive center button
+export const BOTTOM_BUTTON_SIZE = Platform.select({ ios: 40, android: 44 });
 export const SEEKBAR_HEIGHT = 20;
 export const SEEKBAR_TRACK_HEIGHT = 3;
 export const SEEKBAR_HANDLE_SIZE = 16;
 
-// Platform-specific padding
+// Platform-specific padding with safe area consideration
 export const TOP_PADDING_IOS = 60;
 export const TOP_PADDING_ANDROID = 30;
 export const LEGACY_TOP_PADDING_IOS = 50;
 export const LEGACY_TOP_PADDING_ANDROID = 20;
+
+// Bottom controls alignment constants (responsive)
+export const BOTTOM_CONTROLS_PADDING = Platform.select({ ios: 15, android: 12 });
+export const SEEKBAR_ALIGNMENT_OFFSET = Platform.select({ ios: 16, android: 14 }); // Platform-specific alignment
+export const SE_BUTTON_RIGHT_OFFSET = Math.min(SCREEN_WIDTH * 0.1, 38); // Responsive right offset
+export const SE_BUTTON_BOTTOM_OFFSET = Platform.select({ ios: 32, android: 28 }); // Platform-specific bottom offset
 
 // Visual styling constants
 export const BORDER_RADIUS = {
@@ -85,6 +96,5 @@ export const ICON_SIZES = {
   center: 32,
   bottom: 26,
   bottomVolume: 26,
-  bottomFullscreen: 26,
   bottomPlayPause: 26,
 }; 

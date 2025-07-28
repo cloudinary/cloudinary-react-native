@@ -13,6 +13,10 @@ import {
   TOP_PADDING_ANDROID,
   LEGACY_TOP_PADDING_IOS,
   LEGACY_TOP_PADDING_ANDROID,
+  BOTTOM_CONTROLS_PADDING,
+  SEEKBAR_ALIGNMENT_OFFSET,
+  SE_BUTTON_RIGHT_OFFSET,
+  SE_BUTTON_BOTTOM_OFFSET,
 } from './constants';
 
 export const styles = StyleSheet.create({
@@ -59,6 +63,28 @@ export const styles = StyleSheet.create({
     shadowColor: '#000',
     ...SHADOW_VALUES.topButton,
   },
+  // Button positioning styles
+  buttonPositionNE: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? TOP_PADDING_IOS : TOP_PADDING_ANDROID,
+    right: 20,
+  },
+  buttonPositionNW: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? TOP_PADDING_IOS : TOP_PADDING_ANDROID,
+    left: 20,
+  },
+  buttonPositionN: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? TOP_PADDING_IOS : TOP_PADDING_ANDROID,
+    alignSelf: 'center',
+  },
+  buttonPositionSE: {
+    position: 'absolute',
+    bottom: SE_BUTTON_BOTTOM_OFFSET,
+    right: SE_BUTTON_RIGHT_OFFSET,
+    zIndex: 10,
+  },
   iconText: {
     color: COLORS.text.white,
     fontSize: 20,
@@ -100,7 +126,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: BOTTOM_CONTROLS_PADDING,
     backgroundColor: COLORS.bottomControlsBackground,
   },
   bottomLeftControls: {
@@ -120,6 +146,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+    marginBottom: SEEKBAR_ALIGNMENT_OFFSET,
   },
   playPauseIcon: {
     color: COLORS.text.white,
@@ -137,6 +164,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
+    marginBottom: SEEKBAR_ALIGNMENT_OFFSET,
   },
   volumeIcon: {
     color: COLORS.text.white,
@@ -144,15 +172,7 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
     textShadowColor: COLORS.text.shadow,
     textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
-  },
-  fullscreenButton: {
-    width: BOTTOM_BUTTON_SIZE,
-    height: BOTTOM_BUTTON_SIZE,
-    borderRadius: BORDER_RADIUS.bottomButton,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
+        textShadowRadius: 1,
   },
   // Seekbar
   seekbarContainer: {

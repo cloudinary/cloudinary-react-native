@@ -2,6 +2,13 @@ import { Animated } from 'react-native';
 import { AVPlaybackStatusSuccess } from 'expo-av';
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
 
+export enum ButtonPosition {
+  NE = 'NE', // North East (top-right)
+  NW = 'NW', // North West (top-left)
+  N = 'N',   // North (top-center)
+  SE = 'SE'  // South East (bottom-right)
+}
+
 export interface CLDVideoLayerProps {
   cldVideo: CloudinaryVideo;
   videoUrl?: string;
@@ -10,6 +17,8 @@ export interface CLDVideoLayerProps {
   onBack?: () => void;
   onShare?: () => void;
   hideControls?: boolean;
+  backButtonPosition?: ButtonPosition;
+  shareButtonPosition?: ButtonPosition;
 }
 
 
@@ -19,6 +28,8 @@ export interface CLDVideoLayerProps {
 export interface TopControlsProps {
   onBack?: () => void;
   onShare: () => void;
+  backButtonPosition?: ButtonPosition;
+  shareButtonPosition?: ButtonPosition;
 }
 
 export interface CenterControlsProps {
@@ -35,6 +46,8 @@ export interface BottomControlsProps {
   getCurrentPosition: () => number;
   seekbarRef: React.RefObject<any>;
   panResponder: any;
+  backButtonPosition?: ButtonPosition;
+  shareButtonPosition?: ButtonPosition;
 }
 
 export interface SeekbarProps {
