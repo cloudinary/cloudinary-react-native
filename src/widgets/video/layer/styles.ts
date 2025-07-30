@@ -17,8 +17,13 @@ import {
   SEEKBAR_ALIGNMENT_OFFSET,
   SE_BUTTON_RIGHT_OFFSET,
   SE_BUTTON_BOTTOM_OFFSET,
+  getTopPadding,
+  getBottomControlsPadding,
+  getSeekbarAlignmentOffset,
+  getSEButtonBottomOffset,
 } from './constants';
 
+// Base styles (orientation-independent)
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -42,56 +47,6 @@ export const styles = StyleSheet.create({
     marginTop: 16,
     textAlign: 'center',
     opacity: 0.9,
-  },
-  // Top Controls
-  topControlsBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'ios' ? TOP_PADDING_IOS : TOP_PADDING_ANDROID,
-    paddingBottom: 10,
-    backgroundColor: COLORS.topControlsBackground,
-  },
-  topButton: {
-    width: TOP_BUTTON_SIZE,
-    height: TOP_BUTTON_SIZE,
-    borderRadius: BORDER_RADIUS.topButton,
-    backgroundColor: COLORS.topButtonBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    ...SHADOW_VALUES.topButton,
-  },
-  // Button positioning styles
-  buttonPositionNE: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? TOP_PADDING_IOS : TOP_PADDING_ANDROID,
-    right: 20,
-  },
-  buttonPositionNW: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? TOP_PADDING_IOS : TOP_PADDING_ANDROID,
-    left: 20,
-  },
-  buttonPositionN: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? TOP_PADDING_IOS : TOP_PADDING_ANDROID,
-    alignSelf: 'center',
-  },
-  buttonPositionSE: {
-    position: 'absolute',
-    bottom: SE_BUTTON_BOTTOM_OFFSET,
-    right: SE_BUTTON_RIGHT_OFFSET,
-    zIndex: 10,
-  },
-  iconText: {
-    color: COLORS.text.white,
-    fontSize: 20,
-    fontWeight: '400',
-    textShadowColor: COLORS.text.shadow,
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1,
   },
   // Center Controls
   centerControls: {
@@ -120,104 +75,13 @@ export const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 1,
   },
-  // Bottom Controls
-  bottomControlsBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: BOTTOM_CONTROLS_PADDING,
-    backgroundColor: COLORS.bottomControlsBackground,
-  },
-  bottomLeftControls: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  bottomRightControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  playPauseButton: {
-    width: BOTTOM_BUTTON_SIZE,
-    height: BOTTOM_BUTTON_SIZE,
-    borderRadius: BORDER_RADIUS.bottomButton,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-    marginBottom: SEEKBAR_ALIGNMENT_OFFSET,
-  },
-  playPauseIcon: {
+  iconText: {
     color: COLORS.text.white,
-    fontSize: 22,
-    fontWeight: '500',
+    fontSize: 20,
+    fontWeight: '400',
     textShadowColor: COLORS.text.shadow,
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 1,
-  },
-  volumeButton: {
-    width: BOTTOM_BUTTON_SIZE,
-    height: BOTTOM_BUTTON_SIZE,
-    borderRadius: BORDER_RADIUS.bottomButton,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-    marginBottom: SEEKBAR_ALIGNMENT_OFFSET,
-  },
-  volumeIcon: {
-    color: COLORS.text.white,
-    fontSize: 20,
-    fontWeight: '500',
-    textShadowColor: COLORS.text.shadow,
-    textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 1,
-  },
-  // Seekbar
-  seekbarContainer: {
-    flex: 1,
-    marginRight: 18,
-    marginLeft: 8,
-  },
-  seekbar: {
-    height: SEEKBAR_HEIGHT,
-    borderRadius: BORDER_RADIUS.seekbar,
-    position: 'relative',
-    marginBottom: 8,
-    justifyContent: 'center',
-    paddingVertical: 8, // Increase touch area
-  },
-  seekbarTrack: {
-    height: SEEKBAR_TRACK_HEIGHT,
-    backgroundColor: COLORS.seekbarTrack,
-    borderRadius: BORDER_RADIUS.seekbarTrack,
-    position: 'absolute',
-    top: 8.5,
-    left: 0,
-    right: 0,
-  },
-  seekbarProgress: {
-    height: SEEKBAR_TRACK_HEIGHT,
-    backgroundColor: COLORS.seekbarProgress,
-    borderRadius: BORDER_RADIUS.seekbarTrack,
-    position: 'absolute',
-    top: 8.5, // Center within the 20px height
-    shadowColor: COLORS.seekbarProgress,
-    ...SHADOW_VALUES.seekbarProgress,
-  },
-  seekbarHandle: {
-    position: 'absolute',
-    width: SEEKBAR_HANDLE_SIZE,
-    height: SEEKBAR_HANDLE_SIZE,
-    borderRadius: BORDER_RADIUS.seekbarHandle,
-    backgroundColor: COLORS.seekbarHandle,
-    top: 2, // Center within the 20px height
-    marginLeft: -8, // Half of width to center properly
-    shadowColor: '#000',
-    ...SHADOW_VALUES.seekbarHandle,
-    borderWidth: 2,
-    borderColor: COLORS.seekbarHandleBorder,
   },
   timeText: {
     color: COLORS.text.white,
@@ -236,4 +100,156 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     padding: 16,
   },
-}); 
+});
+
+// Orientation-responsive style functions
+export const getResponsiveStyles = (isLandscape: boolean = false) => {
+  const topPadding = getTopPadding(isLandscape);
+  const bottomPadding = getBottomControlsPadding(isLandscape);
+  const seekbarOffset = getSeekbarAlignmentOffset(isLandscape);
+  const seButtonBottomOffset = getSEButtonBottomOffset(isLandscape);
+
+  return StyleSheet.create({
+    // Top Controls
+    topControlsBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingTop: topPadding,
+      paddingBottom: isLandscape ? 8 : 10,
+      backgroundColor: COLORS.topControlsBackground,
+    },
+    topButton: {
+      width: TOP_BUTTON_SIZE,
+      height: TOP_BUTTON_SIZE,
+      borderRadius: BORDER_RADIUS.topButton,
+      backgroundColor: COLORS.topButtonBackground,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      ...SHADOW_VALUES.topButton,
+    },
+    // Button positioning styles
+    buttonPositionNE: {
+      position: 'absolute',
+      top: topPadding,
+      right: 20,
+    },
+    buttonPositionNW: {
+      position: 'absolute',
+      top: topPadding,
+      left: 20,
+    },
+    buttonPositionN: {
+      position: 'absolute',
+      top: topPadding,
+      alignSelf: 'center',
+    },
+    buttonPositionSE: {
+      position: 'absolute',
+      bottom: seButtonBottomOffset,
+      right: SE_BUTTON_RIGHT_OFFSET,
+      zIndex: 10,
+    },
+    // Bottom Controls
+    bottomControlsBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: bottomPadding,
+      backgroundColor: COLORS.bottomControlsBackground,
+    },
+    bottomLeftControls: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    bottomRightControls: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    playPauseButton: {
+      width: BOTTOM_BUTTON_SIZE,
+      height: BOTTOM_BUTTON_SIZE,
+      borderRadius: BORDER_RADIUS.bottomButton,
+      backgroundColor: 'transparent',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+      marginBottom: seekbarOffset,
+    },
+    playPauseIcon: {
+      color: COLORS.text.white,
+      fontSize: isLandscape ? 20 : 22,
+      fontWeight: '500',
+      textShadowColor: COLORS.text.shadow,
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 1,
+    },
+    volumeButton: {
+      width: BOTTOM_BUTTON_SIZE,
+      height: BOTTOM_BUTTON_SIZE,
+      borderRadius: BORDER_RADIUS.bottomButton,
+      backgroundColor: 'transparent',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 8,
+      marginBottom: seekbarOffset,
+    },
+    volumeIcon: {
+      color: COLORS.text.white,
+      fontSize: isLandscape ? 18 : 20,
+      fontWeight: '500',
+      textShadowColor: COLORS.text.shadow,
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 1,
+    },
+    // Seekbar
+    seekbarContainer: {
+      flex: 1,
+      marginRight: 18,
+      marginLeft: 8,
+    },
+    seekbar: {
+      height: SEEKBAR_HEIGHT,
+      borderRadius: BORDER_RADIUS.seekbar,
+      position: 'relative',
+      marginBottom: isLandscape ? 6 : 8,
+      justifyContent: 'center',
+      paddingVertical: isLandscape ? 6 : 8, // Reduce touch area in landscape
+    },
+    seekbarTrack: {
+      height: SEEKBAR_TRACK_HEIGHT,
+      backgroundColor: COLORS.seekbarTrack,
+      borderRadius: BORDER_RADIUS.seekbarTrack,
+      position: 'absolute',
+      top: 8.5,
+      left: 0,
+      right: 0,
+    },
+    seekbarProgress: {
+      height: SEEKBAR_TRACK_HEIGHT,
+      backgroundColor: COLORS.seekbarProgress,
+      borderRadius: BORDER_RADIUS.seekbarTrack,
+      position: 'absolute',
+      top: 8.5, // Center within the 20px height
+      shadowColor: COLORS.seekbarProgress,
+      ...SHADOW_VALUES.seekbarProgress,
+    },
+    seekbarHandle: {
+      position: 'absolute',
+      width: SEEKBAR_HANDLE_SIZE,
+      height: SEEKBAR_HANDLE_SIZE,
+      borderRadius: BORDER_RADIUS.seekbarHandle,
+      backgroundColor: COLORS.seekbarHandle,
+      top: 2, // Center within the 20px height
+      marginLeft: -8, // Half of width to center properly
+      shadowColor: '#000',
+      ...SHADOW_VALUES.seekbarHandle,
+      borderWidth: 2,
+      borderColor: COLORS.seekbarHandleBorder,
+    },
+  });
+}; 

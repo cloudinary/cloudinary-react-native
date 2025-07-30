@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { SeekbarProps } from '../types';
-import { styles } from '../styles';
+import { styles, getResponsiveStyles } from '../styles';
 
 export const Seekbar: React.FC<SeekbarProps> = ({
   progress,
@@ -10,24 +10,27 @@ export const Seekbar: React.FC<SeekbarProps> = ({
   formatTime,
   seekbarRef,
   panResponder,
+  isLandscape = false,
 }) => {
+  const responsiveStyles = getResponsiveStyles(isLandscape);
+
   return (
-    <View style={styles.seekbarContainer}>
+    <View style={responsiveStyles.seekbarContainer}>
       <View 
         ref={seekbarRef}
-        style={styles.seekbar}
+        style={responsiveStyles.seekbar}
         {...panResponder.panHandlers}
       >
-        <View style={styles.seekbarTrack} />
+        <View style={responsiveStyles.seekbarTrack} />
         <View 
           style={[
-            styles.seekbarProgress, 
+            responsiveStyles.seekbarProgress, 
             { width: `${progress * 100}%` }
           ]} 
         />
         <View 
           style={[
-            styles.seekbarHandle, 
+            responsiveStyles.seekbarHandle, 
             { left: `${progress * 100}%` }
           ]} 
         />

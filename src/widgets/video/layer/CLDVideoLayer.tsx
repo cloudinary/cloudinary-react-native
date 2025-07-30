@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, PanResponder, ActivityIndicator, Animated, StyleSheet, Easing } from 'react-native';
+import { View, TouchableOpacity, Text, PanResponder, ActivityIndicator, Animated, StyleSheet, Easing, Dimensions } from 'react-native';
 import { AVPlaybackStatusSuccess } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideo from '../../../AdvancedVideo';
 import { CLDVideoLayerProps, ButtonPosition } from './types';
 import { formatTime, handleDefaultShare } from './utils';
-import { styles } from './styles';
+import { styles, getResponsiveStyles } from './styles';
 import { TopControls, CenterControls, BottomControls } from './components';
 import { ICON_SIZES } from './constants';
 
@@ -16,6 +16,7 @@ interface CLDVideoLayerState {
   seekingPosition: number;
   lastSeekPosition: number;
   isSeekingComplete: boolean;
+  isLandscape: boolean;
 }
 
 export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoLayerState> {
@@ -24,12 +25,19 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   private fadeAnim: Animated.Value;
   private autoHideTimeoutId: NodeJS.Timeout | null = null;
   private panResponder: any;
+  private orientationSubscription: any = null;
+  private orientationCheckInterval: NodeJS.Timeout | null = null;
 
   constructor(props: CLDVideoLayerProps) {
     super(props);
     this.videoRef = React.createRef<AdvancedVideo>();
     this.seekbarRef = React.createRef<View>();
     this.fadeAnim = new Animated.Value(1);
+    
+    // Get initial orientation
+    const { width, height } = Dimensions.get('window');
+    const initialIsLandscape = width > height;
+    console.log('🏗️ Initial orientation setup:', { width, height, initialIsLandscape });
     
     this.state = {
       status: null,
@@ -38,6 +46,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       seekingPosition: 0,
       lastSeekPosition: 0,
       isSeekingComplete: false,
+      isLandscape: initialIsLandscape,
     };
 
     this.panResponder = PanResponder.create({
@@ -114,11 +123,55 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     if (this.state.isControlsVisible) {
       this.startAutoHideTimer();
     }
+    
+    // Listen for orientation changes
+    console.log('🚀 Setting up orientation listener. Initial state:', this.state.isLandscape);
+    
+    // Try multiple approaches for orientation detection
+    this.orientationSubscription = Dimensions.addEventListener('change', this.handleOrientationChange);
+    
+    // Also check orientation periodically as fallback
+    this.orientationCheckInterval = setInterval(() => {
+      const { width, height } = Dimensions.get('window');
+      const isLandscape = width > height;
+      if (isLandscape !== this.state.isLandscape) {
+        console.log('🔄 Orientation detected via polling:', { width, height, isLandscape });
+        this.setState({ isLandscape });
+      }
+    }, 500);
+    
+    console.log('✅ Orientation listener registered');
   }
 
   componentWillUnmount() {
     this.clearAutoHideTimer();
+    
+    // Remove orientation listener
+    if (this.orientationSubscription && this.orientationSubscription.remove) {
+      this.orientationSubscription.remove();
+    }
+    
+    // Clear orientation polling interval
+    if (this.orientationCheckInterval) {
+      clearInterval(this.orientationCheckInterval);
+      this.orientationCheckInterval = null;
+    }
   }
+
+  handleOrientationChange = ({ window }: any) => {
+    const { width, height } = window;
+    const isLandscape = width > height;
+    console.log('🔄 Orientation change detected:', { 
+      width, 
+      height, 
+      isLandscape, 
+      currentState: this.state.isLandscape 
+    });
+    if (isLandscape !== this.state.isLandscape) {
+      console.log('📱 Updating orientation state to:', isLandscape);
+      this.setState({ isLandscape });
+    }
+  };
 
   clearAutoHideTimer = () => {
     if (this.autoHideTimeoutId) {
@@ -247,10 +300,16 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
 
   render() {
     const { cldVideo, videoUrl, onBack, backButtonPosition, shareButtonPosition, showCenterPlayButton = true } = this.props;
-    const { status } = this.state;
+    const { status, isLandscape } = this.state;
     const progress = this.getProgress();
     const currentPosition = this.getCurrentPosition();
     const isVideoLoaded = status?.isLoaded === true;
+
+    // Get responsive styles based on current orientation
+    const responsiveStyles = getResponsiveStyles(isLandscape);
+    
+    // Debug log for render
+    console.log('🎨 Rendering with isLandscape:', isLandscape);
 
     return (
       <TouchableOpacity
@@ -283,6 +342,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             onShare={this.handleShare}
             backButtonPosition={backButtonPosition}
             shareButtonPosition={shareButtonPosition}
+            isLandscape={isLandscape}
           />
           {showCenterPlayButton && (
             <CenterControls status={status} onPlayPause={this.handlePlayPause} />
@@ -298,6 +358,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             panResponder={this.panResponder}
             backButtonPosition={backButtonPosition}
             shareButtonPosition={shareButtonPosition}
+            isLandscape={isLandscape}
           />
         </Animated.View>
 
@@ -306,7 +367,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
           <>
             {onBack && backButtonPosition === ButtonPosition.SE && (
               <TouchableOpacity 
-                style={[styles.topButton, styles.buttonPositionSE]} 
+                style={[responsiveStyles.topButton, responsiveStyles.buttonPositionSE]} 
                 onPress={onBack}
               >
                 <Ionicons name="close" size={ICON_SIZES.top} color="white" />
@@ -314,7 +375,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             )}
             {shareButtonPosition === ButtonPosition.SE && (
               <TouchableOpacity 
-                style={[styles.topButton, styles.buttonPositionSE]} 
+                style={[responsiveStyles.topButton, responsiveStyles.buttonPositionSE]} 
                 onPress={this.handleShare}
               >
                 <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />

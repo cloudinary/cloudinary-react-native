@@ -27,6 +27,7 @@ export interface TopControlsProps {
   onShare: () => void;
   backButtonPosition?: ButtonPosition;
   shareButtonPosition?: ButtonPosition;
+  isLandscape?: boolean;
 }
 
 export interface CenterControlsProps {
@@ -45,6 +46,7 @@ export interface BottomControlsProps {
   panResponder: any;
   backButtonPosition?: ButtonPosition;
   shareButtonPosition?: ButtonPosition;
+  isLandscape?: boolean;
 }
 
 export interface SeekbarProps {
@@ -54,4 +56,5 @@ export interface SeekbarProps {
   formatTime: (milliseconds: number) => string;
   seekbarRef: React.RefObject<any>;
   panResponder: any;
+  isLandscape?: boolean;
 }

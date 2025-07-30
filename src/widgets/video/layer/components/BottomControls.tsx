@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomControlsProps, ButtonPosition } from '../types';
-import { styles } from '../styles';
+import { styles, getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
 import { Seekbar } from './Seekbar';
 
@@ -17,7 +17,9 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
   panResponder,
   backButtonPosition,
   shareButtonPosition,
+  isLandscape = false,
 }) => {
+  const responsiveStyles = getResponsiveStyles(isLandscape);
   const progress = getProgress();
   const currentPosition = getCurrentPosition();
   
@@ -26,18 +28,19 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
   
   return (
     <View style={[
-      styles.bottomControlsBar,
+      responsiveStyles.bottomControlsBar,
       hasSEButton && { paddingRight: 80 } // Create space for SE button
     ]}>
-      <View style={styles.bottomLeftControls}>
+      <View style={responsiveStyles.bottomLeftControls}>
         <TouchableOpacity 
-          style={styles.playPauseButton}
+          style={responsiveStyles.playPauseButton}
           onPress={onPlayPause}
         >
           <Ionicons 
             name={status?.isPlaying ? 'pause' : 'play'} 
             size={ICON_SIZES.bottomPlayPause} 
             color="white" 
+            style={responsiveStyles.playPauseIcon}
           />
         </TouchableOpacity>
         
@@ -48,18 +51,20 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
           formatTime={formatTime}
           seekbarRef={seekbarRef}
           panResponder={panResponder}
+          isLandscape={isLandscape}
         />
       </View>
       
-      <View style={styles.bottomRightControls}>
+      <View style={responsiveStyles.bottomRightControls}>
         <TouchableOpacity 
-          style={styles.volumeButton}
+          style={responsiveStyles.volumeButton}
           onPress={onMuteToggle}
         >
           <Ionicons 
             name={status?.isMuted ? 'volume-mute' : 'volume-high'} 
             size={ICON_SIZES.bottomVolume} 
             color="white" 
+            style={responsiveStyles.volumeIcon}
           />
         </TouchableOpacity>
       </View>

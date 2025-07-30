@@ -269,4 +269,34 @@ export const useVideoSeeking = () => {
     getCurrentPosition,
     handleStatusUpdate,
   };
+};
+
+/**
+ * Custom hook for managing device orientation detection
+ */
+export const useOrientation = () => {
+  const [isLandscape, setIsLandscape] = React.useState(false);
+
+  React.useEffect(() => {
+    const { Dimensions } = require('react-native');
+    
+    const updateOrientation = () => {
+      const { width, height } = Dimensions.get('window');
+      setIsLandscape(width > height);
+    };
+
+    // Set initial orientation
+    updateOrientation();
+
+    // Listen for orientation changes
+    const subscription = Dimensions.addEventListener('change', updateOrientation);
+
+    return () => {
+      if (subscription?.remove) {
+        subscription.remove();
+      }
+    };
+  }, []);
+
+  return { isLandscape };
 }; 
