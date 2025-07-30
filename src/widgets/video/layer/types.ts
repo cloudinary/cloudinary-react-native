@@ -22,10 +22,6 @@ export interface CLDVideoLayerProps {
   shareButtonPosition?: ButtonPosition;
 }
 
-
-
-
-
 export interface TopControlsProps {
   onBack?: () => void;
   onShare: () => void;
@@ -58,4 +54,4 @@ export interface SeekbarProps {
   formatTime: (milliseconds: number) => string;
   seekbarRef: React.RefObject<any>;
   panResponder: any;
-} 
+}
