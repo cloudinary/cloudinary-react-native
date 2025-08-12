@@ -20,7 +20,7 @@ const getTopPadding = () => {
   return 35; // Android
 };
 
-type CurrentScreen = 'home' | 'image' | 'video' | 'videoLayer' | 'fullScreenPlayer';
+type CurrentScreen = 'home' | 'image' | 'video' | 'videoLayer';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
@@ -41,8 +41,6 @@ export default function App() {
         return <AdvancedVideoDemo />;
       case 'videoLayer':
         return <VideoLayerDemo onBack={navigateHome} />;
-      case 'fullScreenPlayer':
-        return <FullScreenPlayerDemo />;
       default:
         return renderHomeScreen();
     }
@@ -83,16 +81,6 @@ export default function App() {
           <Text style={styles.buttonTitle}>🎬 Video Layer</Text>
           <Text style={styles.buttonDescription}>
             Full-screen video with overlay controls
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, styles.fullScreenPlayerButton]}
-          onPress={() => navigateToScreen('fullScreenPlayer')}
-        >
-          <Text style={styles.buttonTitle}>🎭 Full Screen Player With Layer</Text>
-          <Text style={styles.buttonDescription}>
-            Immersive full-screen player with interactive layers
           </Text>
         </TouchableOpacity>
       </View>

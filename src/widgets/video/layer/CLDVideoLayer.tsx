@@ -37,7 +37,6 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     // Get initial orientation
     const { width, height } = Dimensions.get('window');
     const initialIsLandscape = width > height;
-    console.log('🏗️ Initial orientation setup:', { width, height, initialIsLandscape });
     
     this.state = {
       status: null,
@@ -123,9 +122,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     if (this.state.isControlsVisible) {
       this.startAutoHideTimer();
     }
-    
-    // Listen for orientation changes
-    console.log('🚀 Setting up orientation listener. Initial state:', this.state.isLandscape);
+  
     
     // Try multiple approaches for orientation detection
     this.orientationSubscription = Dimensions.addEventListener('change', this.handleOrientationChange);
@@ -135,12 +132,9 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       const { width, height } = Dimensions.get('window');
       const isLandscape = width > height;
       if (isLandscape !== this.state.isLandscape) {
-        console.log('🔄 Orientation detected via polling:', { width, height, isLandscape });
         this.setState({ isLandscape });
       }
     }, 500);
-    
-    console.log('✅ Orientation listener registered');
   }
 
   componentWillUnmount() {
@@ -161,14 +155,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   handleOrientationChange = ({ window }: any) => {
     const { width, height } = window;
     const isLandscape = width > height;
-    console.log('🔄 Orientation change detected:', { 
-      width, 
-      height, 
-      isLandscape, 
-      currentState: this.state.isLandscape 
-    });
     if (isLandscape !== this.state.isLandscape) {
-      console.log('📱 Updating orientation state to:', isLandscape);
       this.setState({ isLandscape });
     }
   };
@@ -307,9 +294,6 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
 
     // Get responsive styles based on current orientation
     const responsiveStyles = getResponsiveStyles(isLandscape);
-    
-    // Debug log for render
-    console.log('🎨 Rendering with isLandscape:', isLandscape);
 
     return (
       <TouchableOpacity
