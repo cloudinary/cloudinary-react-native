@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import AdvancedImageDemo from './AdvancedImageDemo';
 import AdvancedVideoDemo from './AdvancedVideoDemo';
 import VideoLayerDemo from './VideoLayerDemo';
-import FullScreenPlayerDemo from './FullScreenPlayerDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 

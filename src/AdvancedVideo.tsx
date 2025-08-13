@@ -8,6 +8,7 @@ interface AdvancedVideoProps {
   videoUrl?: string;
   cldVideo?: CloudinaryVideo;
   videoStyle?: StyleProp<ViewStyle>;
+  resizeMode?: 'cover' | 'contain' | 'stretch';
   onPlaybackStatusUpdate?: (status: AVPlaybackStatus) => void;
   enableAnalytics?: boolean;
   autoTrackAnalytics?: boolean;
@@ -274,6 +275,7 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         ref={this.videoRef}
         source={{ uri: videoUri }}
         style={this.props.videoStyle}
+        resizeMode={this.props.resizeMode || 'contain'}
         useNativeControls={false}
         onPlaybackStatusUpdate={this.onPlaybackStatusUpdate}
       />

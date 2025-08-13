@@ -34,7 +34,7 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
         onShare={handleShare}
         // Example: Position back button in top-left (NW) and share button in top-right (NE)
         backButtonPosition={ButtonPosition.NW}
-        shareButtonPosition={ButtonPosition.SE}
+        shareButtonPosition={ButtonPosition.NE}
         showCenterPlayButton={true}
         // Other positioning options:
         // ButtonPosition.N - Top center
@@ -46,11 +46,7 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1,
     backgroundColor: '#000',
   },
 }); 

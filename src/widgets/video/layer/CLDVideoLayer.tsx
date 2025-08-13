@@ -306,6 +306,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
           cldVideo={cldVideo}
           videoUrl={videoUrl}
           videoStyle={StyleSheet.absoluteFill}
+          resizeMode="contain"
           onPlaybackStatusUpdate={this.handleStatusUpdate}
         />
 
