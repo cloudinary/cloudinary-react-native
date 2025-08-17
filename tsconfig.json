@@ -5,14 +5,18 @@
     "allowJs": true,
     "baseUrl": "./",
     "paths": {
-      "cloudinary-react-native": ["./src/index"]
+      "cloudinary-react-native": [
+        "./src/index"
+      ]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -26,6 +30,10 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "typeRoots": ["./types", "./node_modules/@types"]
-  },
+    "typeRoots": [
+      "./types",
+      "./src/@types",
+      "./node_modules/@types"
+    ]
+  }
 }

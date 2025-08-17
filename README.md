@@ -21,9 +21,17 @@ This Readme provides basic installation and usage information.
 Transform and optimize assets. Visit our documentation to learn more about [media optimization](https://cloudinary.com/documentation/media_optimization) and [transformations](https://cloudinary.com/documentation/image_transformations).
 
 ## Version Support
-| SDK Version | React Native Version |
-|-------------|----------------------|
-| 1.x.x       | > 0.6                |
+| SDK Version | React Native Version | Expo SDK Version | Video Library |
+|-------------|----------------------|------------------|---------------|
+| 1.x.x       | >= 0.72              | 50-53            | expo-av / expo-video |
+
+### Expo SDK Compatibility
+| Expo SDK | Video Library | Status |
+|----------|---------------|--------|
+| 50       | expo-av       | ✅ Supported |
+| 51       | expo-av       | ✅ Supported |
+| 52       | expo-video    | ✅ Supported (expo-av deprecated) |
+| 53       | expo-video    | ✅ Supported (expo-av removed) |
 
 ## Installation
 ### Install using your favorite package manager (yarn, npm)
@@ -37,15 +45,19 @@ yarn add cloudinary-react-native --save
 ```
 
 ### For Video Player functionality
-If you want to use the video player features, you need to install `expo-av`:
+The SDK supports both `expo-av` and `expo-video` libraries. The appropriate library will be automatically detected and used:
 
+**For Expo SDK 50-51 (expo-av):**
 ```bash
 npm install expo-av
 ```
-Or
+
+**For Expo SDK 52+ (expo-video - recommended):**
 ```bash
-yarn add expo-av
+npm install expo-video
 ```
+
+**Note:** `expo-av` is deprecated in SDK 52 and removed in SDK 53. For newer Expo versions, use `expo-video`.
 
 ## Usage
 ### Setup
@@ -83,7 +95,7 @@ export default function App() {
 ```
 
 ### Video Player
-The `AdvancedVideo` component provides video playback capabilities with optional analytics tracking. **Note: This requires `expo-av` to be installed.**
+The `AdvancedVideo` component provides video playback capabilities with optional analytics tracking. **Note: This requires either `expo-av` (SDK 50-51) or `expo-video` (SDK 52+) to be installed.**
 
 ```tsx
 import { AdvancedVideo } from 'cloudinary-react-native';
