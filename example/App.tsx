@@ -7,8 +7,6 @@ import {cartoonify} from "@cloudinary/url-gen/actions/effect";
 import {max} from "@cloudinary/url-gen/actions/roundCorners";
 import React, {useRef, useState} from "react";
 
-
-
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 const getTopPadding = () => {
@@ -34,8 +32,6 @@ export default function App() {
   const videoPlayer = useRef<any>(null);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [autoTracking, setAutoTracking] = useState(false);
-
-
 
   function createMyImage() {
     var myImage = cld.image('sample').resize(scale().width(300)).effect(cartoonify()).roundCorners(max());
@@ -139,7 +135,6 @@ export default function App() {
           <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
         </View>
         
-
         <View style={styles.controlsContainer}>
           <Text style={styles.title}>Analytics Testing</Text>
           
