@@ -112,12 +112,10 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         connector.startAutoTracking(this.props.analyticsOptions || {});
       }
 
-      // Load expo-video event processing functions
       try {
         const { processExpoVideoEvents } = await import('./widgets/video/analytics/player-adapters/expoVideoPlayerAdapter');
         this.processExpoVideoEvents = processExpoVideoEvents;
       } catch (expoVideoError) {
-        // expo-video adapter not available, will use expo-av fallback
       }
 
       this.setState({
@@ -125,7 +123,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         analyticsInitialized: true,
       });
     } catch (error) {
-      // Failed to initialize analytics
     }
   };
 
@@ -147,7 +144,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
           this.setState({ previousStatus: status });
         }
       } catch (error) {
-        // Error processing analytics status
       }
     }
   };
@@ -158,7 +154,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         try {
           this.processExpoVideoEvents[eventType]?.(this.videoRef.current, data);
         } catch (error) {
-          // Error processing expo-video event
         }
       }
     };
@@ -169,7 +164,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
       try {
         this.state.analyticsConnector.startManualTracking(metadata, { ...this.props.analyticsOptions, ...options });
       } catch (error) {
-        // Failed to start manual analytics tracking
       }
     }
   };
@@ -179,7 +173,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
       try {
         this.state.analyticsConnector.stopManualTracking();
       } catch (error) {
-        // Failed to stop analytics tracking
       }
     }
   };
@@ -189,7 +182,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
       try {
         this.state.analyticsConnector.startAutoTracking({ ...this.props.analyticsOptions, ...options });
       } catch (error) {
-        // Failed to start auto analytics tracking
       }
     }
   };
@@ -209,7 +201,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
           this.state.analyticsConnector.addCustomEvent(eventName, eventDetails);
         }
       } catch (error) {
-        // Failed to add custom analytics event
       }
     }
   };
@@ -225,40 +216,21 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
       }, 'No Video URL'));
     }
 
-    console.log('[Cloudinary] Starting video component detection...');
-    
-    // Simple approach: try expo-video first, fallback to expo-av
     let useExpoVideo = false;
-    let detectionMethod = 'unknown';
-    
-    // First, try to detect expo-video availability
     try {
       const expoVideo = require('expo-video');
-      console.log('[Cloudinary] expo-video package found:', !!expoVideo);
-      console.log('[Cloudinary] expo-video exports:', Object.keys(expoVideo));
       
       if (expoVideo && expoVideo.VideoView) {
         useExpoVideo = true;
-        detectionMethod = 'expo-video available';
-        console.log('[Cloudinary] Will attempt to use expo-video');
-      } else {
-        console.log('[Cloudinary] expo-video package found but no suitable Video component');
-        console.log('[Cloudinary] Available exports:', Object.keys(expoVideo));
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      console.log('[Cloudinary] expo-video not available:', errorMessage);
       useExpoVideo = false;
-      detectionMethod = 'expo-video unavailable';
     }
 
-    // Use the detected video component
     if (useExpoVideo) {
       try {
         const { VideoView, createVideoPlayer } = require('expo-video');
-        console.log(`[Cloudinary] Using expo-video (${detectionMethod})`);
         
-        // Create a player instance for expo-video
         const player = createVideoPlayer(videoUri);
         
         return React.createElement(VideoView, {
@@ -291,16 +263,11 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
           },
         });
       } catch (videoError) {
-        const errorMessage = videoError instanceof Error ? videoError.message : String(videoError);
-        console.log('[Cloudinary] expo-video failed, falling back to expo-av:', errorMessage);
-        console.log('[Cloudinary] Full error:', videoError);
       }
     }
 
-    // Fallback to expo-av (for older SDKs or if expo-video fails)
     try {
       const { Video } = require('expo-av');
-      console.log(`[Cloudinary] Using expo-av (${detectionMethod})`);
       
       return React.createElement(Video, {
         ref: this.videoRef,
