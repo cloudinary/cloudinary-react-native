@@ -1,6 +1,6 @@
 // Type declarations for dynamic imports that may not be available
 declare module 'expo-video' {
-  export const VideoView: any;
+  export const Video: any;
   export default any;
 }
 
