@@ -25,14 +25,6 @@ Transform and optimize assets. Visit our documentation to learn more about [medi
 |-------------|----------------------|------------------|---------------|
 | 1.x.x       | >= 0.72              | 50-53            | expo-av / expo-video |
 
-### Expo SDK Compatibility
-| Expo SDK | Video Library | Status |
-|----------|---------------|--------|
-| 50       | expo-av       | ✅ Supported |
-| 51       | expo-av       | ✅ Supported |
-| 52       | expo-video    | ✅ Supported (expo-av deprecated) |
-| 53       | expo-video    | ✅ Supported (expo-av removed) |
-
 ## Installation
 ### Install using your favorite package manager (yarn, npm)
 ```bash
