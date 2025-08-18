@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "noEmit": false,
+    "declaration": true,
     "emitDeclarationOnly": true,
     "allowJs": true,
     "baseUrl": "./",
@@ -17,8 +18,8 @@
     "lib": [
       "esnext"
     ],
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
@@ -36,5 +37,10 @@
       "./node_modules/@types"
     ]
   },
-  "extends": "expo/tsconfig.base"
+  "extends": "expo/tsconfig.base",
+  "exclude": [
+    "example",
+    "node_modules",
+    "lib"
+  ]
 }

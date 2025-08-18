@@ -3,11 +3,6 @@ import { ExpoVideoAdapter } from './ExpoVideoAdapter';
 import { ExpoAVVideoAdapter } from './ExpoAVVideoAdapter';
 import { FallbackVideoAdapter } from './FallbackVideoAdapter';
 
-// Log module import (but not during tests)
-if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-  console.log('🏭 [Cloudinary] VideoPlayerFactory module imported successfully!');
-}
-
 // Re-export types for external use
 export { VideoPlayerType } from './types';
 
@@ -32,31 +27,17 @@ export class VideoPlayerFactory {
   static getAvailableAdapter(): VideoPlayerAdapter {
     this.initializeAdapters();
 
-    if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-      console.log('[Cloudinary VideoPlayerFactory] Checking available video adapters...');
-    }
-    
     // Find the first available adapter
     for (const adapter of this.adapters) {
       const adapterName = adapter.getAdapterName();
       const isAvailable = adapter.isAvailable();
       
-      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-        console.log(`[Cloudinary VideoPlayerFactory] Checking ${adapterName}: ${isAvailable ? 'AVAILABLE' : 'NOT AVAILABLE'}`);
-      }
-      
       if (isAvailable) {
-        if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-          console.log(`[Cloudinary VideoPlayerFactory] ✅ Selected adapter: ${adapterName}`);
-        }
         return adapter;
       }
     }
 
     // If no adapter is available, return fallback
-    if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-      console.log('[Cloudinary VideoPlayerFactory] ⚠️ No video adapters available, using fallback');
-    }
     return new FallbackVideoAdapter('No video player library found. Install expo-video or expo-av.');
   }
 

@@ -4,11 +4,6 @@ import type { CloudinaryVideo } from '@cloudinary/url-gen';
 import { SDKAnalyticsConstants } from './internal/SDKAnalyticsConstants';
 import { VideoPlayerAdapter, VideoPlayerRef, VideoPlayerFactory } from './adapters';
 
-// Log module import (but not during tests)
-if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-  console.log('🚀 [Cloudinary] AdvancedVideo module imported successfully!');
-}
-
 interface AdvancedVideoProps {
   videoUrl?: string;
   cldVideo?: CloudinaryVideo;
@@ -45,15 +40,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
     this.videoRef = React.createRef<VideoPlayerRef | null>();
     
     const videoAdapter = VideoPlayerFactory.getAvailableAdapter();
-    
-    // Log detailed information about video adapter selection
-    if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-      console.log('[Cloudinary AdvancedVideo] Initializing video component...');
-      const availableAdapters = VideoPlayerFactory.getAvailableAdapters();
-      console.log(`[Cloudinary AdvancedVideo] Available adapters:`, availableAdapters);
-      console.log(`[Cloudinary AdvancedVideo] 🎥 Selected video adapter: ${videoAdapter.getAdapterName()}`);
-      console.log(`[Cloudinary AdvancedVideo] You are using: ${videoAdapter.getAdapterName() === 'expo-video' ? '📱 EXPO-VIDEO (newer)' : videoAdapter.getAdapterName() === 'expo-av' ? '📱 EXPO-AV (legacy)' : '⚠️ FALLBACK'}`);
-    }
     
     this.state = {
       analyticsConnector: null,
@@ -211,47 +197,23 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
     }
 
     try {
-      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-        console.log(`[Cloudinary AdvancedVideo] 🎬 Rendering video with ${this.state.videoAdapter.getAdapterName()} adapter`);
-      }
       const videoElement = this.state.videoAdapter.renderVideo({
         videoUri,
         style: this.props.videoStyle,
         onPlaybackStatusUpdate: this.onPlaybackStatusUpdate,
-        onLoadStart: () => {
-          if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-            console.log(`[Cloudinary AdvancedVideo] 📡 Video load started using ${this.state.videoAdapter.getAdapterName()}`);
-          }
-        },
-        onLoad: () => {
-          if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-            console.log(`[Cloudinary AdvancedVideo] ✅ Video loaded successfully using ${this.state.videoAdapter.getAdapterName()}`);
-          }
-        },
-        onError: (error: any) => {
-          if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-            console.log(`[Cloudinary AdvancedVideo] ❌ Video error with ${this.state.videoAdapter.getAdapterName()}:`, error);
-          }
-        },
+        onLoadStart: () => {},
+        onLoad: () => {},
+        onError: (_error: any) => {},
       }, this.videoRef);
       
-      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-        console.log(`[Cloudinary AdvancedVideo] ✅ Video component successfully rendered with ${this.state.videoAdapter.getAdapterName()}`);
-      }
       return videoElement;
     } catch (error) {
       // If the adapter fails, fall back to a fallback adapter
-      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-        console.log(`[Cloudinary AdvancedVideo] ❌ ${this.state.videoAdapter.getAdapterName()} adapter failed, falling back to fallback adapter:`, error instanceof Error ? error.message : 'Unknown error');
-      }
       const { FallbackVideoAdapter } = require('./adapters/FallbackVideoAdapter');
       const fallbackAdapter = new FallbackVideoAdapter(
         error instanceof Error ? `Video Error: ${error.message}` : 'Unknown video error'
       );
       
-      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-        console.log(`[Cloudinary AdvancedVideo] 🔄 Using fallback adapter to render video`);
-      }
       return fallbackAdapter.renderVideo({
         videoUri,
         style: this.props.videoStyle,

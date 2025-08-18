@@ -7,7 +7,7 @@ import { create, act } from 'react-test-renderer';
 jest.mock('react-native', () => {
   const mockReact = require('react');
   return {
-    Image: ({ source, testID, ...props }) => mockReact.createElement('Image', { source, testID, ...props }),
+    Image: ({ source, testID, ...props }: { source: any; testID?: string; [key: string]: any }) => mockReact.createElement('Image', { source, testID, ...props }),
     Platform: { OS: 'ios' },
   };
 });
@@ -25,13 +25,13 @@ jest.mock('../internal/SDKAnalyticsConstants', () => ({
 describe('AdvancedImage', () => {
   it('should render an Image with the correct URI', () => {
     const cldImg = new CloudinaryImage('sample', { cloudName: 'demo' }, { analytics: false });
-    let component;
+    let component: any;
     
     act(() => {
       component = create(<AdvancedImage cldImg={cldImg} />);
     });
     
-    const tree = component.toJSON();
+    const tree = component!.toJSON();
     
     expect(tree.type).toBe('Image');
     expect(tree.props.source.uri).toBe(cldImg.toURL());
@@ -39,13 +39,13 @@ describe('AdvancedImage', () => {
 
   it('should forward any other props to the Image', () => {
     const cldImg = new CloudinaryImage('sample', { cloudName: 'demo' }, { analytics: false });
-    let component;
+    let component: any;
     
     act(() => {
       component = create(<AdvancedImage cldImg={cldImg} testID="my-image" style={{ width: 100 }} />);
     });
     
-    const tree = component.toJSON();
+    const tree = component!.toJSON();
     
     expect(tree.props.testID).toBe('my-image');
     expect(tree.props.style).toEqual({ width: 100 });

@@ -7,7 +7,7 @@ import React from 'react';
 jest.mock('react-native', () => {
   const mockReact = require('react');
   return {
-    Image: ({ source, testID, ...props }) => mockReact.createElement('Image', { source, testID, ...props }),
+    Image: ({ source, testID, ...props }: { source: any; testID?: string; [key: string]: any }) => mockReact.createElement('Image', { source, testID, ...props }),
     Platform: { OS: 'ios' },
   };
 });
@@ -38,13 +38,13 @@ describe('analytics', () => {
   it('creates a url with analytics', () => {
     const componentImage = new CloudinaryImage('sample', { cloudName: 'demo' });
 
-    let component;
+    let component: any;
     act(() => {
       component = create(
         <AdvancedImage cldImg={componentImage} testID="cld-image" />
       );
     });
-    const tree = component.toJSON();
+    const tree = component!.toJSON();
 
     // Check that the URL contains analytics parameters
     const actualUrl = tree.props.source.uri;

@@ -16,7 +16,6 @@ export const sendRequest = async (url, data) => {
     });
     return response;
   } catch (error) {
-    console.error('❌ Failed to send analytics events:', error);
     return null;
   }
 }; 

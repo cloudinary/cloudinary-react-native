@@ -1,11 +1,6 @@
 import React, { ReactElement, RefObject } from 'react';
 import { VideoPlayerAdapter, VideoPlayerProps, VideoPlayerRef, VideoPlayerType } from './types';
 
-// Log module import (but not during tests)
-if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-  console.log('📼 [Cloudinary] ExpoAVVideoAdapter module imported!');
-}
-
 export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
   private expoAVModule: any = null;
 
@@ -16,13 +11,7 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
   private loadExpoAV(): void {
     try {
       this.expoAVModule = require('expo-av');
-      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-        console.log('[Cloudinary ExpoAVVideoAdapter] Successfully loaded expo-av module');
-      }
     } catch (error) {
-      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-        console.log('[Cloudinary ExpoAVVideoAdapter] Failed to load expo-av module:', (error as Error)?.message || 'Unknown error');
-      }
       this.expoAVModule = null;
     }
   }
@@ -31,10 +20,6 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
     const hasModule = !!this.expoAVModule;
     const hasVideo = !!(this.expoAVModule && this.expoAVModule.Video);
     const isAvailable = hasModule && hasVideo;
-    
-    if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
-      console.log(`[Cloudinary ExpoAVVideoAdapter] Availability check: module=${hasModule}, Video=${hasVideo}, available=${isAvailable}`);
-    }
     
     return isAvailable;
   }
