@@ -1,6 +1,12 @@
 import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+
+// TEST: This log should show up immediately when the app starts
+console.log('🧪 [TEST] App.tsx loaded - Console.log is working!');
+
+console.log('🧪 [TEST] About to import cloudinary-react-native...');
 import {AdvancedImage, AdvancedVideo} from 'cloudinary-react-native';
+console.log('🧪 [TEST] Successfully imported cloudinary-react-native!', {AdvancedVideo: typeof AdvancedVideo});
 import {Cloudinary} from '@cloudinary/url-gen';
 import {scale} from "@cloudinary/url-gen/actions/resize";
 import {cartoonify} from "@cloudinary/url-gen/actions/effect";
@@ -29,6 +35,9 @@ const cld = new Cloudinary({
 });
 
 export default function App() {
+  // TEST: This should show when the App component is created
+  console.log('🧪 [TEST] App component function called!');
+  
   const videoPlayer = useRef<any>(null);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [autoTracking, setAutoTracking] = useState(false);
@@ -158,22 +167,27 @@ export default function App() {
         </View>
 
         <View style={styles.videoContainer}>
-          <AdvancedVideo
-            ref={videoPlayer}
-            videoStyle={styles.video}
-            cldVideo={createMyVideoObject()}
-            enableAnalytics={analyticsEnabled}
-            autoTrackAnalytics={autoTracking}
-            analyticsOptions={{
-              customData: {
-                userId: 'demo-user-123',
-                appVersion: '1.0.0',
-                platform: 'react-native'
-              },
-              videoPlayerType: 'auto-detected',
-              videoPlayerVersion: 'auto-detected'
-            }}
-          />
+          {(() => {
+            console.log('🧪 [TEST] About to render AdvancedVideo component...');
+            return (
+              <AdvancedVideo
+                ref={videoPlayer}
+                videoStyle={styles.video}
+                cldVideo={createMyVideoObject()}
+                enableAnalytics={analyticsEnabled}
+                autoTrackAnalytics={autoTracking}
+                analyticsOptions={{
+                  customData: {
+                    userId: 'demo-user-123',
+                    appVersion: '1.0.0',
+                    platform: 'react-native'
+                  },
+                  videoPlayerType: 'auto-detected',
+                  videoPlayerVersion: 'auto-detected'
+                }}
+              />
+            );
+          })()}
         </View>
 
         <View style={styles.statusContainer}>

@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
-import { ViewStyle, StyleProp, View, Text } from 'react-native';
+import { ViewStyle, StyleProp } from 'react-native';
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
 import { SDKAnalyticsConstants } from './internal/SDKAnalyticsConstants';
+import { VideoPlayerAdapter, VideoPlayerRef, VideoPlayerFactory } from './adapters';
 
+// Log module import (but not during tests)
+if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
+  console.log('🚀 [Cloudinary] AdvancedVideo module imported successfully!');
+}
 
 interface AdvancedVideoProps {
   videoUrl?: string;
@@ -18,18 +23,11 @@ interface AdvancedVideoProps {
   };
 }
 
-
-interface ExtendedVideoRef {
-  _currentStatus?: any;
-  _cloudinaryEventCallbacks?: any;
-
-  [key: string]: any;
-}
-
 interface AdvancedVideoState {
   analyticsConnector: any;
   previousStatus?: any;
   analyticsInitialized: boolean;
+  videoAdapter: VideoPlayerAdapter;
 }
 
 export interface AdvancedVideoRef {
@@ -40,17 +38,28 @@ export interface AdvancedVideoRef {
 }
 
 class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
-  private videoRef: React.RefObject<ExtendedVideoRef | null>;
-  private processVideoStatus: ((videoRef: any, status: any, previousStatus?: any) => void) | null = null;
-  private processExpoVideoEvents: any = null;
+  private videoRef: React.RefObject<VideoPlayerRef | null>;
 
   constructor(props: AdvancedVideoProps) {
     super(props);
-    this.videoRef = React.createRef<ExtendedVideoRef>();
+    this.videoRef = React.createRef<VideoPlayerRef | null>();
+    
+    const videoAdapter = VideoPlayerFactory.getAvailableAdapter();
+    
+    // Log detailed information about video adapter selection
+    if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
+      console.log('[Cloudinary AdvancedVideo] Initializing video component...');
+      const availableAdapters = VideoPlayerFactory.getAvailableAdapters();
+      console.log(`[Cloudinary AdvancedVideo] Available adapters:`, availableAdapters);
+      console.log(`[Cloudinary AdvancedVideo] 🎥 Selected video adapter: ${videoAdapter.getAdapterName()}`);
+      console.log(`[Cloudinary AdvancedVideo] You are using: ${videoAdapter.getAdapterName() === 'expo-video' ? '📱 EXPO-VIDEO (newer)' : videoAdapter.getAdapterName() === 'expo-av' ? '📱 EXPO-AV (legacy)' : '⚠️ FALLBACK'}`);
+    }
+    
     this.state = {
       analyticsConnector: null,
       previousStatus: undefined,
       analyticsInitialized: false,
+      videoAdapter,
     };
   }
 
@@ -112,23 +121,16 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         connector.startAutoTracking(this.props.analyticsOptions || {});
       }
 
-      try {
-        const { processExpoVideoEvents } = await import('./widgets/video/analytics/player-adapters/expoVideoPlayerAdapter');
-        this.processExpoVideoEvents = processExpoVideoEvents;
-      } catch (expoVideoError) {
-      }
-
       this.setState({
         analyticsConnector: connector,
         analyticsInitialized: true,
       });
     } catch (error) {
+      // Silently fail if analytics initialization fails
     }
   };
 
   private onPlaybackStatusUpdate = (status: any) => {
-    if (!status.isLoaded) return;
-
     if (this.props.enableAnalytics && this.videoRef.current && this.state.analyticsInitialized) {
       if (!this.videoRef.current._currentStatus) {
         this.videoRef.current._currentStatus = {};
@@ -139,25 +141,18 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
       };
 
       try {
-        if (this.processVideoStatus) {
-          this.processVideoStatus(this.videoRef.current, status, this.state.previousStatus);
-          this.setState({ previousStatus: status });
+        // Use the adapter's status processing if available
+        if (this.state.videoAdapter.processStatusUpdate) {
+          this.state.videoAdapter.processStatusUpdate(this.videoRef.current, status, this.state.previousStatus);
         }
+        this.setState({ previousStatus: status });
       } catch (error) {
+        // Silently fail if status processing fails
       }
     }
   };
 
-  private createExpoVideoHandler = (eventType: string) => {
-    return (data: any) => {
-      if (this.props.enableAnalytics && this.videoRef.current && this.state.analyticsInitialized) {
-        try {
-          this.processExpoVideoEvents[eventType]?.(this.videoRef.current, data);
-        } catch (error) {
-        }
-      }
-    };
-  };
+
 
   public startAnalyticsTracking = (metadata?: any, options?: any) => {
     if (this.state.analyticsConnector) {
@@ -209,90 +204,58 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
     const videoUri = this.getVideoUri();
 
     if (!videoUri) {
-      return React.createElement(View, {
-        style: [this.props.videoStyle, { backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }]
-      }, React.createElement(Text, {
-        style: { color: 'white', textAlign: 'center' }
-      }, 'No Video URL'));
-    }
-
-    let useExpoVideo = false;
-    try {
-      const expoVideo = require('expo-video');
-      
-      if (expoVideo && expoVideo.VideoView) {
-        useExpoVideo = true;
-      }
-    } catch (error) {
-      useExpoVideo = false;
-    }
-
-    if (useExpoVideo) {
-      try {
-        const { VideoView, createVideoPlayer } = require('expo-video');
-        
-        const player = createVideoPlayer(videoUri);
-        
-        return React.createElement(VideoView, {
-          ref: this.videoRef,
-          player: player,
-          style: this.props.videoStyle,
-          nativeControls: true,
-          onPlaybackStatusUpdate: (status: any) => {
-            if (this.processExpoVideoEvents) {
-              this.processExpoVideoEvents.onPlaybackStatusUpdate(this.videoRef.current, status);
-            }
-            if (this.onPlaybackStatusUpdate) {
-              this.onPlaybackStatusUpdate(status);
-            }
-          },
-          onLoadStart: (data: any) => {
-            if (this.processExpoVideoEvents) {
-              this.processExpoVideoEvents.onLoadStart(this.videoRef.current, data);
-            }
-          },
-          onLoad: (data: any) => {
-            if (this.processExpoVideoEvents) {
-              this.processExpoVideoEvents.onLoad(this.videoRef.current, data);
-            }
-          },
-          onError: (error: any) => {
-            if (this.processExpoVideoEvents) {
-              this.processExpoVideoEvents.onError(this.videoRef.current, error);
-            }
-          },
-        });
-      } catch (videoError) {
-      }
-    }
-
-    try {
-      const { Video } = require('expo-av');
-      
-      return React.createElement(Video, {
-        ref: this.videoRef,
-        source: { uri: videoUri },
+      return this.state.videoAdapter.renderVideo({
+        videoUri: '',
         style: this.props.videoStyle,
-        useNativeControls: true,
-        shouldPlay: false,
-        isLooping: false,
-        resizeMode: 'contain',
-        onPlaybackStatusUpdate: (status: any) => {
-          if (this.onPlaybackStatusUpdate) {
-            this.onPlaybackStatusUpdate(status);
+      }, this.videoRef);
+    }
+
+    try {
+      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
+        console.log(`[Cloudinary AdvancedVideo] 🎬 Rendering video with ${this.state.videoAdapter.getAdapterName()} adapter`);
+      }
+      const videoElement = this.state.videoAdapter.renderVideo({
+        videoUri,
+        style: this.props.videoStyle,
+        onPlaybackStatusUpdate: this.onPlaybackStatusUpdate,
+        onLoadStart: () => {
+          if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
+            console.log(`[Cloudinary AdvancedVideo] 📡 Video load started using ${this.state.videoAdapter.getAdapterName()}`);
           }
         },
-        onError: () => {},
-        onLoad: () => {},
-        onLoadStart: () => {},
-      });
-    } catch (avError) {
-      const errorMessage = avError instanceof Error ? avError.message : String(avError);
-      return React.createElement(View, {
-        style: [this.props.videoStyle, { backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }]
-      }, React.createElement(Text, {
-        style: { color: 'white', textAlign: 'center' }
-      }, `Video Error: ${errorMessage}`));
+        onLoad: () => {
+          if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
+            console.log(`[Cloudinary AdvancedVideo] ✅ Video loaded successfully using ${this.state.videoAdapter.getAdapterName()}`);
+          }
+        },
+        onError: (error: any) => {
+          if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
+            console.log(`[Cloudinary AdvancedVideo] ❌ Video error with ${this.state.videoAdapter.getAdapterName()}:`, error);
+          }
+        },
+      }, this.videoRef);
+      
+      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
+        console.log(`[Cloudinary AdvancedVideo] ✅ Video component successfully rendered with ${this.state.videoAdapter.getAdapterName()}`);
+      }
+      return videoElement;
+    } catch (error) {
+      // If the adapter fails, fall back to a fallback adapter
+      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
+        console.log(`[Cloudinary AdvancedVideo] ❌ ${this.state.videoAdapter.getAdapterName()} adapter failed, falling back to fallback adapter:`, error instanceof Error ? error.message : 'Unknown error');
+      }
+      const { FallbackVideoAdapter } = require('./adapters/FallbackVideoAdapter');
+      const fallbackAdapter = new FallbackVideoAdapter(
+        error instanceof Error ? `Video Error: ${error.message}` : 'Unknown video error'
+      );
+      
+      if (process.env.NODE_ENV !== 'test' && typeof jest === 'undefined') {
+        console.log(`[Cloudinary AdvancedVideo] 🔄 Using fallback adapter to render video`);
+      }
+      return fallbackAdapter.renderVideo({
+        videoUri,
+        style: this.props.videoStyle,
+      }, this.videoRef);
     }
   }
 }
