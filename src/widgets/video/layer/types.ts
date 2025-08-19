@@ -31,12 +31,12 @@ export interface TopControlsProps {
 }
 
 export interface CenterControlsProps {
-  status: AVPlaybackStatusSuccess | null;
+  status: any | null;
   onPlayPause: () => void;
 }
 
 export interface BottomControlsProps {
-  status: AVPlaybackStatusSuccess | null;
+  status: any | null;
   onPlayPause: () => void;
   onMuteToggle: () => void;
   formatTime: (milliseconds: number) => string;
@@ -52,7 +52,7 @@ export interface BottomControlsProps {
 export interface SeekbarProps {
   progress: number;
   currentPosition: number;
-  status: AVPlaybackStatusSuccess | null;
+  status: any | null;
   formatTime: (milliseconds: number) => string;
   seekbarRef: React.RefObject<any>;
   panResponder: any;

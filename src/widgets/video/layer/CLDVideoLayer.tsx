@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, PanResponder, ActivityIndicator, Animated, StyleSheet, Easing, Dimensions } from 'react-native';
-import { AVPlaybackStatusSuccess } from 'expo-av';
+
 import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideo from '../../../AdvancedVideo';
 import { CLDVideoLayerProps, ButtonPosition } from './types';
@@ -10,7 +10,7 @@ import { TopControls, CenterControls, BottomControls } from './components';
 import { ICON_SIZES } from './constants';
 
 interface CLDVideoLayerState {
-  status: AVPlaybackStatusSuccess | null;
+  status: any | null;
   isControlsVisible: boolean;
   isSeeking: boolean;
   seekingPosition: number;
@@ -20,8 +20,8 @@ interface CLDVideoLayerState {
 }
 
 export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoLayerState> {
-  private videoRef: React.RefObject<AdvancedVideo>;
-  private seekbarRef: React.RefObject<View>;
+  private videoRef: React.RefObject<AdvancedVideo | null>;
+  private seekbarRef: React.RefObject<View | null>;
   private fadeAnim: Animated.Value;
   private autoHideTimeoutId: NodeJS.Timeout | null = null;
   private panResponder: any;
@@ -30,8 +30,8 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
 
   constructor(props: CLDVideoLayerProps) {
     super(props);
-    this.videoRef = React.createRef<AdvancedVideo>();
-    this.seekbarRef = React.createRef<View>();
+    this.videoRef = React.createRef<AdvancedVideo | null>();
+    this.seekbarRef = React.createRef<View | null>();
     this.fadeAnim = new Animated.Value(1);
     
     // Get initial orientation
@@ -306,8 +306,6 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
           cldVideo={cldVideo}
           videoUrl={videoUrl}
           videoStyle={StyleSheet.absoluteFill}
-          resizeMode="contain"
-          onPlaybackStatusUpdate={this.handleStatusUpdate}
         />
 
         {/* Loading Spinner */}

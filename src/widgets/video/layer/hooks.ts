@@ -90,7 +90,7 @@ export const useVideoSeeking = () => {
   const handleSeekMove = React.useCallback((
     evt: any,
     seekbarRef: React.RefObject<any>,
-    status: AVPlaybackStatusSuccess | null
+    status: any | null
   ) => {
     if (seekbarRef.current && status) {
       const touchPageX = evt.nativeEvent.pageX;
@@ -109,7 +109,7 @@ export const useVideoSeeking = () => {
   const handleSeekEnd = React.useCallback((
     evt: any,
     seekbarRef: React.RefObject<any>,
-    status: AVPlaybackStatusSuccess | null,
+    status: any | null,
     videoRef: any
   ) => {
     if (seekbarRef.current && status) {
@@ -181,7 +181,7 @@ export const useVideoSeeking = () => {
   }, []);
 
   const getProgress = React.useCallback((
-    status: AVPlaybackStatusSuccess | null,
+    status: any | null,
     isSeeking: boolean,
     seekingPosition: number,
     isSeekingComplete: boolean,
@@ -204,7 +204,7 @@ export const useVideoSeeking = () => {
   }, []);
 
   const getCurrentPosition = React.useCallback((
-    status: AVPlaybackStatusSuccess | null,
+    status: any | null,
     isSeeking: boolean,
     seekingPosition: number,
     isSeekingComplete: boolean,
