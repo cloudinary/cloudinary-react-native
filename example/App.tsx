@@ -1,5 +1,6 @@
 import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+
 import {AdvancedImage, AdvancedVideo} from 'cloudinary-react-native';
 import {Cloudinary} from '@cloudinary/url-gen';
 import {scale} from "@cloudinary/url-gen/actions/resize";
@@ -9,16 +10,14 @@ import React, {useRef, useState} from "react";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
-// Calculate safe area padding based on screen dimensions
 const getTopPadding = () => {
   if (Platform.OS === 'ios') {
-    // For iPhone X and newer (with notch), screen height is typically 812+ or width 390+
     if (screenHeight >= 812 || screenWidth >= 390) {
-      return 60; // Devices with notch
+      return 60;
     }
-    return 40; // Older devices
+    return 40;
   }
-  return 35; // Android
+  return 35;
 };
 
 const cld = new Cloudinary({
@@ -49,7 +48,6 @@ export default function App() {
     const newAnalyticsState = !analyticsEnabled;
     setAnalyticsEnabled(newAnalyticsState);
     
-    // Auto-enable tracking when analytics are enabled for better UX
     if (newAnalyticsState && !autoTracking) {
       setAutoTracking(true);
     }
@@ -118,7 +116,7 @@ export default function App() {
       videoPlayer.current.addCustomEvent('user_interaction', {
         action: 'button_clicked',
         buttonName: 'share',
-        videoPosition: 30.5, // seconds
+        videoPosition: 30.5,
         customData: {
           userId: 'demo-user-123',
           sessionId: 'session-456'
@@ -138,7 +136,6 @@ export default function App() {
           <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
         </View>
         
-        {/* Analytics Controls */}
         <View style={styles.controlsContainer}>
           <Text style={styles.title}>Analytics Testing</Text>
           
@@ -157,34 +154,39 @@ export default function App() {
           <TouchableOpacity style={styles.button} onPress={addCustomEventToVideo}>
             <Text style={styles.buttonText}>Send Custom Event</Text>
           </TouchableOpacity>
+          
+
         </View>
 
         <View style={styles.videoContainer}>
-          <AdvancedVideo
-            ref={videoPlayer}
-            videoStyle={styles.video}
-            cldVideo={createMyVideoObject()}
-            enableAnalytics={analyticsEnabled}
-            autoTrackAnalytics={autoTracking}
-            analyticsOptions={{
-              customData: {
-                userId: 'demo-user-123',
-                appVersion: '1.0.0',
-                platform: 'react-native'
-              },
-              videoPlayerType: 'expo-av',
-              videoPlayerVersion: '14.0.0'
-            }}
-          />
+          {(() => {
+            return (
+              <AdvancedVideo
+                ref={videoPlayer}
+                videoStyle={styles.video}
+                cldVideo={createMyVideoObject()}
+                enableAnalytics={analyticsEnabled}
+                autoTrackAnalytics={autoTracking}
+                analyticsOptions={{
+                  customData: {
+                    userId: 'demo-user-123',
+                    appVersion: '1.0.0',
+                    platform: 'react-native'
+                  },
+                  videoPlayerType: 'auto-detected',
+                  videoPlayerVersion: 'auto-detected'
+                }}
+              />
+            );
+          })()}
         </View>
-        
-        {/* Status Display */}
+
         <View style={styles.statusContainer}>
           <Text style={styles.statusText}>
-            Analytics: {analyticsEnabled ? '✅ Enabled' : '❌ Disabled'}
+            Analytics: {analyticsEnabled ? 'Enabled' : 'Disabled'}
           </Text>
           <Text style={styles.statusText}>
-            Auto Tracking: {autoTracking ? '✅ Enabled' : '❌ Disabled'}
+            Auto Tracking: {autoTracking ? 'Enabled' : 'Disabled'}
           </Text>
         </View>
       </View>

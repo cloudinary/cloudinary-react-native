@@ -57,8 +57,9 @@
     "@testing-library/jest-native": "^5.4.2",
     "@testing-library/react-native": "^12.5.1",
     "@types/jest": "^28.1.2",
-    "@types/react": "18.2.0",
+    "@types/react": "^18.2.0 || ^19.0.0",
     "@types/react-native": "0.72.0",
+    "@types/react-test-renderer": "^19.0.0",
     "babel-jest": "^29.5.0",
     "del-cli": "^5.0.0",
     "eslint": "^8.4.1",
@@ -68,28 +69,39 @@
     "metro-react-native-babel-preset": "^0.77.0",
     "pod-install": "^0.1.0",
     "prettier": "^2.0.5",
-    "react": "^18.0.0",
-    "react-native": "^0.72.3",
+    "react": "^19.1.1",
+    "react-native": "^0.79.6",
     "react-native-builder-bob": "^0.20.0",
-    "react-test-renderer": "18.2.0",
+    "react-test-renderer": "19.0.0",
     "release-it": "^15.0.0",
-    "typescript": "^4.5.2"
+    "typescript": "^5.3.0"
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.10.0",
+    "expo-constants": "^17.0.0",
     "expo-crypto": "^14.1.5",
     "isomorphic-fetch": "^3.0.0",
     "util": "^0.10.4"
   },
   "peerDependencies": {
-    "expo": "^50.0.0",
-    "expo-av": "^14.0.0",
+    "expo": "^50.0.0 || ^51.0.0 || ^52.0.0 || ^53.0.0",
+    "expo-av": "^14.0.0 || ^15.0.0",
+    "expo-constants": "^16.0.0 || ^17.0.0",
     "expo-modules-core": "1.11.14",
-    "react": ">=18.0.0",
-    "react-native": ">=0.72.0"
+    "expo-video": "^2.0.0",
+    "react": "^19.0.0",
+    "react-native": ">=0.79.0"
+  },
+  "peerDependenciesMeta": {
+    "expo-av": {
+      "optional": true
+    },
+    "expo-video": {
+      "optional": true
+    }
   },
   "resolutions": {
-    "@types/react": "18.2.0",
+    "@types/react": "^18.2.0 || ^19.0.0",
     "@types/react-native": "0.72.0"
   },
   "engines": {
@@ -98,6 +110,8 @@
   "packageManager": "^yarn@1.22.15",
   "jest": {
     "preset": "react-native",
+    "setupFilesAfterEnv": ["<rootDir>/jest-setup.js"],
+    "setupFiles": ["<rootDir>/jest.setup-before-env.js"],
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
@@ -111,10 +125,14 @@
       "node"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!@react-native|react-native)"
+      "node_modules/(?!(@react-native|react-native|expo|@expo|expo-.*)/)"
     ],
     "moduleNameMapper": {
-      "\\.(png|jpg|jpeg|gif)$": "<rootDir>/mocks/image-mock.js"
+      "\\.(png|jpg|jpeg|gif)$": "<rootDir>/mocks/image-mock.js",
+      "expo-av": "<rootDir>/mocks/expo-av-mock.js",
+      "expo-video": "<rootDir>/mocks/expo-video-mock.js",
+      "expo-constants": "<rootDir>/mocks/expo-constants-mock.js",
+      "expo-crypto": "<rootDir>/mocks/expo-crypto-mock.js"
     }
   },
   "release-it": {

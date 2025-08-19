@@ -270,13 +270,11 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
           },
         };
       } catch (error) {
-        console.warn('Failed to create minimal tracking session:', error);
         return;
       }
     }
 
     if (!videoTrackingSession || !videoTrackingSession.eventCollector) {
-      console.warn('No active analytics tracking session. Start tracking first.');
       return;
     }
 
@@ -293,8 +291,6 @@ export const connectCloudinaryAnalytics = (videoRef, mainOptions = {}) => {
         timestamp: Date.now()
       });
     } catch (error) {
-      console.warn('Failed to add custom event:', error);
-      console.warn('Error details:', error.message);
     }
   };
 
