@@ -1,12 +1,7 @@
 import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
-// TEST: This log should show up immediately when the app starts
-console.log('🧪 [TEST] App.tsx loaded - Console.log is working!');
-
-console.log('🧪 [TEST] About to import cloudinary-react-native...');
 import {AdvancedImage, AdvancedVideo} from 'cloudinary-react-native';
-console.log('🧪 [TEST] Successfully imported cloudinary-react-native!', {AdvancedVideo: typeof AdvancedVideo});
 import {Cloudinary} from '@cloudinary/url-gen';
 import {scale} from "@cloudinary/url-gen/actions/resize";
 import {cartoonify} from "@cloudinary/url-gen/actions/effect";
@@ -35,9 +30,6 @@ const cld = new Cloudinary({
 });
 
 export default function App() {
-  // TEST: This should show when the App component is created
-  console.log('🧪 [TEST] App component function called!');
-  
   const videoPlayer = useRef<any>(null);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
   const [autoTracking, setAutoTracking] = useState(false);
@@ -168,7 +160,6 @@ export default function App() {
 
         <View style={styles.videoContainer}>
           {(() => {
-            console.log('🧪 [TEST] About to render AdvancedVideo component...');
             return (
               <AdvancedVideo
                 ref={videoPlayer}
