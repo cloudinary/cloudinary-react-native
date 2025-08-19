@@ -7,16 +7,14 @@ import VideoLayerDemo from './VideoLayerDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
-// Calculate safe area padding based on screen dimensions
 const getTopPadding = () => {
   if (Platform.OS === 'ios') {
-    // For iPhone X and newer (with notch), screen height is typically 812+ or width 390+
     if (screenHeight >= 812 || screenWidth >= 390) {
-      return 60; // Devices with notch
+      return 60;
     }
-    return 40; // Older devices
+    return 40;
   }
-  return 35; // Android
+  return 35;
 };
 
 type CurrentScreen = 'home' | 'image' | 'video' | 'videoLayer';
