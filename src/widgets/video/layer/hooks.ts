@@ -142,7 +142,7 @@ export const useVideoSeeking = () => {
                   validSeekPosition < status.durationMillis) {
                 
                 lastSeekTime.current = now;
-                videoRef.current.setPositionAsync(validSeekPosition).catch((error: any) => {
+                videoRef.current.setStatusAsync({ positionMillis: validSeekPosition }).catch((error: any) => {
                   console.warn('Seek failed:', error);
                   resolve({
                     isSeeking: false,

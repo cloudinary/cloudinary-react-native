@@ -1,4 +1,4 @@
-import { Share } from 'react-native';
+import { Share, Platform } from 'react-native';
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
 
 /**
@@ -18,7 +18,7 @@ export const handleDefaultShare = async (cldVideo: CloudinaryVideo): Promise<voi
   try {
     const videoUrl = cldVideo.toURL();
     await Share.share({
-      message: '',
+      message: Platform.OS === 'ios' ? '' : videoUrl,
       url: videoUrl,
     });
   } catch (error) {

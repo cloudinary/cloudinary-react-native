@@ -34,6 +34,7 @@ export interface AdvancedVideoRef {
   pauseAsync: () => Promise<void>;
   setIsMutedAsync: (isMuted: boolean) => Promise<void>;
   setPositionAsync: (positionMillis: number) => Promise<void>;
+  setStatusAsync: (status: any) => Promise<void>;
 }
 
 class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
@@ -206,7 +207,8 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   public playAsync = async () => {
     if (this.videoRef.current) {
       try {
-        await this.videoRef.current.playAsync();
+        // expo-av uses setStatusAsync for playback control
+        await this.videoRef.current.setStatusAsync({ shouldPlay: true });
       } catch (error) {
         console.warn('Failed to play video:', error);
       }
@@ -216,7 +218,8 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   public pauseAsync = async () => {
     if (this.videoRef.current) {
       try {
-        await this.videoRef.current.pauseAsync();
+        // expo-av uses setStatusAsync for playback control
+        await this.videoRef.current.setStatusAsync({ shouldPlay: false });
       } catch (error) {
         console.warn('Failed to pause video:', error);
       }
@@ -226,7 +229,8 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   public setIsMutedAsync = async (isMuted: boolean) => {
     if (this.videoRef.current) {
       try {
-        await this.videoRef.current.setIsMutedAsync(isMuted);
+        // expo-av uses setStatusAsync for muting
+        await this.videoRef.current.setStatusAsync({ isMuted });
       } catch (error) {
         console.warn('Failed to set muted state:', error);
       }
@@ -236,9 +240,21 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   public setPositionAsync = async (positionMillis: number) => {
     if (this.videoRef.current) {
       try {
-        await this.videoRef.current.setPositionAsync(positionMillis);
+        // expo-av uses setStatusAsync for seeking
+        await this.videoRef.current.setStatusAsync({ positionMillis });
       } catch (error) {
         console.warn('Failed to set position:', error);
+      }
+    }
+  };
+
+  public setStatusAsync = async (status: any) => {
+    if (this.videoRef.current) {
+      try {
+        // Forward to underlying video component
+        await this.videoRef.current.setStatusAsync(status);
+      } catch (error) {
+        console.warn('Failed to set status:', error);
       }
     }
   };

@@ -86,7 +86,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
                     validSeekPosition >= 0 && 
                     validSeekPosition < this.state.status.durationMillis) {
                   
-                  this.videoRef.current.setPositionAsync(validSeekPosition).catch((error) => {
+                  this.videoRef.current.setStatusAsync({ positionMillis: validSeekPosition }).catch((error: any) => {
                     console.warn('Seek failed:', error);
                     this.setState({
                       isSeeking: false,
@@ -266,9 +266,9 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     if (this.videoRef.current) {
       try {
         if (this.state.status?.isPlaying) {
-          await this.videoRef.current.pauseAsync();
+          await this.videoRef.current.setStatusAsync({ shouldPlay: false });
         } else {
-          await this.videoRef.current.playAsync();
+          await this.videoRef.current.setStatusAsync({ shouldPlay: true });
         }
       } catch (error) {
         console.warn('Failed to toggle play/pause:', error);

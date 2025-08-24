@@ -41,7 +41,11 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
     const { Video } = this.expoAVModule;
     
     return React.createElement(Video, {
-      ref,
+      ref: (videoInstance: any) => {
+        if (ref && typeof ref === 'object' && 'current' in ref) {
+          ref.current = videoInstance;
+        }
+      },
       source: { uri: props.videoUri },
       style: props.style,
       useNativeControls: false,

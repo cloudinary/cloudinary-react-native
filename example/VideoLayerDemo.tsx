@@ -31,7 +31,7 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
       <CLDVideoLayer
         cldVideo={createMyVideoObject()}
         onBack={onBack}
-        onShare={handleShare}
+        // onShare={handleShare}
         // Example: Position back button in top-left (NW) and share button in top-right (NE)
         backButtonPosition={ButtonPosition.NW}
         shareButtonPosition={ButtonPosition.NE}
