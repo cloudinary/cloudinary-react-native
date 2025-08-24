@@ -234,23 +234,32 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   };
 
   handleStatusUpdate = (s: any) => {
-    if (s.isLoaded) {
-      if (this.state.isSeekingComplete && this.state.lastSeekPosition > 0) {
-        const currentVideoPosition = s.positionMillis || 0;
-        const seekPositionDiff = Math.abs(currentVideoPosition - this.state.lastSeekPosition);
-        
-        if (seekPositionDiff < 500) {
-          this.setState({ 
-            status: s,
-            isSeekingComplete: false,
-            lastSeekPosition: 0
-          });
-          return;
-        }
-      }
+    console.log('CLDVideoLayer - Status Update:', {
+      isLoaded: s?.isLoaded,
+      durationMillis: s?.durationMillis,
+      positionMillis: s?.positionMillis,
+      isPlaying: s?.isPlaying,
+      error: s?.error,
+      hasFullStatus: !!s,
+      currentVideoLoaded: this.state.status?.isLoaded
+    });
+    
+    // Always update status to handle loading states properly
+    if (this.state.isSeekingComplete && this.state.lastSeekPosition > 0 && s?.isLoaded) {
+      const currentVideoPosition = s.positionMillis || 0;
+      const seekPositionDiff = Math.abs(currentVideoPosition - this.state.lastSeekPosition);
       
-      this.setState({ status: s });
+      if (seekPositionDiff < 500) {
+        this.setState({ 
+          status: s,
+          isSeekingComplete: false,
+          lastSeekPosition: 0
+        });
+        return;
+      }
     }
+    
+    this.setState({ status: s });
   };
 
   handlePlayPause = async () => {
@@ -306,6 +315,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
           cldVideo={cldVideo}
           videoUrl={videoUrl}
           videoStyle={StyleSheet.absoluteFill}
+          onPlaybackStatusUpdate={this.handleStatusUpdate}
         />
 
         {/* Loading Spinner */}
