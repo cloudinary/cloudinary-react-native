@@ -21,9 +21,10 @@ This Readme provides basic installation and usage information.
 Transform and optimize assets. Visit our documentation to learn more about [media optimization](https://cloudinary.com/documentation/media_optimization) and [transformations](https://cloudinary.com/documentation/image_transformations).
 
 ## Version Support
-| SDK Version | React Native Version | Expo SDK Version | Video Library |
-|-------------|----------------------|------------------|---------------|
-| 1.x.x       | >= 0.72              | 50-53            | expo-av / expo-video |
+| SDK Version   | React Native Version | Expo SDK Version | Video Library |
+|---------------|----------------------|---------------|---------|
+| 1.0.0 - 1.1.0 | >= 0.72              | 50            | expo-av |
+| 1.2.x         | >= 0.72              | 50-53         | expo-av / expo-video |
 
 ## Installation
 ### Install using your favorite package manager (yarn, npm)
@@ -104,8 +105,8 @@ let video = myCld.video('sea_turtle');
 export default function App() {
   return (
     <View style={styles.container}>
-      <AdvancedVideo 
-        cldVideo={video} 
+      <AdvancedVideo
+        cldVideo={video}
         videoStyle={{width: 400, height: 220}}
       />
     </View>
@@ -131,8 +132,8 @@ let video = myCld.video('sea_turtle');
 export default function App() {
   return (
     <View style={styles.container}>
-      <AdvancedVideo 
-        cldVideo={video} 
+      <AdvancedVideo
+        cldVideo={video}
         videoStyle={{width: 400, height: 220}}
         enableAnalytics={true}
         autoTrackAnalytics={true}
