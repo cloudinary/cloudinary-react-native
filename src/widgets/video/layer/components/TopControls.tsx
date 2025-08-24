@@ -32,27 +32,69 @@ export const TopControls: React.FC<TopControlsProps> = ({
     (backButtonPosition && backButtonPosition !== ButtonPosition.SE) ||
     (shareButtonPosition && shareButtonPosition !== ButtonPosition.SE);
 
-  // If we have top-positioned buttons, render them with absolute positioning
+  // If we have top-positioned buttons, render them within the bar
   if (hasTopPositionedButtons) {
     return (
       <View style={responsiveStyles.topControlsBar}>
-        {/* Invisible spacer to maintain layout */}
-        {onBack && backButtonPosition && backButtonPosition !== ButtonPosition.SE && (
-          <TouchableOpacity 
-            style={[responsiveStyles.topButton, getPositionStyle(backButtonPosition)]} 
-            onPress={onBack}
-          >
-            <Ionicons name="close" size={ICON_SIZES.top} color="white" />
-          </TouchableOpacity>
-        )}
-        {shareButtonPosition && shareButtonPosition !== ButtonPosition.SE && (
-          <TouchableOpacity 
-            style={[responsiveStyles.topButton, getPositionStyle(shareButtonPosition)]} 
-            onPress={onShare}
-          >
-            <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
-          </TouchableOpacity>
-        )}
+        {/* Left side - NW positioned button */}
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-start' }}>
+          {onBack && backButtonPosition === ButtonPosition.NW && (
+            <TouchableOpacity 
+              style={responsiveStyles.topButton} 
+              onPress={onBack}
+            >
+              <Ionicons name="close" size={ICON_SIZES.top} color="white" />
+            </TouchableOpacity>
+          )}
+          {shareButtonPosition === ButtonPosition.NW && (
+            <TouchableOpacity 
+              style={responsiveStyles.topButton} 
+              onPress={onShare}
+            >
+              <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Center - N positioned button */}
+        <View style={{ flexDirection: 'row' }}>
+          {onBack && backButtonPosition === ButtonPosition.N && (
+            <TouchableOpacity 
+              style={responsiveStyles.topButton} 
+              onPress={onBack}
+            >
+              <Ionicons name="close" size={ICON_SIZES.top} color="white" />
+            </TouchableOpacity>
+          )}
+          {shareButtonPosition === ButtonPosition.N && (
+            <TouchableOpacity 
+              style={responsiveStyles.topButton} 
+              onPress={onShare}
+            >
+              <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Right side - NE positioned button */}
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end' }}>
+          {onBack && backButtonPosition === ButtonPosition.NE && (
+            <TouchableOpacity 
+              style={responsiveStyles.topButton} 
+              onPress={onBack}
+            >
+              <Ionicons name="close" size={ICON_SIZES.top} color="white" />
+            </TouchableOpacity>
+          )}
+          {shareButtonPosition === ButtonPosition.NE && (
+            <TouchableOpacity 
+              style={responsiveStyles.topButton} 
+              onPress={onShare}
+            >
+              <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     );
   }

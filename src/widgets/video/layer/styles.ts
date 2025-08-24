@@ -117,7 +117,7 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
       alignItems: 'center',
       paddingHorizontal: 20,
       paddingTop: topPadding,
-      paddingBottom: isLandscape ? 8 : 10,
+      paddingBottom: (bottomPadding || 15) * 2,
       backgroundColor: COLORS.topControlsBackground,
     },
     topButton: {
@@ -133,17 +133,17 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
     // Button positioning styles
     buttonPositionNE: {
       position: 'absolute',
-      top: topPadding,
+      top: topPadding + (isLandscape ? 6 : 8),
       right: 20,
     },
     buttonPositionNW: {
       position: 'absolute',
-      top: topPadding,
+      top: topPadding + (isLandscape ? 6 : 8),
       left: 20,
     },
     buttonPositionN: {
       position: 'absolute',
-      top: topPadding,
+      top: topPadding + (isLandscape ? 6 : 8),
       alignSelf: 'center',
     },
     buttonPositionSE: {

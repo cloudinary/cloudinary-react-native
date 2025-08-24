@@ -32,8 +32,8 @@ export const LEGACY_TOP_PADDING_IOS = 50;
 export const LEGACY_TOP_PADDING_ANDROID = 20;
 
 // Landscape-specific padding (reduced for landscape mode)
-export const TOP_PADDING_IOS_LANDSCAPE = 40;
-export const TOP_PADDING_ANDROID_LANDSCAPE = 20;
+export const TOP_PADDING_IOS_LANDSCAPE = 20;
+export const TOP_PADDING_ANDROID_LANDSCAPE = 6;
 
 // Get responsive top padding based on orientation
 export const getTopPadding = (isLandscape: boolean = false) => {
@@ -109,7 +109,7 @@ export const SHADOW_VALUES = {
 export const COLORS = {
   overlay: 'rgba(0, 0, 0, 0.4)',
   loadingBackground: 'rgba(0, 0, 0, 0.8)',
-  topControlsBackground: 'rgba(0, 0, 0, 0.4)',
+  topControlsBackground: 'rgba(0, 0, 0, 0.6)',
   bottomControlsBackground: 'rgba(0, 0, 0, 0.6)',
   topButtonBackground: 'rgba(0, 0, 0, 0.7)',
   centerButtonBackground: 'rgba(255, 255, 255, 0.95)',
