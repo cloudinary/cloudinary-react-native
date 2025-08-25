@@ -18,6 +18,7 @@ export const Seekbar: React.FC<SeekbarProps> = ({
   
   // Get values from config with fallbacks to current defaults
   const seekbarHeight = seekbar?.height ?? SEEKBAR_HEIGHT;
+  const seekbarWidth = seekbar?.width; // undefined means full width (default)
   const seekbarColor = seekbar?.color ?? COLORS.seekbarProgress;
   const timePosition = seekbar?.timePosition ?? TimePosition.BELOW;
 
@@ -37,14 +38,25 @@ export const Seekbar: React.FC<SeekbarProps> = ({
     </View>
   );
 
+  // Create seekbar width styling
+  const seekbarWidthStyle = seekbarWidth ? {
+    width: seekbarWidth as any, // Accept both number (px) and string (%)
+    alignSelf: 'center' as const // Center the seekbar if it's not full width
+  } : {};
+
   return (
     <View style={responsiveStyles.seekbarContainer}>
-      {timePosition === TimePosition.ABOVE && timeText}
-      <View 
-        ref={seekbarRef}
-        style={[responsiveStyles.seekbar, { height: seekbarHeight }]}
-        {...panResponder.panHandlers}
-      >
+      <View style={seekbarWidth ? { alignItems: 'center' } : {}}>
+        {timePosition === TimePosition.ABOVE && (
+          <View style={seekbarWidthStyle}>
+            {timeText}
+          </View>
+        )}
+        <View 
+          ref={seekbarRef}
+          style={[responsiveStyles.seekbar, { height: seekbarHeight }, seekbarWidthStyle]}
+          {...panResponder.panHandlers}
+        >
         <View style={responsiveStyles.seekbarTrack} />
         <View 
           style={[
@@ -61,8 +73,13 @@ export const Seekbar: React.FC<SeekbarProps> = ({
             { left: `${progress * 100}%` }
           ]} 
         />
+        </View>
+        {timePosition === TimePosition.BELOW && (
+          <View style={seekbarWidthStyle}>
+            {timeText}
+          </View>
+        )}
       </View>
-      {timePosition === TimePosition.BELOW && timeText}
     </View>
   );
 }; 

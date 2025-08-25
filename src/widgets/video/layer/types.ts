@@ -17,6 +17,7 @@ export enum TimePosition {
 
 export interface SeekbarConfig {
   height?: number;             // px
+  width?: number | string;     // px or percentage (e.g., 200 or '80%')
   color?: string;              // CSS color
   timePosition?: TimePosition; // TimePosition.ABOVE | TimePosition.BELOW | TimePosition.NONE
 }
