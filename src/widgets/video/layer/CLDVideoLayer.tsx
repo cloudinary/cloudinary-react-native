@@ -295,7 +295,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   };
 
   render() {
-    const { cldVideo, videoUrl, onBack, backButtonPosition, shareButtonPosition, showCenterPlayButton = true } = this.props;
+    const { cldVideo, videoUrl, onBack, backButtonPosition, shareButtonPosition, showCenterPlayButton = true, seekbar = {} } = this.props;
     const { status, isLandscape } = this.state;
     const progress = this.getProgress();
     const currentPosition = this.getCurrentPosition();
@@ -352,6 +352,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             backButtonPosition={backButtonPosition}
             shareButtonPosition={shareButtonPosition}
             isLandscape={isLandscape}
+            seekbar={seekbar}
           />
         </Animated.View>
 

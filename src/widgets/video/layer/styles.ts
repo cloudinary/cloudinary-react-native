@@ -216,7 +216,6 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
       height: SEEKBAR_HEIGHT,
       borderRadius: BORDER_RADIUS.seekbar,
       position: 'relative',
-      marginBottom: isLandscape ? 6 : 8,
       justifyContent: 'center',
       paddingVertical: isLandscape ? 6 : 8, // Reduce touch area in landscape
     },

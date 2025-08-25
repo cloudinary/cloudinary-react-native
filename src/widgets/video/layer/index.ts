@@ -1,3 +1,3 @@
 export { CLDVideoLayer } from './CLDVideoLayer';
-export type { CLDVideoLayerProps } from './types';
-export { ButtonPosition } from './types'; 
+export type { CLDVideoLayerProps, SeekbarConfig } from './types';
+export { ButtonPosition, TimePosition } from './types'; 

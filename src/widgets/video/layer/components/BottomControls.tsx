@@ -18,6 +18,7 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
   backButtonPosition,
   shareButtonPosition,
   isLandscape = false,
+  seekbar = {},
 }) => {
   const responsiveStyles = getResponsiveStyles(isLandscape);
   const progress = getProgress();
@@ -52,6 +53,7 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
           seekbarRef={seekbarRef}
           panResponder={panResponder}
           isLandscape={isLandscape}
+          seekbar={seekbar}
         />
       </View>
       

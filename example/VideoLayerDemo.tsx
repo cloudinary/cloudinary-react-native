@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Alert, SafeAreaView } from 'react-native';
-import { CLDVideoLayer, ButtonPosition } from '../src/widgets/video/layer';
+import { CLDVideoLayer, ButtonPosition, TimePosition } from '../src/widgets/video/layer';
 import { Cloudinary } from '@cloudinary/url-gen';
 
 const cld = new Cloudinary({
@@ -36,6 +36,11 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
         backButtonPosition={ButtonPosition.NW}
         shareButtonPosition={ButtonPosition.NE}
         showCenterPlayButton={true}
+        seekbar={{
+          height: 30,
+          color: 'red',
+          timePosition: TimePosition.BELOW,
+        }}
         // Other positioning options:
         // ButtonPosition.N - Top center
         // ButtonPosition.SE - Bottom right (above bottom controls)

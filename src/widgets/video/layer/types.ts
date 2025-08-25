@@ -9,6 +9,18 @@ export enum ButtonPosition {
   SE = 'SE'  // South East (bottom-right)
 }
 
+export enum TimePosition {
+  ABOVE = 'above',
+  BELOW = 'below', 
+  NONE = 'none'
+}
+
+export interface SeekbarConfig {
+  height?: number;             // px
+  color?: string;              // CSS color
+  timePosition?: TimePosition; // TimePosition.ABOVE | TimePosition.BELOW | TimePosition.NONE
+}
+
 export interface CLDVideoLayerProps {
   cldVideo: CloudinaryVideo;
   videoUrl?: string;
@@ -20,6 +32,7 @@ export interface CLDVideoLayerProps {
   showCenterPlayButton?: boolean;
   backButtonPosition?: ButtonPosition;
   shareButtonPosition?: ButtonPosition;
+  seekbar?: SeekbarConfig;
 }
 
 export interface TopControlsProps {
@@ -47,6 +60,7 @@ export interface BottomControlsProps {
   backButtonPosition?: ButtonPosition;
   shareButtonPosition?: ButtonPosition;
   isLandscape?: boolean;
+  seekbar?: SeekbarConfig;
 }
 
 export interface SeekbarProps {
@@ -57,4 +71,5 @@ export interface SeekbarProps {
   seekbarRef: React.RefObject<any>;
   panResponder: any;
   isLandscape?: boolean;
+  seekbar?: SeekbarConfig;
 }
