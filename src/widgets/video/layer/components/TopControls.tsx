@@ -4,13 +4,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { TopControlsProps, ButtonPosition } from '../types';
 import { styles, getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
+import { CustomButton } from './CustomButton';
 
 export const TopControls: React.FC<TopControlsProps> = ({ 
   onBack, 
   onShare, 
   backButtonPosition,
   shareButtonPosition,
-  isLandscape = false
+  isLandscape = false,
+  fullScreen,
+  isFullScreen = false,
+  onToggleFullScreen,
+  customButtons = []
 }) => {
   const responsiveStyles = getResponsiveStyles(isLandscape);
 
@@ -22,15 +27,47 @@ export const TopControls: React.FC<TopControlsProps> = ({
         return responsiveStyles.buttonPositionNW;
       case ButtonPosition.N:
         return responsiveStyles.buttonPositionN;
+      case ButtonPosition.SE:
+        return responsiveStyles.buttonPositionSE;
+      case ButtonPosition.SW:
+        return responsiveStyles.buttonPositionSW;
+      case ButtonPosition.S:
+        return responsiveStyles.buttonPositionS;
+      case ButtonPosition.E:
+        return responsiveStyles.buttonPositionE;
+      case ButtonPosition.W:
+        return responsiveStyles.buttonPositionW;
       default:
         return {};
     }
   };
 
+  // Create default full screen button if enabled
+  const defaultFullScreenButton = fullScreen?.enabled !== false && fullScreen?.button ? {
+    ...fullScreen.button,
+    onPress: fullScreen.button.onPress || onToggleFullScreen
+  } : fullScreen?.enabled !== false ? {
+    icon: isFullScreen ? 'contract-outline' : 'expand-outline',
+    position: ButtonPosition.NE,
+    onPress: onToggleFullScreen
+  } : null;
+
+  // Combine all buttons (default full screen + custom buttons)
+  const allButtons = [
+    ...(defaultFullScreenButton ? [defaultFullScreenButton] : []),
+    ...customButtons
+  ];
+
+  // Filter buttons by position for top area (N, NE, NW)
+  const topPositionedButtons = allButtons.filter(button => 
+    [ButtonPosition.N, ButtonPosition.NE, ButtonPosition.NW].includes(button.position)
+  );
+
   // Check if we have any top-positioned buttons (NE, NW, N)
   const hasTopPositionedButtons = 
-    (backButtonPosition && backButtonPosition !== ButtonPosition.SE) ||
-    (shareButtonPosition && shareButtonPosition !== ButtonPosition.SE);
+    (backButtonPosition && [ButtonPosition.N, ButtonPosition.NE, ButtonPosition.NW].includes(backButtonPosition)) ||
+    (shareButtonPosition && [ButtonPosition.N, ButtonPosition.NE, ButtonPosition.NW].includes(shareButtonPosition)) ||
+    topPositionedButtons.length > 0;
 
   // If we have top-positioned buttons, render them within the bar
   if (hasTopPositionedButtons) {
@@ -54,6 +91,16 @@ export const TopControls: React.FC<TopControlsProps> = ({
               <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
+          {topPositionedButtons
+            .filter(button => button.position === ButtonPosition.NW)
+            .map((button, index) => (
+              <CustomButton 
+                key={`nw-${index}`}
+                config={button}
+                isLandscape={isLandscape}
+                defaultOnPress={button === defaultFullScreenButton ? onToggleFullScreen : undefined}
+              />
+            ))}
         </View>
 
         {/* Center - N positioned button */}
@@ -74,6 +121,16 @@ export const TopControls: React.FC<TopControlsProps> = ({
               <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
+          {topPositionedButtons
+            .filter(button => button.position === ButtonPosition.N)
+            .map((button, index) => (
+              <CustomButton 
+                key={`n-${index}`}
+                config={button}
+                isLandscape={isLandscape}
+                defaultOnPress={button === defaultFullScreenButton ? onToggleFullScreen : undefined}
+              />
+            ))}
         </View>
 
         {/* Right side - NE positioned button */}
@@ -94,6 +151,16 @@ export const TopControls: React.FC<TopControlsProps> = ({
               <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
+          {topPositionedButtons
+            .filter(button => button.position === ButtonPosition.NE)
+            .map((button, index) => (
+              <CustomButton 
+                key={`ne-${index}`}
+                config={button}
+                isLandscape={isLandscape}
+                defaultOnPress={button === defaultFullScreenButton ? onToggleFullScreen : undefined}
+              />
+            ))}
         </View>
       </View>
     );

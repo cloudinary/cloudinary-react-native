@@ -6,7 +6,20 @@ export enum ButtonPosition {
   NE = 'NE', // North East (top-right)
   NW = 'NW', // North West (top-left)
   N = 'N',   // North (top-center)
-  SE = 'SE'  // South East (bottom-right)
+  SE = 'SE', // South East (bottom-right)
+  SW = 'SW', // South West (bottom-left)
+  S = 'S',   // South (bottom-center)
+  E = 'E',   // East (middle-right)
+  W = 'W'    // West (middle-left)
+}
+
+export interface ButtonConfig {
+  icon: string;                    // Ionicons icon name
+  size?: number;                   // Icon size (px)
+  color?: string;                  // Icon color
+  backgroundColor?: string;        // Button background color
+  position: ButtonPosition;        // Button position
+  onPress?: () => void;           // Custom functionality
 }
 
 export enum TimePosition {
@@ -22,6 +35,14 @@ export interface SeekbarConfig {
   timePosition?: TimePosition; // TimePosition.ABOVE | TimePosition.BELOW | TimePosition.NONE
 }
 
+export interface FullScreenConfig {
+  enabled?: boolean;           // Enable/disable full screen functionality
+  landscapeOnly?: boolean;     // Force landscape mode in full screen (default: true)
+  button?: ButtonConfig;       // Custom button configuration
+  onEnterFullScreen?: () => void;  // Custom enter full screen handler
+  onExitFullScreen?: () => void;   // Custom exit full screen handler
+}
+
 export interface CLDVideoLayerProps {
   cldVideo: CloudinaryVideo;
   videoUrl?: string;
@@ -34,6 +55,8 @@ export interface CLDVideoLayerProps {
   backButtonPosition?: ButtonPosition;
   shareButtonPosition?: ButtonPosition;
   seekBar?: SeekbarConfig;
+  fullScreen?: FullScreenConfig;
+  customButtons?: ButtonConfig[];  // Additional custom buttons
 }
 
 export interface TopControlsProps {
@@ -42,6 +65,10 @@ export interface TopControlsProps {
   backButtonPosition?: ButtonPosition;
   shareButtonPosition?: ButtonPosition;
   isLandscape?: boolean;
+  fullScreen?: FullScreenConfig;
+  isFullScreen?: boolean;
+  onToggleFullScreen?: () => void;
+  customButtons?: ButtonConfig[];
 }
 
 export interface CenterControlsProps {
@@ -62,6 +89,10 @@ export interface BottomControlsProps {
   shareButtonPosition?: ButtonPosition;
   isLandscape?: boolean;
   seekbar?: SeekbarConfig;
+  fullScreen?: FullScreenConfig;
+  isFullScreen?: boolean;
+  onToggleFullScreen?: () => void;
+  customButtons?: ButtonConfig[];
 }
 
 export interface SeekbarProps {

@@ -48,7 +48,9 @@ export const BOTTOM_CONTROLS_PADDING = Platform.select({ ios: 15, android: 12 })
 export const BOTTOM_CONTROLS_PADDING_LANDSCAPE = Platform.select({ ios: 10, android: 8 });
 export const SEEKBAR_ALIGNMENT_OFFSET = Platform.select({ ios: 16, android: 14 }); // Platform-specific alignment
 export const SEEKBAR_ALIGNMENT_OFFSET_LANDSCAPE = Platform.select({ ios: 12, android: 10 });
-export const SE_BUTTON_RIGHT_OFFSET = Math.min(SCREEN_WIDTH * 0.1, 38); // Responsive right offset
+// Align SE buttons with volume button position
+// Volume button position = bottomControlsBar paddingHorizontal (20) + volumeButton marginRight (8) = 28
+export const SE_BUTTON_RIGHT_OFFSET = 28; // Align with volume button
 export const SE_BUTTON_BOTTOM_OFFSET = Platform.select({ ios: 32, android: 28 }); // Platform-specific bottom offset
 export const SE_BUTTON_BOTTOM_OFFSET_LANDSCAPE = Platform.select({ ios: 20, android: 18 });
 
@@ -65,6 +67,60 @@ export const getSeekbarAlignmentOffset = (isLandscape: boolean = false) => {
 // Get responsive SE button bottom offset
 export const getSEButtonBottomOffset = (isLandscape: boolean = false) => {
   return isLandscape ? SE_BUTTON_BOTTOM_OFFSET_LANDSCAPE : SE_BUTTON_BOTTOM_OFFSET;
+};
+
+// Button spacing constants for multiple buttons in the same position
+export const BUTTON_SPACING = Platform.select({ ios: 8, android: 6 }); // Space between buttons
+export const BUTTON_MARGIN = Platform.select({ ios: 4, android: 3 }); // Margin from edge
+
+// Calculate button positions with automatic spacing
+export const calculateButtonPosition = (
+  position: string,
+  index: number,
+  totalButtons: number,
+  isLandscape: boolean = false
+) => {
+  const buttonSize = TOP_BUTTON_SIZE ?? 44;
+  const spacing = BUTTON_SPACING ?? 8;
+  const margin = BUTTON_MARGIN ?? 4;
+  
+  switch (position) {
+    case 'SE':
+      // For SE position, account for volume button and stack vertically upward
+      // Add extra offset to avoid overlap with bottom controls (volume button area)
+      const seBaseOffset = (getSEButtonBottomOffset(isLandscape) ?? 32) + (buttonSize + spacing); // Extra space for volume button
+      return {
+        bottom: seBaseOffset + (index * (buttonSize + spacing)),
+      };
+    case 'SW':
+      // For SW position, stack vertically upward
+      return {
+        bottom: (getSEButtonBottomOffset(isLandscape) ?? 32) + (index * (buttonSize + spacing)),
+      };
+    case 'NE':
+    case 'NW':
+      // For top positions, stack vertically downward
+      return {
+        top: (getTopPadding(isLandscape) ?? 60) + (isLandscape ? 6 : 8) + (index * (buttonSize + spacing)),
+      };
+    case 'E':
+    case 'W':
+      // For middle positions, stack vertically around center
+      const centerOffset = ((totalButtons - 1) * (buttonSize + spacing)) / 2;
+      return {
+        top: `50%`,
+        marginTop: -22 + (index * (buttonSize + spacing)) - centerOffset,
+      };
+    case 'N':
+    case 'S':
+      // For center positions, stack horizontally
+      const horizontalCenterOffset = ((totalButtons - 1) * (buttonSize + spacing)) / 2;
+      return {
+        marginLeft: (index * (buttonSize + spacing)) - horizontalCenterOffset,
+      };
+    default:
+      return {};
+  }
 };
 
 // Visual styling constants

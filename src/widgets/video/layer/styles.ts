@@ -152,6 +152,32 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
       right: SE_BUTTON_RIGHT_OFFSET,
       zIndex: 10,
     },
+    buttonPositionSW: {
+      position: 'absolute',
+      bottom: seButtonBottomOffset,
+      left: SE_BUTTON_RIGHT_OFFSET,
+      zIndex: 10,
+    },
+    buttonPositionS: {
+      position: 'absolute',
+      bottom: seButtonBottomOffset,
+      alignSelf: 'center',
+      zIndex: 10,
+    },
+    buttonPositionE: {
+      position: 'absolute',
+      right: 20,
+      top: '50%',
+      marginTop: -22, // Half of TOP_BUTTON_SIZE to center
+      zIndex: 10,
+    },
+    buttonPositionW: {
+      position: 'absolute',
+      left: 20,
+      top: '50%',
+      marginTop: -22, // Half of TOP_BUTTON_SIZE to center
+      zIndex: 10,
+    },
     // Bottom Controls
     bottomControlsBar: {
       flexDirection: 'row',

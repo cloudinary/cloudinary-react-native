@@ -6,8 +6,8 @@ import AdvancedVideo from '../../../AdvancedVideo';
 import { CLDVideoLayerProps, ButtonPosition } from './types';
 import { formatTime, handleDefaultShare } from './utils';
 import { styles, getResponsiveStyles } from './styles';
-import { TopControls, CenterControls, BottomControls } from './components';
-import { ICON_SIZES } from './constants';
+import { TopControls, CenterControls, BottomControls, CustomButton } from './components';
+import { ICON_SIZES, calculateButtonPosition } from './constants';
 
 interface CLDVideoLayerState {
   status: any | null;
@@ -17,6 +17,8 @@ interface CLDVideoLayerState {
   lastSeekPosition: number;
   isSeekingComplete: boolean;
   isLandscape: boolean;
+  isFullScreen: boolean;
+  previousOrientation: 'portrait' | 'landscape' | null;
 }
 
 export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoLayerState> {
@@ -46,6 +48,8 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       lastSeekPosition: 0,
       isSeekingComplete: false,
       isLandscape: initialIsLandscape,
+      isFullScreen: false,
+      previousOrientation: null,
     };
 
     this.panResponder = PanResponder.create({
@@ -294,9 +298,58 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     }
   };
 
+  handleToggleFullScreen = async () => {
+    const { fullScreen } = this.props;
+    const { isFullScreen } = this.state;
+    
+    // If fullScreen is disabled, do nothing
+    if (fullScreen?.enabled === false) {
+      return;
+    }
+
+    try {
+      if (!isFullScreen) {
+        // Store current orientation before entering full screen
+        const currentOrientation = this.state.isLandscape ? 'landscape' : 'portrait';
+        this.setState({ 
+          previousOrientation: currentOrientation,
+          isFullScreen: true 
+        });
+
+        // Call custom enter full screen handler if provided
+        if (fullScreen?.onEnterFullScreen) {
+          fullScreen.onEnterFullScreen();
+        }
+      } else {
+        // Exit full screen
+        this.setState({ 
+          isFullScreen: false,
+          previousOrientation: null 
+        });
+
+        // Call custom exit full screen handler if provided
+        if (fullScreen?.onExitFullScreen) {
+          fullScreen.onExitFullScreen();
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to toggle full screen:', error);
+    }
+  };
+
   render() {
-    const { cldVideo, videoUrl, onBack, backButtonPosition, shareButtonPosition, showCenterPlayButton = true, seekbar = {} } = this.props;
-    const { status, isLandscape } = this.state;
+    const { 
+      cldVideo, 
+      videoUrl, 
+      onBack, 
+      backButtonPosition, 
+      shareButtonPosition, 
+      showCenterPlayButton = true, 
+      seekBar = {},
+      fullScreen,
+      customButtons = []
+    } = this.props;
+    const { status, isLandscape, isFullScreen } = this.state;
     const progress = this.getProgress();
     const currentPosition = this.getCurrentPosition();
     const isVideoLoaded = status?.isLoaded === true;
@@ -336,6 +389,10 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             backButtonPosition={backButtonPosition}
             shareButtonPosition={shareButtonPosition}
             isLandscape={isLandscape}
+            fullScreen={fullScreen}
+            isFullScreen={isFullScreen}
+            onToggleFullScreen={this.handleToggleFullScreen}
+            customButtons={customButtons}
           />
           {showCenterPlayButton && (
             <CenterControls status={status} onPlayPause={this.handlePlayPause} />
@@ -347,16 +404,20 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             formatTime={formatTime}
             getProgress={this.getProgress}
             getCurrentPosition={this.getCurrentPosition}
-            seekbarRef={this.seekbarRef}
+            seekBarRef={this.seekbarRef}
             panResponder={this.panResponder}
             backButtonPosition={backButtonPosition}
             shareButtonPosition={shareButtonPosition}
             isLandscape={isLandscape}
-            seekbar={seekbar}
+            seekbar={seekBar}
+            fullScreen={fullScreen}
+            isFullScreen={isFullScreen}
+            onToggleFullScreen={this.handleToggleFullScreen}
+            customButtons={customButtons}
           />
         </Animated.View>
 
-        {/* SE positioned buttons - rendered outside animated overlay for proper positioning */}
+        {/* Absolute positioned buttons - rendered outside animated overlay for proper positioning */}
         {this.state.isControlsVisible && (
           <>
             {onBack && backButtonPosition === ButtonPosition.SE && (
@@ -375,6 +436,80 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
                 <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
               </TouchableOpacity>
             )}
+            
+            {/* Render absolute positioned custom buttons and full screen button */}
+            {(() => {
+              // Create default full screen button if enabled
+              const defaultFullScreenButton = fullScreen?.enabled !== false && fullScreen?.button ? {
+                ...fullScreen.button,
+                onPress: fullScreen.button.onPress || this.handleToggleFullScreen
+              } : fullScreen?.enabled !== false ? {
+                icon: isFullScreen ? 'contract-outline' : 'expand-outline',
+                position: ButtonPosition.NE,
+                onPress: this.handleToggleFullScreen
+              } : null;
+
+              // Combine all buttons (default full screen + custom buttons)
+              const allButtons = [
+                ...(defaultFullScreenButton ? [defaultFullScreenButton] : []),
+                ...customButtons
+              ];
+
+              // Filter buttons for absolute positioning (not in top controls bar)
+              const absolutePositionedButtons = allButtons.filter(button => 
+                [ButtonPosition.SE, ButtonPosition.SW, ButtonPosition.S, ButtonPosition.E, ButtonPosition.W].includes(button.position)
+              );
+
+              // Group buttons by position for proper spacing
+              const buttonsByPosition = absolutePositionedButtons.reduce((acc, button) => {
+                const pos = button.position;
+                if (!acc[pos]) acc[pos] = [];
+                acc[pos].push(button);
+                return acc;
+              }, {} as Record<string, any[]>);
+
+              // Render buttons with automatic spacing
+              const renderedButtons: React.ReactElement[] = [];
+
+              Object.entries(buttonsByPosition).forEach(([position, buttons]) => {
+                buttons.forEach((button, index) => {
+                  // Get base position style
+                  const basePositionStyle = (() => {
+                    switch (button.position) {
+                      case ButtonPosition.SE: return responsiveStyles.buttonPositionSE;
+                      case ButtonPosition.SW: return responsiveStyles.buttonPositionSW;
+                      case ButtonPosition.S: return responsiveStyles.buttonPositionS;
+                      case ButtonPosition.E: return responsiveStyles.buttonPositionE;
+                      case ButtonPosition.W: return responsiveStyles.buttonPositionW;
+                      default: return {};
+                    }
+                  })();
+
+                  // Calculate spacing offset for multiple buttons in same position
+                  const spacingStyle = calculateButtonPosition(
+                    position, 
+                    index, 
+                    buttons.length, 
+                    isLandscape
+                  );
+
+                  // Combine base position with spacing
+                  const finalStyle = { ...basePositionStyle, ...spacingStyle };
+
+                  renderedButtons.push(
+                    <CustomButton 
+                      key={`absolute-${position}-${index}`}
+                      config={button}
+                      isLandscape={isLandscape}
+                      style={finalStyle}
+                      defaultOnPress={button === defaultFullScreenButton ? this.handleToggleFullScreen : undefined}
+                    />
+                  );
+                });
+              });
+
+              return renderedButtons;
+            })()}
           </>
         )}
       </TouchableOpacity>
