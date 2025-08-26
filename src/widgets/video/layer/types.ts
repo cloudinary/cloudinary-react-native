@@ -33,7 +33,7 @@ export interface CLDVideoLayerProps {
   showCenterPlayButton?: boolean;
   backButtonPosition?: ButtonPosition;
   shareButtonPosition?: ButtonPosition;
-  seekbar?: SeekbarConfig;
+  seekBar?: SeekbarConfig;
 }
 
 export interface TopControlsProps {
@@ -56,7 +56,7 @@ export interface BottomControlsProps {
   formatTime: (milliseconds: number) => string;
   getProgress: () => number;
   getCurrentPosition: () => number;
-  seekbarRef: React.RefObject<any>;
+  seekBarRef: React.RefObject<any>;
   panResponder: any;
   backButtonPosition?: ButtonPosition;
   shareButtonPosition?: ButtonPosition;
@@ -69,8 +69,8 @@ export interface SeekbarProps {
   currentPosition: number;
   status: any | null;
   formatTime: (milliseconds: number) => string;
-  seekbarRef: React.RefObject<any>;
+  seekBarRef: React.RefObject<any>;
   panResponder: any;
   isLandscape?: boolean;
-  seekbar?: SeekbarConfig;
+  seekBar?: SeekbarConfig;
 }

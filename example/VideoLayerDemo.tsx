@@ -36,7 +36,7 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
         backButtonPosition={ButtonPosition.NW}
         shareButtonPosition={ButtonPosition.NE}
         showCenterPlayButton={true}
-        seekbar={{
+        seekBar={{
           height: 30,
           color: 'red',
           timePosition: TimePosition.BELOW,
