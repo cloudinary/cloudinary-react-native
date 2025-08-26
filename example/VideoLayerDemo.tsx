@@ -41,55 +41,55 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
           color: 'red',
           timePosition: TimePosition.BELOW,
         }}
-        fullScreen={{
-          enabled: true,
-          landscapeOnly: true,
-          button: {
-            icon: 'resize-outline',           // Ionicons name
-            position: ButtonPosition.SE,     // Bottom-right corner (will auto-space above volume button)
-            size: 28,                        // Icon size in pixels
-            color: '#FFD700',               // Icon color
-            backgroundColor: 'rgba(0,0,0,0.8)', // Button background
-          },
-          onEnterFullScreen: () => {
-            // Custom logic when entering full screen
-            console.log('Entering full screen');
-            // Example: Lock orientation using expo-screen-orientation
-            // ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-          },
-          onExitFullScreen: () => {
-            // Custom logic when exiting full screen
-            console.log('Exiting full screen');
-            // Example: Unlock orientation
-            // ScreenOrientation.unlockAsync();
-          },
-        }}
-        customButtons={[
-          // Demo: Multiple buttons in SE position - they will auto-stack vertically
-          // All SE buttons are automatically aligned with the volume button's right edge
-          {
-            icon: 'bookmark-outline',
-            position: ButtonPosition.SE,
-            color: '#FF6B6B',
-            size: 24,
-            onPress: () => Alert.alert('Bookmark', 'Video bookmarked!'),
-          },
-          {
-            icon: 'heart-outline',
-            position: ButtonPosition.SE,
-            color: '#FF1493',
-            size: 24,
-            onPress: () => Alert.alert('Like', 'Video liked!'),
-          },
-          // Demo: Button in different position
-          {
-            icon: 'information-circle-outline',
-            position: ButtonPosition.NE, // This will stack with share button
-            color: '#00BFFF',
-            size: 24,
-            onPress: () => Alert.alert('Info', 'Video information!'),
-          },
-        ]}
+        // fullScreen={{
+        //   enabled: true,
+        //   landscapeOnly: true,
+        //   button: {
+        //     icon: 'resize-outline',           // Ionicons name
+        //     position: ButtonPosition.SE,     // Bottom-right corner (will auto-space above volume button)
+        //     size: 28,                        // Icon size in pixels
+        //     color: '#FFD700',               // Icon color
+        //     backgroundColor: 'rgba(0,0,0,0.8)', // Button background
+        //   },
+        //   onEnterFullScreen: () => {
+        //     // Custom logic when entering full screen
+        //     console.log('Entering full screen');
+        //     // Example: Lock orientation using expo-screen-orientation
+        //     // ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+        //   },
+        //   onExitFullScreen: () => {
+        //     // Custom logic when exiting full screen
+        //     console.log('Exiting full screen');
+        //     // Example: Unlock orientation
+        //     // ScreenOrientation.unlockAsync();
+        //   },
+        // }}
+        // customButtons={[
+        //   // Demo: Multiple buttons in SE position - they will auto-stack vertically
+        //   // All SE buttons are automatically aligned with the volume button's right edge
+        //   {
+        //     icon: 'bookmark-outline',
+        //     position: ButtonPosition.SE,
+        //     color: '#FF6B6B',
+        //     size: 24,
+        //     onPress: () => Alert.alert('Bookmark', 'Video bookmarked!'),
+        //   },
+        //   {
+        //     icon: 'heart-outline',
+        //     position: ButtonPosition.SE,
+        //     color: '#FF1493',
+        //     size: 24,
+        //     onPress: () => Alert.alert('Like', 'Video liked!'),
+        //   },
+        //   // Demo: Button in different position
+        //   {
+        //     icon: 'information-circle-outline',
+        //     position: ButtonPosition.NE, // This will stack with share button
+        //     color: '#00BFFF',
+        //     size: 24,
+        //     onPress: () => Alert.alert('Info', 'Video information!'),
+        //   },
+        // ]}
         // Other positioning options:
         // ButtonPosition.N - Top center
         // ButtonPosition.SE - Bottom right (above bottom controls)

@@ -43,10 +43,10 @@ export const TopControls: React.FC<TopControlsProps> = ({
   };
 
   // Create default full screen button if enabled
-  const defaultFullScreenButton = fullScreen?.enabled !== false && fullScreen?.button ? {
+  const defaultFullScreenButton = fullScreen?.enabled === true && fullScreen?.button ? {
     ...fullScreen.button,
     onPress: fullScreen.button.onPress || onToggleFullScreen
-  } : fullScreen?.enabled !== false ? {
+  } : fullScreen?.enabled === true ? {
     icon: isFullScreen ? 'contract-outline' : 'expand-outline',
     position: ButtonPosition.NE,
     onPress: onToggleFullScreen

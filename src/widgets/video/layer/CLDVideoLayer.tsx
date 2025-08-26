@@ -309,8 +309,8 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     const { fullScreen } = this.props;
     const { isFullScreen } = this.state;
     
-    // If fullScreen is disabled, do nothing
-    if (fullScreen?.enabled === false) {
+    // If fullScreen is not explicitly enabled, do nothing
+    if (fullScreen?.enabled !== true) {
       return;
     }
 
@@ -447,10 +447,10 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             {/* Render absolute positioned custom buttons and full screen button */}
             {(() => {
               // Create default full screen button if enabled
-              const defaultFullScreenButton = fullScreen?.enabled !== false && fullScreen?.button ? {
+              const defaultFullScreenButton = fullScreen?.enabled === true && fullScreen?.button ? {
                 ...fullScreen.button,
                 onPress: fullScreen.button.onPress || this.handleToggleFullScreen
-              } : fullScreen?.enabled !== false ? {
+              } : fullScreen?.enabled === true ? {
                 icon: isFullScreen ? 'contract-outline' : 'expand-outline',
                 position: ButtonPosition.NE,
                 onPress: this.handleToggleFullScreen
