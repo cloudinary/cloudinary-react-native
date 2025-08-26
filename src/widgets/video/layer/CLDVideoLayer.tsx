@@ -57,6 +57,8 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (_evt) => {
         this.setState({ isSeeking: true });
+        // Clear auto-hide timer while seeking
+        this.clearAutoHideTimer();
       },
       onPanResponderMove: (evt) => {
         if (this.seekbarRef.current && this.state.status) {
@@ -117,6 +119,11 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
               });
             }
           });
+        }
+        
+        // Restart auto-hide timer after seeking ends (if controls are visible)
+        if (this.state.isControlsVisible) {
+          this.startAutoHideTimer();
         }
       },
     });

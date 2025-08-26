@@ -9,18 +9,18 @@ export const Seekbar: React.FC<SeekbarProps> = ({
   currentPosition,
   status,
   formatTime,
-  seekbarRef,
+  seekBarRef,
   panResponder,
   isLandscape = false,
-  seekbar = {},
+  seekBar = {},
 }) => {
   const responsiveStyles = getResponsiveStyles(isLandscape);
   
   // Get values from config with fallbacks to current defaults
-  const seekbarHeight = seekbar?.height ?? SEEKBAR_HEIGHT;
-  const seekbarWidth = seekbar?.width; // undefined means full width (default)
-  const seekbarColor = seekbar?.color ?? COLORS.seekbarProgress;
-  const timePosition = seekbar?.timePosition ?? TimePosition.BELOW;
+  const seekbarHeight = seekBar?.height ?? SEEKBAR_HEIGHT;
+  const seekbarWidth = seekBar?.width; // undefined means full width (default)
+  const seekbarColor = seekBar?.color ?? COLORS.seekbarProgress;
+  const timePosition = seekBar?.timePosition ?? TimePosition.BELOW;
 
   // Create consistent spacing with wrapper View - different heights for above/below
   const timeTextSpacingAbove = isLandscape ? 22 : 24; // Total height for above position
@@ -53,7 +53,7 @@ export const Seekbar: React.FC<SeekbarProps> = ({
           </View>
         )}
         <View 
-          ref={seekbarRef}
+          ref={seekBarRef}
           style={[responsiveStyles.seekbar, { height: seekbarHeight }, seekbarWidthStyle]}
           {...panResponder.panHandlers}
         >

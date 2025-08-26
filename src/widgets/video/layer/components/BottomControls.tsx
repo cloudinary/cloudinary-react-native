@@ -13,7 +13,7 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
   formatTime,
   getProgress,
   getCurrentPosition,
-  seekbarRef,
+  seekBarRef,
   panResponder,
   backButtonPosition,
   shareButtonPosition,
@@ -50,10 +50,10 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
           currentPosition={currentPosition}
           status={status}
           formatTime={formatTime}
-          seekbarRef={seekbarRef}
+          seekBarRef={seekBarRef}
           panResponder={panResponder}
           isLandscape={isLandscape}
-          seekbar={seekbar}
+          seekBar={seekbar}
         />
       </View>
       
