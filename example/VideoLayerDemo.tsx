@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Text, Alert, SafeAreaView } from 'react-native';
 import { CLDVideoLayer, ButtonPosition, TimePosition } from '../src/widgets/video/layer';
+import { VideoPlayerFactory } from '../src/adapters';
 import { Cloudinary } from '@cloudinary/url-gen';
 
 const cld = new Cloudinary({
@@ -17,6 +18,11 @@ interface VideoLayerDemoProps {
 }
 
 export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
+  useEffect(() => {
+    const currentAdapter = VideoPlayerFactory.getAvailableAdapter();
+    console.log(`🎥 Video Package: ${currentAdapter.getAdapterName()}`);
+  }, []);
+
   function createMyVideoObject() {
     const myVideo = cld.video('sea_turtle')
     return myVideo

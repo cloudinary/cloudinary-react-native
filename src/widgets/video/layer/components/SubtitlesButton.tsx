@@ -55,7 +55,7 @@ export const SubtitlesButton: React.FC<SubtitlesButtonProps> = ({
         onPress={toggleMenu}
       >
         <Ionicons 
-          name="closed-caption-outline" 
+          name="chatbox-outline" 
           size={ICON_SIZES.bottomVolume} 
           color="white" 
           style={responsiveStyles.volumeIcon}

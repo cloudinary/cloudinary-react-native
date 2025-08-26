@@ -33,11 +33,6 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
       throw new Error('expo-av is not available');
     }
 
-    console.log('ExpoAVVideoAdapter - Rendering video:', {
-      videoUri: props.videoUri,
-      hasOnPlaybackStatusUpdate: !!props.onPlaybackStatusUpdate
-    });
-
     const { Video } = this.expoAVModule;
     
     return React.createElement(Video, {
@@ -53,25 +48,21 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
       isLooping: false,
       resizeMode: 'contain',
       onPlaybackStatusUpdate: (status: any) => {
-        console.log('ExpoAVVideoAdapter - Status update:', status);
         if (props.onPlaybackStatusUpdate) {
           props.onPlaybackStatusUpdate(status);
         }
       },
       onError: (error: any) => {
-        console.log('ExpoAVVideoAdapter - Error:', error);
         if (props.onError) {
           props.onError(error);
         }
       },
       onLoad: (data: any) => {
-        console.log('ExpoAVVideoAdapter - Load:', data);
         if (props.onLoad) {
           props.onLoad(data);
         }
       },
       onLoadStart: (data: any) => {
-        console.log('ExpoAVVideoAdapter - Load Start:', data);
         if (props.onLoadStart) {
           props.onLoadStart(data);
         }

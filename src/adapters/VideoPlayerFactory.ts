@@ -14,8 +14,8 @@ export class VideoPlayerFactory {
     if (this.initialized) return;
 
     this.adapters = [
-      new ExpoAVVideoAdapter(),   // Try expo-av first (more stable for this use case)
-      new ExpoVideoAdapter(),     // Fallback to expo-video
+      new ExpoVideoAdapter(),     // Try expo-video first (modern, recommended)
+      new ExpoAVVideoAdapter(),   // Fallback to expo-av for compatibility
     ];
 
     this.initialized = true;
@@ -27,21 +27,16 @@ export class VideoPlayerFactory {
   static getAvailableAdapter(): VideoPlayerAdapter {
     this.initializeAdapters();
 
-    console.log('VideoPlayerFactory - Checking adapters...');
     // Find the first available adapter
     for (const adapter of this.adapters) {
-      const adapterName = adapter.getAdapterName();
       const isAvailable = adapter.isAvailable();
-      console.log(`VideoPlayerFactory - ${adapterName}: ${isAvailable ? 'Available' : 'Not Available'}`);
       
       if (isAvailable) {
-        console.log(`VideoPlayerFactory - Using adapter: ${adapterName}`);
         return adapter;
       }
     }
 
     // If no adapter is available, return fallback
-    console.log('VideoPlayerFactory - No adapters available, using fallback');
     return new FallbackVideoAdapter('No video player library found. Install expo-video or expo-av.');
   }
 
