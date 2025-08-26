@@ -5,6 +5,8 @@ import { BottomControlsProps, ButtonPosition } from '../types';
 import { styles, getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
 import { Seekbar } from './Seekbar';
+import { PlaybackSpeedButton } from './PlaybackSpeedButton';
+import { SubtitlesButton } from './SubtitlesButton';
 
 export const BottomControls: React.FC<BottomControlsProps> = ({
   status,
@@ -19,6 +21,16 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
   shareButtonPosition,
   isLandscape = false,
   seekbar = {},
+  playbackSpeed,
+  currentPlaybackSpeed,
+  onPlaybackSpeedChange,
+  isSpeedMenuVisible,
+  onToggleSpeedMenu,
+  subtitles,
+  currentSubtitle,
+  onSubtitleChange,
+  isSubtitlesMenuVisible,
+  onToggleSubtitlesMenu,
 }) => {
   const responsiveStyles = getResponsiveStyles(isLandscape);
   const progress = getProgress();
@@ -58,6 +70,22 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
       </View>
       
       <View style={responsiveStyles.bottomRightControls}>
+        <SubtitlesButton
+          subtitles={subtitles}
+          currentSubtitle={currentSubtitle}
+          onSubtitleChange={onSubtitleChange}
+          isLandscape={isLandscape}
+          isMenuVisible={isSubtitlesMenuVisible}
+          onToggleMenu={onToggleSubtitlesMenu}
+        />
+        <PlaybackSpeedButton
+          playbackSpeed={playbackSpeed}
+          currentSpeed={currentPlaybackSpeed}
+          onSpeedChange={onPlaybackSpeedChange}
+          isLandscape={isLandscape}
+          isMenuVisible={isSpeedMenuVisible}
+          onToggleMenu={onToggleSpeedMenu}
+        />
         <TouchableOpacity 
           style={responsiveStyles.volumeButton}
           onPress={onMuteToggle}

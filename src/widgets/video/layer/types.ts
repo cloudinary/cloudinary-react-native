@@ -43,6 +43,31 @@ export interface FullScreenConfig {
   onExitFullScreen?: () => void;   // Custom exit full screen handler
 }
 
+export interface PlaybackSpeedOption {
+  value: number;               // Speed multiplier (e.g., 0.5, 1.0, 1.25, 1.5, 2.0)
+  label: string;               // Display label (e.g., "0.5×", "1.0×", "1.25×", "1.5×", "2.0×")
+}
+
+export interface PlaybackSpeedConfig {
+  enabled?: boolean;           // Enable/disable playback speed functionality
+  defaultSpeed?: number;       // Default playback speed (default: 1.0)
+  speeds?: PlaybackSpeedOption[];  // Custom speed options
+  button?: Partial<ButtonConfig>;  // Custom button configuration (position not needed as it's fixed in bottom controls)
+}
+
+export interface SubtitleOption {
+  code: string;                // Language code (e.g., 'en', 'es', 'ar', 'off')
+  label: string;               // Display label (e.g., 'English', 'Spanish', 'Arabic', 'Off')
+  url?: string;                // Future: URL to subtitle file
+}
+
+export interface SubtitlesConfig {
+  enabled?: boolean;           // Enable/disable subtitles functionality
+  defaultLanguage?: string;    // Default language code (default: 'off')
+  languages?: SubtitleOption[]; // Available subtitle languages
+  button?: Partial<ButtonConfig>;  // Custom button configuration (position not needed as it's fixed in bottom controls)
+}
+
 export interface CLDVideoLayerProps {
   cldVideo: CloudinaryVideo;
   videoUrl?: string;
@@ -56,6 +81,8 @@ export interface CLDVideoLayerProps {
   shareButtonPosition?: ButtonPosition;
   seekBar?: SeekbarConfig;
   fullScreen?: FullScreenConfig;
+  playbackSpeed?: PlaybackSpeedConfig;
+  subtitles?: SubtitlesConfig;
   customButtons?: ButtonConfig[];  // Additional custom buttons
 }
 
@@ -92,6 +119,16 @@ export interface BottomControlsProps {
   fullScreen?: FullScreenConfig;
   isFullScreen?: boolean;
   onToggleFullScreen?: () => void;
+  playbackSpeed?: PlaybackSpeedConfig;
+  currentPlaybackSpeed?: number;
+  onPlaybackSpeedChange?: (speed: number) => void;
+  isSpeedMenuVisible?: boolean;
+  onToggleSpeedMenu?: () => void;
+  subtitles?: SubtitlesConfig;
+  currentSubtitle?: string;
+  onSubtitleChange?: (languageCode: string) => void;
+  isSubtitlesMenuVisible?: boolean;
+  onToggleSubtitlesMenu?: () => void;
   customButtons?: ButtonConfig[];
 }
 

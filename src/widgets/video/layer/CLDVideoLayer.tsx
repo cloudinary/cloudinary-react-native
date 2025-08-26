@@ -19,6 +19,10 @@ interface CLDVideoLayerState {
   isLandscape: boolean;
   isFullScreen: boolean;
   previousOrientation: 'portrait' | 'landscape' | null;
+  currentPlaybackSpeed: number;
+  isSpeedMenuVisible: boolean;
+  currentSubtitle: string;
+  isSubtitlesMenuVisible: boolean;
 }
 
 export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoLayerState> {
@@ -50,6 +54,10 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       isLandscape: initialIsLandscape,
       isFullScreen: false,
       previousOrientation: null,
+      currentPlaybackSpeed: props.playbackSpeed?.defaultSpeed || 1.0,
+      isSpeedMenuVisible: false,
+      currentSubtitle: props.subtitles?.defaultLanguage || 'off',
+      isSubtitlesMenuVisible: false,
     };
 
     this.panResponder = PanResponder.create({
@@ -297,6 +305,36 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     }
   };
 
+  handlePlaybackSpeedChange = async (speed: number) => {
+    if (this.videoRef.current && this.state.status) {
+      try {
+        await this.videoRef.current.setStatusAsync({ rate: speed });
+        this.setState({ currentPlaybackSpeed: speed });
+      } catch (error) {
+        console.warn('Failed to change playback speed:', error);
+      }
+    }
+  };
+
+  handleToggleSpeedMenu = () => {
+    this.setState({ isSpeedMenuVisible: !this.state.isSpeedMenuVisible });
+  };
+
+  handleSubtitleChange = (languageCode: string) => {
+    // For now, just update the state. In the future, this will control actual subtitle display
+    console.log('Subtitle changed to:', languageCode);
+    this.setState({ currentSubtitle: languageCode });
+    
+    // TODO: In future versions, this will:
+    // 1. Load subtitle file from URL
+    // 2. Apply subtitles to video player
+    // 3. Handle subtitle rendering
+  };
+
+  handleToggleSubtitlesMenu = () => {
+    this.setState({ isSubtitlesMenuVisible: !this.state.isSubtitlesMenuVisible });
+  };
+
   handleShare = async () => {
     if (this.props.onShare) {
       this.props.onShare();
@@ -354,6 +392,8 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       showCenterPlayButton = true, 
       seekBar = {},
       fullScreen,
+      playbackSpeed,
+      subtitles,
       customButtons = []
     } = this.props;
     const { status, isLandscape, isFullScreen } = this.state;
@@ -420,6 +460,16 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             fullScreen={fullScreen}
             isFullScreen={isFullScreen}
             onToggleFullScreen={this.handleToggleFullScreen}
+            playbackSpeed={playbackSpeed}
+            currentPlaybackSpeed={this.state.currentPlaybackSpeed}
+            onPlaybackSpeedChange={this.handlePlaybackSpeedChange}
+            isSpeedMenuVisible={this.state.isSpeedMenuVisible}
+            onToggleSpeedMenu={this.handleToggleSpeedMenu}
+            subtitles={subtitles}
+            currentSubtitle={this.state.currentSubtitle}
+            onSubtitleChange={this.handleSubtitleChange}
+            isSubtitlesMenuVisible={this.state.isSubtitlesMenuVisible}
+            onToggleSubtitlesMenu={this.handleToggleSubtitlesMenu}
             customButtons={customButtons}
           />
         </Animated.View>

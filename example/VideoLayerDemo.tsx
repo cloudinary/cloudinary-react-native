@@ -41,6 +41,27 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
           color: 'red',
           timePosition: TimePosition.BELOW,
         }}
+        playbackSpeed={{
+          enabled: true,
+          defaultSpeed: 1.0,
+          speeds: [
+            { value: 0.5, label: '0.5×' },
+            { value: 1.0, label: '1.0×' },
+            { value: 1.25, label: '1.25×' },
+            { value: 1.5, label: '1.5×' },
+            { value: 2.0, label: '2.0×' },
+          ],
+        }}
+        subtitles={{
+          enabled: true,
+          defaultLanguage: 'off',
+          languages: [
+            { code: 'off', label: 'Off' },
+            { code: 'en', label: 'English' },
+            { code: 'es', label: 'Spanish' },
+            { code: 'ar', label: 'Arabic' },
+          ],
+        }}
         // fullScreen={{
         //   enabled: true,
         //   landscapeOnly: true,
