@@ -13,6 +13,11 @@ export enum ButtonPosition {
   W = 'W'    // West (middle-left)
 }
 
+export enum ButtonLayoutDirection {
+  HORIZONTAL = 'horizontal', // Arrange buttons side by side
+  VERTICAL = 'vertical'      // Arrange buttons stacked vertically
+}
+
 export interface ButtonConfig {
   icon: string;                    // Ionicons icon name
   size?: number;                   // Icon size (px)
@@ -20,6 +25,12 @@ export interface ButtonConfig {
   backgroundColor?: string;        // Button background color
   position: ButtonPosition;        // Button position
   onPress?: () => void;           // Custom functionality
+}
+
+export interface ButtonGroupConfig {
+  position: ButtonPosition;                    // Group position (NE, NW, etc.)
+  layoutDirection?: ButtonLayoutDirection;     // How to arrange multiple buttons in this position
+  buttons: ButtonConfig[];                     // Individual button configurations
 }
 
 export enum TimePosition {
@@ -83,7 +94,7 @@ export interface CLDVideoLayerProps {
   fullScreen?: FullScreenConfig;
   playbackSpeed?: PlaybackSpeedConfig;
   subtitles?: SubtitlesConfig;
-  customButtons?: ButtonConfig[];  // Additional custom buttons
+  buttonGroups?: ButtonGroupConfig[];  // Button groups with layout control
 }
 
 export interface TopControlsProps {
@@ -95,7 +106,7 @@ export interface TopControlsProps {
   fullScreen?: FullScreenConfig;
   isFullScreen?: boolean;
   onToggleFullScreen?: () => void;
-  customButtons?: ButtonConfig[];
+  buttonGroups?: ButtonGroupConfig[];
 }
 
 export interface CenterControlsProps {
@@ -129,7 +140,7 @@ export interface BottomControlsProps {
   onSubtitleChange?: (languageCode: string) => void;
   isSubtitlesMenuVisible?: boolean;
   onToggleSubtitlesMenu?: () => void;
-  customButtons?: ButtonConfig[];
+  buttonGroups?: ButtonGroupConfig[];
 }
 
 export interface SeekbarProps {

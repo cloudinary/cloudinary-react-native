@@ -1,4 +1,5 @@
 import { Platform, Dimensions } from 'react-native';
+import { ButtonLayoutDirection } from './types';
 
 // Get device dimensions for responsive calculations
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -73,51 +74,127 @@ export const getSEButtonBottomOffset = (isLandscape: boolean = false) => {
 export const BUTTON_SPACING = Platform.select({ ios: 8, android: 6 }); // Space between buttons
 export const BUTTON_MARGIN = Platform.select({ ios: 4, android: 3 }); // Margin from edge
 
-// Calculate button positions with automatic spacing
+// Calculate button positions with automatic spacing and layout direction support
 export const calculateButtonPosition = (
   position: string,
   index: number,
   totalButtons: number,
-  isLandscape: boolean = false
+  isLandscape: boolean = false,
+  layoutDirection: ButtonLayoutDirection = ButtonLayoutDirection.VERTICAL
 ) => {
   const buttonSize = TOP_BUTTON_SIZE ?? 44;
   const spacing = BUTTON_SPACING ?? 8;
   const margin = BUTTON_MARGIN ?? 4;
   
+  // Helper function to calculate horizontal layout
+  const getHorizontalLayout = () => {
+    const horizontalCenterOffset = ((totalButtons - 1) * (buttonSize + spacing)) / 2;
+    return {
+      marginLeft: (index * (buttonSize + spacing)) - horizontalCenterOffset,
+    };
+  };
+
+  // Helper function to calculate vertical layout
+  const getVerticalLayout = (baseOffset: number = 0) => {
+    const verticalCenterOffset = ((totalButtons - 1) * (buttonSize + spacing)) / 2;
+    return {
+      marginTop: baseOffset + (index * (buttonSize + spacing)) - verticalCenterOffset,
+    };
+  };
+  
   switch (position) {
     case 'SE':
-      // For SE position, account for volume button and stack vertically upward
-      // Add extra offset to avoid overlap with bottom controls (volume button area)
-      const seBaseOffset = (getSEButtonBottomOffset(isLandscape) ?? 32) + (buttonSize + spacing); // Extra space for volume button
+      // For SE position, account for volume button
+      const seBaseOffset = (getSEButtonBottomOffset(isLandscape) ?? 32) + (buttonSize + spacing);
+      if (layoutDirection === 'horizontal') {
+        return {
+          bottom: seBaseOffset,
+          ...getHorizontalLayout(),
+        };
+      }
+      // Default to vertical stacking upward
       return {
         bottom: seBaseOffset + (index * (buttonSize + spacing)),
       };
+    
     case 'SW':
-      // For SW position, stack vertically upward
+      // For SW position
+      const swBaseOffset = (getSEButtonBottomOffset(isLandscape) ?? 32);
+      if (layoutDirection === 'horizontal') {
+        return {
+          bottom: swBaseOffset,
+          ...getHorizontalLayout(),
+        };
+      }
+      // Default to vertical stacking upward
       return {
-        bottom: (getSEButtonBottomOffset(isLandscape) ?? 32) + (index * (buttonSize + spacing)),
+        bottom: swBaseOffset + (index * (buttonSize + spacing)),
       };
+    
+    case 'S':
+      // For South position
+      const sBaseOffset = (getSEButtonBottomOffset(isLandscape) ?? 32);
+      if (layoutDirection === 'vertical') {
+        return {
+          bottom: sBaseOffset + (index * (buttonSize + spacing)),
+          alignSelf: 'center',
+        };
+      }
+      // Default to horizontal stacking
+      return {
+        bottom: sBaseOffset,
+        alignSelf: 'center',
+        ...getHorizontalLayout(),
+      };
+    
     case 'NE':
     case 'NW':
-      // For top positions, stack vertically downward
+      // For top positions
+      const topBaseOffset = (getTopPadding(isLandscape) ?? 60) + (isLandscape ? 6 : 8);
+      if (layoutDirection === 'horizontal') {
+        return {
+          top: topBaseOffset,
+          ...getHorizontalLayout(),
+        };
+      }
+      // Default to vertical stacking downward
       return {
-        top: (getTopPadding(isLandscape) ?? 60) + (isLandscape ? 6 : 8) + (index * (buttonSize + spacing)),
+        top: topBaseOffset + (index * (buttonSize + spacing)),
       };
+    
+    case 'N':
+      // For North position
+      const nBaseOffset = (getTopPadding(isLandscape) ?? 60) + (isLandscape ? 6 : 8);
+      if (layoutDirection === 'vertical') {
+        return {
+          top: nBaseOffset + (index * (buttonSize + spacing)),
+          alignSelf: 'center',
+        };
+      }
+      // Default to horizontal stacking
+      return {
+        top: nBaseOffset,
+        alignSelf: 'center',
+        ...getHorizontalLayout(),
+      };
+    
     case 'E':
     case 'W':
-      // For middle positions, stack vertically around center
+      // For middle positions
+      if (layoutDirection === 'horizontal') {
+        return {
+          top: '50%',
+          marginTop: -22,
+          ...getHorizontalLayout(),
+        };
+      }
+      // Default to vertical stacking around center
       const centerOffset = ((totalButtons - 1) * (buttonSize + spacing)) / 2;
       return {
-        top: `50%`,
+        top: '50%',
         marginTop: -22 + (index * (buttonSize + spacing)) - centerOffset,
       };
-    case 'N':
-    case 'S':
-      // For center positions, stack horizontally
-      const horizontalCenterOffset = ((totalButtons - 1) * (buttonSize + spacing)) / 2;
-      return {
-        marginLeft: (index * (buttonSize + spacing)) - horizontalCenterOffset,
-      };
+    
     default:
       return {};
   }

@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import AdvancedImageDemo from './AdvancedImageDemo';
 import AdvancedVideoDemo from './AdvancedVideoDemo';
 import VideoLayerDemo from './VideoLayerDemo';
+import { ButtonLayoutDemo } from './ButtonLayoutDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -17,7 +18,7 @@ const getTopPadding = () => {
   return 35;
 };
 
-type CurrentScreen = 'home' | 'image' | 'video' | 'videoLayer';
+type CurrentScreen = 'home' | 'image' | 'video' | 'videoLayer' | 'buttonLayout';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
@@ -38,6 +39,8 @@ export default function App() {
         return <AdvancedVideoDemo />;
       case 'videoLayer':
         return <VideoLayerDemo onBack={navigateHome} />;
+      case 'buttonLayout':
+        return <ButtonLayoutDemo />;
       default:
         return renderHomeScreen();
     }
@@ -80,6 +83,16 @@ export default function App() {
             Full-screen video with overlay controls
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.buttonLayoutButton]}
+          onPress={() => navigateToScreen('buttonLayout')}
+        >
+          <Text style={styles.buttonTitle}>🎯 Button Layout Demo</Text>
+          <Text style={styles.buttonDescription}>
+            Flexible button positioning and arrangements
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.footerContainer}>
@@ -95,6 +108,15 @@ export default function App() {
       <View style={styles.fullScreenContainer}>
         <StatusBar style="auto" />
         <VideoLayerDemo onBack={navigateHome} />
+      </View>
+    );
+  }
+
+  if (currentScreen === 'buttonLayout') {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <StatusBar style="auto" />
+        <ButtonLayoutDemo />
       </View>
     );
   }
@@ -174,6 +196,10 @@ const styles = StyleSheet.create({
   videoLayerButton: {
     borderLeftWidth: 4,
     borderLeftColor: '#FF9800',
+  },
+  buttonLayoutButton: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#9C27B0',
   },
   fullScreenPlayerButton: {
     borderLeftWidth: 4,

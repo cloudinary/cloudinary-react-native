@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { TopControlsProps, ButtonPosition } from '../types';
+import { TopControlsProps, ButtonPosition, ButtonLayoutDirection } from '../types';
 import { styles, getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
 import { CustomButton } from './CustomButton';
@@ -15,7 +15,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
   fullScreen,
   isFullScreen = false,
   onToggleFullScreen,
-  customButtons = []
+  buttonGroups = []
 }) => {
   const responsiveStyles = getResponsiveStyles(isLandscape);
 
@@ -52,16 +52,39 @@ export const TopControls: React.FC<TopControlsProps> = ({
     onPress: onToggleFullScreen
   } : null;
 
-  // Combine all buttons (default full screen + custom buttons)
-  const allButtons = [
-    ...(defaultFullScreenButton ? [defaultFullScreenButton] : []),
-    ...customButtons
-  ];
+  // Process button groups format for top positions
+  const processedButtonGroups: Record<string, { buttons: any[], layoutDirection: ButtonLayoutDirection }> = {};
+  
+  buttonGroups
+    .filter(group => [ButtonPosition.N, ButtonPosition.NE, ButtonPosition.NW].includes(group.position))
+    .forEach(group => {
+      processedButtonGroups[group.position] = {
+        buttons: group.buttons,
+        layoutDirection: group.layoutDirection || ButtonLayoutDirection.VERTICAL
+      };
+    });
 
-  // Filter buttons by position for top area (N, NE, NW)
-  const topPositionedButtons = allButtons.filter(button => 
-    [ButtonPosition.N, ButtonPosition.NE, ButtonPosition.NW].includes(button.position)
-  );
+  // Add default full screen button if enabled and not already in a group
+  if (defaultFullScreenButton && !processedButtonGroups[ButtonPosition.NE]) {
+    processedButtonGroups[ButtonPosition.NE] = {
+      buttons: [defaultFullScreenButton],
+      layoutDirection: ButtonLayoutDirection.VERTICAL
+    };
+  } else if (defaultFullScreenButton && processedButtonGroups[ButtonPosition.NE]) {
+    // Check if full screen button is already in the group to avoid duplicates
+    const existingButtons = processedButtonGroups[ButtonPosition.NE].buttons;
+    const hasFullScreenButton = existingButtons.some(button => 
+      button.icon === defaultFullScreenButton.icon || 
+      (button.icon === 'expand-outline' || button.icon === 'contract-outline')
+    );
+    
+    if (!hasFullScreenButton) {
+      processedButtonGroups[ButtonPosition.NE].buttons.push(defaultFullScreenButton);
+    }
+  }
+
+  // Extract buttons for each position
+  const topPositionedButtons = Object.values(processedButtonGroups).flatMap(group => group.buttons);
 
   // Check if we have any top-positioned buttons (NE, NW, N)
   const hasTopPositionedButtons = 
@@ -91,16 +114,14 @@ export const TopControls: React.FC<TopControlsProps> = ({
               <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
-          {topPositionedButtons
-            .filter(button => button.position === ButtonPosition.NW)
-            .map((button, index) => (
-              <CustomButton 
-                key={`nw-${index}`}
-                config={button}
-                isLandscape={isLandscape}
-                defaultOnPress={button === defaultFullScreenButton ? onToggleFullScreen : undefined}
-              />
-            ))}
+          {processedButtonGroups[ButtonPosition.NW]?.buttons.map((button, index) => (
+            <CustomButton 
+              key={`nw-${index}`}
+              config={button}
+              isLandscape={isLandscape}
+              defaultOnPress={button === defaultFullScreenButton ? onToggleFullScreen : undefined}
+            />
+          ))}
         </View>
 
         {/* Center - N positioned button */}
@@ -121,16 +142,14 @@ export const TopControls: React.FC<TopControlsProps> = ({
               <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
-          {topPositionedButtons
-            .filter(button => button.position === ButtonPosition.N)
-            .map((button, index) => (
-              <CustomButton 
-                key={`n-${index}`}
-                config={button}
-                isLandscape={isLandscape}
-                defaultOnPress={button === defaultFullScreenButton ? onToggleFullScreen : undefined}
-              />
-            ))}
+          {processedButtonGroups[ButtonPosition.N]?.buttons.map((button, index) => (
+            <CustomButton 
+              key={`n-${index}`}
+              config={button}
+              isLandscape={isLandscape}
+              defaultOnPress={button === defaultFullScreenButton ? onToggleFullScreen : undefined}
+            />
+          ))}
         </View>
 
         {/* Right side - NE positioned button */}
@@ -151,16 +170,14 @@ export const TopControls: React.FC<TopControlsProps> = ({
               <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
-          {topPositionedButtons
-            .filter(button => button.position === ButtonPosition.NE)
-            .map((button, index) => (
-              <CustomButton 
-                key={`ne-${index}`}
-                config={button}
-                isLandscape={isLandscape}
-                defaultOnPress={button === defaultFullScreenButton ? onToggleFullScreen : undefined}
-              />
-            ))}
+          {processedButtonGroups[ButtonPosition.NE]?.buttons.map((button, index) => (
+            <CustomButton 
+              key={`ne-${index}`}
+              config={button}
+              isLandscape={isLandscape}
+              defaultOnPress={button === defaultFullScreenButton ? onToggleFullScreen : undefined}
+            />
+          ))}
         </View>
       </View>
     );

@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Text, PanResponder, ActivityIndicator, Animated
 
 import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideo from '../../../AdvancedVideo';
-import { CLDVideoLayerProps, ButtonPosition } from './types';
+import { CLDVideoLayerProps, ButtonPosition, ButtonLayoutDirection } from './types';
 import { formatTime, handleDefaultShare } from './utils';
 import { styles, getResponsiveStyles } from './styles';
 import { TopControls, CenterControls, BottomControls, CustomButton } from './components';
@@ -394,7 +394,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       fullScreen,
       playbackSpeed,
       subtitles,
-      customButtons = []
+      buttonGroups = []
     } = this.props;
     const { status, isLandscape, isFullScreen } = this.state;
     const progress = this.getProgress();
@@ -439,7 +439,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             fullScreen={fullScreen}
             isFullScreen={isFullScreen}
             onToggleFullScreen={this.handleToggleFullScreen}
-            customButtons={customButtons}
+            buttonGroups={buttonGroups}
           />
           {showCenterPlayButton && (
             <CenterControls status={status} onPlayPause={this.handlePlayPause} />
@@ -470,7 +470,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             onSubtitleChange={this.handleSubtitleChange}
             isSubtitlesMenuVisible={this.state.isSubtitlesMenuVisible}
             onToggleSubtitlesMenu={this.handleToggleSubtitlesMenu}
-            customButtons={customButtons}
+            buttonGroups={buttonGroups}
           />
         </Animated.View>
 
@@ -506,29 +506,45 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
                 onPress: this.handleToggleFullScreen
               } : null;
 
-              // Combine all buttons (default full screen + custom buttons)
-              const allButtons = [
-                ...(defaultFullScreenButton ? [defaultFullScreenButton] : []),
-                ...customButtons
-              ];
+              // Process button groups format
+              const processedButtonGroups: Record<string, { buttons: any[], layoutDirection: ButtonLayoutDirection }> = {};
+              
+              buttonGroups.forEach(group => {
+                processedButtonGroups[group.position] = {
+                  buttons: group.buttons,
+                  layoutDirection: group.layoutDirection || ButtonLayoutDirection.VERTICAL
+                };
+              });
 
-              // Filter buttons for absolute positioning (not in top controls bar)
-              const absolutePositionedButtons = allButtons.filter(button => 
-                [ButtonPosition.SE, ButtonPosition.SW, ButtonPosition.S, ButtonPosition.E, ButtonPosition.W].includes(button.position)
+              // Add default full screen button if enabled and not already in a group
+              if (defaultFullScreenButton && !processedButtonGroups[ButtonPosition.NE]) {
+                processedButtonGroups[ButtonPosition.NE] = {
+                  buttons: [defaultFullScreenButton],
+                  layoutDirection: ButtonLayoutDirection.VERTICAL
+                };
+              } else if (defaultFullScreenButton && processedButtonGroups[ButtonPosition.NE]) {
+                // Check if full screen button is already in the group to avoid duplicates
+                const existingButtons = processedButtonGroups[ButtonPosition.NE].buttons;
+                const hasFullScreenButton = existingButtons.some(button => 
+                  button.icon === defaultFullScreenButton.icon || 
+                  (button.icon === 'expand-outline' || button.icon === 'contract-outline')
+                );
+                
+                if (!hasFullScreenButton) {
+                  processedButtonGroups[ButtonPosition.NE].buttons.push(defaultFullScreenButton);
+                }
+              }
+
+              // Filter for absolute positioning (not in top controls bar)
+              const absolutePositions = [ButtonPosition.SE, ButtonPosition.SW, ButtonPosition.S, ButtonPosition.E, ButtonPosition.W];
+              const absoluteButtonGroups = Object.entries(processedButtonGroups).filter(([position]) => 
+                absolutePositions.includes(position as ButtonPosition)
               );
 
-              // Group buttons by position for proper spacing
-              const buttonsByPosition = absolutePositionedButtons.reduce((acc, button) => {
-                const pos = button.position;
-                if (!acc[pos]) acc[pos] = [];
-                acc[pos].push(button);
-                return acc;
-              }, {} as Record<string, any[]>);
-
-              // Render buttons with automatic spacing
+              // Render buttons with enhanced spacing and layout direction
               const renderedButtons: React.ReactElement[] = [];
 
-              Object.entries(buttonsByPosition).forEach(([position, buttons]) => {
+              absoluteButtonGroups.forEach(([position, { buttons, layoutDirection }]) => {
                 buttons.forEach((button, index) => {
                   // Get base position style
                   const basePositionStyle = (() => {
@@ -542,12 +558,13 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
                     }
                   })();
 
-                  // Calculate spacing offset for multiple buttons in same position
+                  // Calculate spacing offset with layout direction support
                   const spacingStyle = calculateButtonPosition(
                     position, 
                     index, 
                     buttons.length, 
-                    isLandscape
+                    isLandscape,
+                    layoutDirection
                   );
 
                   // Combine base position with spacing
