@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import AdvancedImageDemo from './AdvancedImageDemo';
 import AdvancedVideoDemo from './AdvancedVideoDemo';
 import VideoLayerDemo from './VideoLayerDemo';
-import { ButtonLayoutDemo } from './ButtonLayoutDemo';
+import { ActiveLayerLayoutDemo } from './ActiveLayerLayoutDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -40,7 +40,7 @@ export default function App() {
       case 'videoLayer':
         return <VideoLayerDemo onBack={navigateHome} />;
       case 'buttonLayout':
-        return <ButtonLayoutDemo />;
+        return <ActiveLayerLayoutDemo />;
       default:
         return renderHomeScreen();
     }
@@ -116,7 +116,7 @@ export default function App() {
     return (
       <View style={styles.fullScreenContainer}>
         <StatusBar style="auto" />
-        <ButtonLayoutDemo />
+        <ActiveLayerLayoutDemo />
       </View>
     );
   }

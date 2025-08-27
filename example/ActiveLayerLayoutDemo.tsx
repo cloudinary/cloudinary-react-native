@@ -2,13 +2,25 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { CLDVideoLayer } from '../src/widgets/video/layer/CLDVideoLayer';
 import { ButtonPosition, ButtonLayoutDirection } from '../src/widgets/video/layer/types';
-import { CloudinaryVideo } from '@cloudinary/url-gen';
+import { Cloudinary } from '@cloudinary/url-gen';
 
-export const ButtonLayoutDemo: React.FC = () => {
+export const ActiveLayerLayoutDemo: React.FC = () => {
   const [currentExample, setCurrentExample] = useState('horizontal');
 
   // Create a sample video
-  const cldVideo = new CloudinaryVideo('samples/elephants', { cloudName: 'demo' });
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: 'demo'
+    },
+    url: {
+      secure: true
+    }
+  });
+
+  function createMyVideoObject() {
+    const myVideo = cld.video('samples/elephants')
+    return myVideo
+  }
 
   // Example 1: Button Groups with Horizontal Layout
   const horizontalButtonGroups = [
@@ -136,6 +148,48 @@ export const ButtonLayoutDemo: React.FC = () => {
     }
   ];
 
+  // Example 4: Subtitles Button Demo
+  const subtitlesButtonDemo = {
+    subtitles: {
+      enabled: true,
+      defaultLanguage: 'off',
+      languages: [
+        { code: 'off', label: 'Off' },
+        { code: 'en', label: 'English' },
+        { code: 'es', label: 'Spanish' },
+        { code: 'fr', label: 'French' },
+        { code: 'de', label: 'German' },
+      ],
+      button: {
+        position: ButtonPosition.SE,
+        color: '#FF6B6B',
+        size: 28,
+      }
+    }
+  };
+
+  // Example 5: Playback Speed Button Demo
+  const playbackSpeedDemo = {
+    playbackSpeed: {
+      enabled: true,
+      defaultSpeed: 1.0,
+      speeds: [
+        { value: 0.25, label: '0.25×' },
+        { value: 0.5, label: '0.5×' },
+        { value: 0.75, label: '0.75×' },
+        { value: 1.0, label: '1.0×' },
+        { value: 1.25, label: '1.25×' },
+        { value: 1.5, label: '1.5×' },
+        { value: 2.0, label: '2.0×' },
+      ],
+      button: {
+        position: ButtonPosition.NE,
+        color: '#4CAF50',
+        size: 28,
+      }
+    }
+  };
+
   const getVideoLayerProps = () => {
     switch (currentExample) {
       case 'horizontal':
@@ -150,6 +204,10 @@ export const ButtonLayoutDemo: React.FC = () => {
         return {
           buttonGroups: mixedLayoutGroups
         };
+      case 'subtitles':
+        return subtitlesButtonDemo;
+      case 'playbackSpeed':
+        return playbackSpeedDemo;
       default:
         return {};
     }
@@ -158,7 +216,9 @@ export const ButtonLayoutDemo: React.FC = () => {
   const examples = [
     { id: 'horizontal', title: 'Horizontal Button Groups', description: 'Buttons arranged horizontally in corners' },
     { id: 'vertical', title: 'Vertical Button Groups', description: 'Buttons arranged vertically on sides' },
-    { id: 'mixed', title: 'Mixed Layout Directions', description: 'Different layouts for different positions' }
+    { id: 'mixed', title: 'Mixed Layout Directions', description: 'Different layouts for different positions' },
+    { id: 'subtitles', title: 'Subtitles Button', description: 'Interactive subtitles selection with language options' },
+    { id: 'playbackSpeed', title: 'Playback Speed Button', description: 'Adjustable video playback speed controls' }
   ];
 
   return (
@@ -193,7 +253,7 @@ export const ButtonLayoutDemo: React.FC = () => {
       {/* Video Player with Custom Buttons */}
       <View style={styles.videoContainer}>
         <CLDVideoLayer
-          cldVideo={cldVideo}
+          cldVideo={createMyVideoObject()}
           autoPlay={false}
           muted={true}
           showCenterPlayButton={true}
@@ -285,6 +345,52 @@ const getCodeExample = (example: string) => {
       buttons: [/* vertical buttons */]
     }
   ]}
+/>`;
+
+    case 'subtitles':
+      return `// Subtitles button with language options
+<CLDVideoLayer
+  cldVideo={cldVideo}
+  subtitles={{
+    enabled: true,
+    defaultLanguage: 'off',
+    languages: [
+      { code: 'off', label: 'Off' },
+      { code: 'en', label: 'English' },
+      { code: 'es', label: 'Spanish' },
+      { code: 'fr', label: 'French' },
+      { code: 'de', label: 'German' },
+    ],
+    button: {
+      position: ButtonPosition.SE,
+      color: '#FF6B6B',
+      size: 28,
+    }
+  }}
+/>`;
+
+    case 'playbackSpeed':
+      return `// Playback speed button with multiple speeds
+<CLDVideoLayer
+  cldVideo={cldVideo}
+  playbackSpeed={{
+    enabled: true,
+    defaultSpeed: 1.0,
+    speeds: [
+      { value: 0.25, label: '0.25×' },
+      { value: 0.5, label: '0.5×' },
+      { value: 0.75, label: '0.75×' },
+      { value: 1.0, label: '1.0×' },
+      { value: 1.25, label: '1.25×' },
+      { value: 1.5, label: '1.5×' },
+      { value: 2.0, label: '2.0×' },
+    ],
+    button: {
+      position: ButtonPosition.NE,
+      color: '#4CAF50',
+      size: 28,
+    }
+  }}
 />`;
 
     default:
