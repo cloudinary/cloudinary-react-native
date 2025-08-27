@@ -165,7 +165,7 @@ export const ButtonLayoutDemo: React.FC = () => {
     <View style={styles.container}>
       {/* Header with Example Selector */}
       <View style={styles.header}>
-        <Text style={styles.title}>Button Layout Examples</Text>
+        <Text style={styles.title}> Active Layer Examples</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.examplesContainer}>
           {examples.map(example => (
             <TouchableOpacity

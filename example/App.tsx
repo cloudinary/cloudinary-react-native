@@ -88,9 +88,9 @@ export default function App() {
           style={[styles.button, styles.buttonLayoutButton]}
           onPress={() => navigateToScreen('buttonLayout')}
         >
-          <Text style={styles.buttonTitle}>🎯 Button Layout Demo</Text>
+          <Text style={styles.buttonTitle}>🎯 Active Layer Examples</Text>
           <Text style={styles.buttonDescription}>
-            Flexible button positioning and arrangements
+            Interactive layer components and controls
           </Text>
         </TouchableOpacity>
       </View>
