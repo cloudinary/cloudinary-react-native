@@ -25,6 +25,8 @@ export interface ButtonConfig {
   backgroundColor?: string;        // Button background color
   position: ButtonPosition;        // Button position
   onPress?: () => void;           // Custom functionality
+  text?: string;                   // Text label next to icon
+  textColor?: string;              // Text color
 }
 
 export interface ButtonGroupConfig {

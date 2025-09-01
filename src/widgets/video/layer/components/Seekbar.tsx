@@ -30,7 +30,8 @@ export const Seekbar: React.FC<SeekbarProps> = ({
     <View style={{ 
       height: timePosition === TimePosition.ABOVE ? timeTextSpacingAbove : timeTextSpacingBelow, 
       justifyContent: 'center',
-      alignItems: 'flex-start'
+      alignItems: 'flex-start',
+      paddingLeft: 12,
     }}>
       <Text style={[styles.timeText, { lineHeight: 16 }]}>
         {formatTime(currentPosition)} / {formatTime(status?.durationMillis || 0)}

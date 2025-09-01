@@ -14,6 +14,7 @@ import AdvancedVideoDemo from './AdvancedVideoDemo';
 import VideoLayerDemo from './VideoLayerDemo';
 import { ActiveLayerLayoutDemo } from './ActiveLayerLayoutDemo';
 import YouTubeLayerDemo from './YouTubeLayerDemo';
+import NetflixLayerDemo from './NetflixLayerDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -27,7 +28,7 @@ const getTopPadding = () => {
   return 35;
 };
 
-type CurrentScreen = 'home' | 'video' | 'videoLayer' | 'buttonLayout' | 'youtubeLayer';
+type CurrentScreen = 'home' | 'video' | 'videoLayer' | 'buttonLayout' | 'youtubeLayer' | 'netflixLayer';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
@@ -44,6 +45,10 @@ export default function App() {
     setCurrentScreen('youtubeLayer');
   };
 
+  const navigateToNetflix = () => {
+    setCurrentScreen('netflixLayer');
+  };
+
 
 
   const renderCurrentScreen = () => {
@@ -56,6 +61,8 @@ export default function App() {
         return <ActiveLayerLayoutDemo onNavigateToYouTube={navigateToYouTube} />;
       case 'youtubeLayer':
         return <YouTubeLayerDemo onBack={navigateHome} />;
+      case 'netflixLayer':
+        return <NetflixLayerDemo onBack={navigateHome} />;
       default:
         return renderHomeScreen();
     }
@@ -151,6 +158,25 @@ export default function App() {
               Professional YouTube video integration with custom branding and enhanced user experience.
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.featureCard, styles.netflixCard]}
+            onPress={() => navigateToScreen('netflixLayer')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardHeader}>
+              <View style={[styles.iconContainer, styles.netflixIcon]}>
+                <Text style={styles.iconText}>N</Text>
+              </View>
+              <View style={styles.cardTitleContainer}>
+                <Text style={[styles.cardTitle, styles.netflixCardTitle]}>Netflix Integration</Text>
+                <Text style={[styles.cardSubtitle, styles.netflixCardSubtitle]}>Streaming experience</Text>
+              </View>
+            </View>
+            <Text style={[styles.cardDescription, styles.netflixCardDescription]}>
+              Authentic Netflix-style streaming interface with advanced playback controls and Netflix branding.
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.footerContainer}>
@@ -188,6 +214,15 @@ export default function App() {
       <View style={styles.fullScreenContainer}>
         <StatusBar hidden />
         <YouTubeLayerDemo onBack={navigateHome} />
+      </View>
+    );
+  }
+
+  if (currentScreen === 'netflixLayer') {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <StatusBar hidden />
+        <NetflixLayerDemo onBack={navigateHome} />
       </View>
     );
   }
@@ -292,6 +327,11 @@ const styles = StyleSheet.create({
     borderLeftWidth: 6,
     borderLeftColor: '#ef4444',
   },
+  netflixCard: {
+    backgroundColor: '#1a1a1a',
+    borderLeftWidth: 6,
+    borderLeftColor: '#e50914',
+  },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -316,6 +356,18 @@ const styles = StyleSheet.create({
   },
   youtubeIcon: {
     backgroundColor: '#ef4444',
+  },
+  netflixIcon: {
+    backgroundColor: '#e50914',
+  },
+  netflixCardTitle: {
+    color: '#ffffff',
+  },
+  netflixCardSubtitle: {
+    color: '#cccccc',
+  },
+  netflixCardDescription: {
+    color: '#aaaaaa',
   },
   iconText: {
     fontSize: 20,

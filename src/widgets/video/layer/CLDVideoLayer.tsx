@@ -656,7 +656,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
               left: this.props.bottomButtonBar.style?.marginHorizontal || 20,
               right: this.props.bottomButtonBar.style?.marginHorizontal || 20,
               flexDirection: 'row',
-              justifyContent: 'flex-start',
+              justifyContent: 'center',
               alignItems: 'center',
               zIndex: 1, // Lower than seekbar and bottom controls
               backgroundColor: this.props.bottomButtonBar.style?.backgroundColor || 'rgba(0,0,0,0.7)',
@@ -670,11 +670,13 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
               <TouchableOpacity
                 key={`bottom-bar-${index}`}
                 style={{
-                  marginRight: index < this.props.bottomButtonBar!.buttons.length - 1 ? 32 : 0,
+                  marginHorizontal: 16,
                   paddingVertical: 8,
-                  paddingHorizontal: 4,
+                  paddingHorizontal: 8,
                   backgroundColor: button.backgroundColor || 'transparent',
                   borderRadius: button.backgroundColor ? 15 : 0,
+                  flexDirection: 'row',
+                  alignItems: 'center',
                 }}
                 onPress={button.onPress}
               >
@@ -683,6 +685,16 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
                   size={button.size || 20} 
                   color={button.color || 'white'} 
                 />
+                {button.text && (
+                  <Text style={{
+                    color: button.textColor || button.color || 'white',
+                    fontSize: 14,
+                    fontWeight: '500',
+                    marginLeft: 6,
+                  }}>
+                    {button.text}
+                  </Text>
+                )}
               </TouchableOpacity>
             ))}
           </View>
