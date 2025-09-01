@@ -186,6 +186,7 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
       paddingHorizontal: 20,
       paddingVertical: bottomPadding,
       backgroundColor: COLORS.bottomControlsBackground,
+      zIndex: 10, // Ensure bottom controls appear above button bar
     },
     bottomLeftControls: {
       flex: 1,

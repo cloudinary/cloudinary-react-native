@@ -4,7 +4,11 @@ import { CLDVideoLayer } from '../src/widgets/video/layer/CLDVideoLayer';
 import { ButtonPosition, ButtonLayoutDirection } from '../src/widgets/video/layer/types';
 import { Cloudinary } from '@cloudinary/url-gen';
 
-export const ActiveLayerLayoutDemo: React.FC = () => {
+interface ActiveLayerLayoutDemoProps {
+  onNavigateToYouTube?: () => void;
+}
+
+export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ onNavigateToYouTube }) => {
   const [currentExample, setCurrentExample] = useState('horizontal');
 
   // Create a sample video

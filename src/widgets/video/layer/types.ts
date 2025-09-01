@@ -95,6 +95,20 @@ export interface CLDVideoLayerProps {
   playbackSpeed?: PlaybackSpeedConfig;
   subtitles?: SubtitlesConfig;
   buttonGroups?: ButtonGroupConfig[];  // Button groups with layout control
+  bottomButtonBar?: {
+    enabled: boolean;
+    buttons: ButtonConfig[];
+    style?: {
+      backgroundColor?: string;
+      borderRadius?: number;
+      paddingHorizontal?: number;
+      paddingVertical?: number;
+      marginHorizontal?: number;
+      marginBottom?: number;
+    };
+  };  // Bottom button bar positioned below seekbar
+  title?: string;
+  subtitle?: string;
 }
 
 export interface TopControlsProps {

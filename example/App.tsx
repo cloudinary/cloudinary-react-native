@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Platform, Dimensions } from 'react-native';
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  Platform, 
+  Dimensions,
+  ScrollView,
+  SafeAreaView
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import AdvancedImageDemo from './AdvancedImageDemo';
 import AdvancedVideoDemo from './AdvancedVideoDemo';
 import VideoLayerDemo from './VideoLayerDemo';
 import { ActiveLayerLayoutDemo } from './ActiveLayerLayoutDemo';
+import YouTubeLayerDemo from './YouTubeLayerDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -18,7 +27,7 @@ const getTopPadding = () => {
   return 35;
 };
 
-type CurrentScreen = 'home' | 'image' | 'video' | 'videoLayer' | 'buttonLayout';
+type CurrentScreen = 'home' | 'video' | 'videoLayer' | 'buttonLayout' | 'youtubeLayer';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
@@ -31,76 +40,129 @@ export default function App() {
     setCurrentScreen('home');
   };
 
+  const navigateToYouTube = () => {
+    setCurrentScreen('youtubeLayer');
+  };
+
+
+
   const renderCurrentScreen = () => {
     switch (currentScreen) {
-      case 'image':
-        return <AdvancedImageDemo />;
       case 'video':
         return <AdvancedVideoDemo />;
       case 'videoLayer':
         return <VideoLayerDemo onBack={navigateHome} />;
       case 'buttonLayout':
-        return <ActiveLayerLayoutDemo />;
+        return <ActiveLayerLayoutDemo onNavigateToYouTube={navigateToYouTube} />;
+      case 'youtubeLayer':
+        return <YouTubeLayerDemo onBack={navigateHome} />;
       default:
         return renderHomeScreen();
     }
   };
 
   const renderHomeScreen = () => (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.title}>Cloudinary React Native SDK</Text>
-        <Text style={styles.subtitle}>Widget Examples</Text>
-      </View>
-      
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={[styles.button, styles.imageButton]}
-          onPress={() => navigateToScreen('image')}
-        >
-          <Text style={styles.buttonTitle}>📸 Advanced Image</Text>
-          <Text style={styles.buttonDescription}>
-            Showcase image transformations and effects
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="light" backgroundColor="#1a1a2e" />
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollContainer}>
+        <View style={styles.headerContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Cloudinary</Text>
+            <Text style={styles.titleAccent}>Video Studio</Text>
+          </View>
+          <Text style={styles.subtitle}>
+            Professional video experiences for mobile
           </Text>
-        </TouchableOpacity>
+        </View>
+        
+        <View style={styles.featuresContainer}>
+          <TouchableOpacity
+            style={[styles.featureCard, styles.primaryCard]}
+            onPress={() => navigateToScreen('video')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardHeader}>
+              <View style={[styles.iconContainer, styles.videoIcon]}>
+                <Text style={styles.iconText}>▶</Text>
+              </View>
+              <View style={styles.cardTitleContainer}>
+                <Text style={styles.cardTitle}>Advanced Video Player</Text>
+                <Text style={styles.cardSubtitle}>Smart playback & analytics</Text>
+              </View>
+            </View>
+            <Text style={styles.cardDescription}>
+              Experience next-gen video playback with real-time analytics, adaptive streaming, and intelligent controls.
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, styles.videoButton]}
-          onPress={() => navigateToScreen('video')}
-        >
-          <Text style={styles.buttonTitle}>🎥 Advanced Video</Text>
-          <Text style={styles.buttonDescription}>
-            Video playback with analytics and controls
+          <TouchableOpacity
+            style={[styles.featureCard, styles.secondaryCard]}
+            onPress={() => navigateToScreen('videoLayer')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardHeader}>
+              <View style={[styles.iconContainer, styles.layerIcon]}>
+                <Text style={styles.iconText}>⚡</Text>
+              </View>
+              <View style={styles.cardTitleContainer}>
+                <Text style={styles.cardTitle}>Immersive Video Layer</Text>
+                <Text style={styles.cardSubtitle}>Full-screen experience</Text>
+              </View>
+            </View>
+            <Text style={styles.cardDescription}>
+              Cinematic full-screen video with elegant overlay controls and seamless user interactions.
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.featureCard, styles.accentCard]}
+            onPress={() => navigateToScreen('buttonLayout')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardHeader}>
+              <View style={[styles.iconContainer, styles.interactiveIcon]}>
+                <Text style={styles.iconText}>◉</Text>
+              </View>
+              <View style={styles.cardTitleContainer}>
+                <Text style={styles.cardTitle}>Interactive Components</Text>
+                <Text style={styles.cardSubtitle}>Dynamic controls</Text>
+              </View>
+            </View>
+            <Text style={styles.cardDescription}>
+              Explore advanced interactive layer components with custom controls and responsive layouts.
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.featureCard, styles.youtubeCard]}
+            onPress={() => navigateToScreen('youtubeLayer')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardHeader}>
+              <View style={[styles.iconContainer, styles.youtubeIcon]}>
+                <Text style={styles.iconText}>▣</Text>
+              </View>
+              <View style={styles.cardTitleContainer}>
+                <Text style={styles.cardTitle}>YouTube Integration</Text>
+                <Text style={styles.cardSubtitle}>Seamless embedding</Text>
+              </View>
+            </View>
+            <Text style={styles.cardDescription}>
+              Professional YouTube video integration with custom branding and enhanced user experience.
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.footerContainer}>
+          <Text style={styles.footerText}>
+            Powered by Cloudinary React Native SDK
           </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, styles.videoLayerButton]}
-          onPress={() => navigateToScreen('videoLayer')}
-        >
-          <Text style={styles.buttonTitle}>🎬 Video Layer</Text>
-          <Text style={styles.buttonDescription}>
-            Full-screen video with overlay controls
+          <Text style={styles.footerSubtext}>
+            Built for developers, designed for users
           </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, styles.buttonLayoutButton]}
-          onPress={() => navigateToScreen('buttonLayout')}
-        >
-          <Text style={styles.buttonTitle}>🎯 Active Layer Examples</Text>
-          <Text style={styles.buttonDescription}>
-            Interactive layer components and controls
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.footerContainer}>
-        <Text style={styles.footerText}>
-          Built with Cloudinary React Native SDK
-        </Text>
-      </View>
-    </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 
   if (currentScreen === 'videoLayer') {
@@ -116,125 +178,211 @@ export default function App() {
     return (
       <View style={styles.fullScreenContainer}>
         <StatusBar style="auto" />
-        <ActiveLayerLayoutDemo />
+        <ActiveLayerLayoutDemo onNavigateToYouTube={navigateToYouTube} />
+      </View>
+    );
+  }
+
+  if (currentScreen === 'youtubeLayer') {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <StatusBar hidden />
+        <YouTubeLayerDemo onBack={navigateHome} />
       </View>
     );
   }
 
   return (
-    <View style={styles.safeArea}>
-      <StatusBar style="auto" />
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar style="light" backgroundColor="#1a1a2e" />
       {currentScreen !== 'home' && (
-        <TouchableOpacity style={styles.backButton} onPress={navigateHome}>
-          <Text style={styles.backButtonText}>← Back to Home</Text>
-        </TouchableOpacity>
+        <View style={styles.backButtonContainer}>
+          <TouchableOpacity style={styles.backButton} onPress={navigateHome}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+        </View>
       )}
       {renderCurrentScreen()}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: getTopPadding(),
+    backgroundColor: '#1a1a2e',
   },
   fullScreenContainer: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#000000',
   },
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    justifyContent: 'space-between',
+    backgroundColor: '#1a1a2e',
+  },
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: '#1a1a2e',
   },
   headerContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 40,
     alignItems: 'center',
-    marginTop: 40,
+    backgroundColor: '#1a1a2e',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 12,
   },
   title: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 8,
+    color: '#ffffff',
+    letterSpacing: -1,
+  },
+  titleAccent: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#6366f1',
+    letterSpacing: -1,
   },
   subtitle: {
     fontSize: 18,
-    color: '#666',
+    color: '#94a3b8',
     textAlign: 'center',
+    fontWeight: '500',
+    lineHeight: 24,
   },
-  buttonsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingVertical: 20,
+  featuresContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
   },
-  button: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-    padding: 20,
-    marginVertical: 10,
-    alignItems: 'center',
+  featureCard: {
+    marginBottom: 20,
+    padding: 24,
+    borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 8,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
   },
-  imageButton: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#4CAF50',
+  primaryCard: {
+    backgroundColor: '#ffffff',
+    borderLeftWidth: 6,
+    borderLeftColor: '#6366f1',
   },
-  videoButton: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#2196F3',
+  secondaryCard: {
+    backgroundColor: '#f8fafc',
+    borderLeftWidth: 6,
+    borderLeftColor: '#06b6d4',
   },
-  videoLayerButton: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF9800',
+  accentCard: {
+    backgroundColor: '#fefce8',
+    borderLeftWidth: 6,
+    borderLeftColor: '#eab308',
   },
-  buttonLayoutButton: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#9C27B0',
+  youtubeCard: {
+    backgroundColor: '#fef2f2',
+    borderLeftWidth: 6,
+    borderLeftColor: '#ef4444',
   },
-  fullScreenPlayerButton: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#9C27B0',
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  buttonTitle: {
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  videoIcon: {
+    backgroundColor: '#6366f1',
+  },
+  layerIcon: {
+    backgroundColor: '#06b6d4',
+  },
+  interactiveIcon: {
+    backgroundColor: '#eab308',
+  },
+  youtubeIcon: {
+    backgroundColor: '#ef4444',
+  },
+  iconText: {
+    fontSize: 20,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  cardTitleContainer: {
+    flex: 1,
+  },
+  cardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    color: '#1e293b',
+    marginBottom: 2,
   },
-  buttonDescription: {
+  cardSubtitle: {
     fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+    color: '#64748b',
+    fontWeight: '500',
+  },
+  cardDescription: {
+    fontSize: 16,
+    color: '#475569',
+    lineHeight: 22,
+    fontWeight: 'normal',
   },
   footerContainer: {
-    paddingBottom: 20,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
     alignItems: 'center',
+    backgroundColor: '#1a1a2e',
   },
   footerText: {
-    fontSize: 14,
-    color: '#999',
+    fontSize: 16,
+    color: '#64748b',
     textAlign: 'center',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  footerSubtext: {
+    fontSize: 14,
+    color: '#475569',
+    textAlign: 'center',
+    fontWeight: 'normal',
+  },
+  backButtonContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    backgroundColor: '#1a1a2e',
   },
   backButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    margin: 16,
+    backgroundColor: '#6366f1',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
     alignSelf: 'flex-start',
+    shadowColor: '#6366f1',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   backButtonText: {
-    color: 'white',
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
   },

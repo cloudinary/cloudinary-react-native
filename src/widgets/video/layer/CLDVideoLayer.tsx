@@ -7,7 +7,7 @@ import { CLDVideoLayerProps, ButtonPosition, ButtonLayoutDirection } from './typ
 import { formatTime, handleDefaultShare } from './utils';
 import { styles, getResponsiveStyles } from './styles';
 import { TopControls, CenterControls, BottomControls, CustomButton } from './components';
-import { ICON_SIZES, calculateButtonPosition } from './constants';
+import { ICON_SIZES, calculateButtonPosition, getBottomControlsPadding, BOTTOM_BUTTON_SIZE, SEEKBAR_HEIGHT, getTopPadding } from './constants';
 
 interface CLDVideoLayerState {
   status: any | null;
@@ -444,34 +444,49 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
           {showCenterPlayButton && (
             <CenterControls status={status} onPlayPause={this.handlePlayPause} />
           )}
-          <BottomControls
-            status={status}
-            onPlayPause={this.handlePlayPause}
-            onMuteToggle={this.handleMuteToggle}
-            formatTime={formatTime}
-            getProgress={this.getProgress}
-            getCurrentPosition={this.getCurrentPosition}
-            seekBarRef={this.seekbarRef}
-            panResponder={this.panResponder}
-            backButtonPosition={backButtonPosition}
-            shareButtonPosition={shareButtonPosition}
-            isLandscape={isLandscape}
-            seekbar={seekBar}
-            fullScreen={fullScreen}
-            isFullScreen={isFullScreen}
-            onToggleFullScreen={this.handleToggleFullScreen}
-            playbackSpeed={playbackSpeed}
-            currentPlaybackSpeed={this.state.currentPlaybackSpeed}
-            onPlaybackSpeedChange={this.handlePlaybackSpeedChange}
-            isSpeedMenuVisible={this.state.isSpeedMenuVisible}
-            onToggleSpeedMenu={this.handleToggleSpeedMenu}
-            subtitles={subtitles}
-            currentSubtitle={this.state.currentSubtitle}
-            onSubtitleChange={this.handleSubtitleChange}
-            isSubtitlesMenuVisible={this.state.isSubtitlesMenuVisible}
-            onToggleSubtitlesMenu={this.handleToggleSubtitlesMenu}
-            buttonGroups={buttonGroups}
-          />
+          <View style={(() => {
+            // If bottom button bar is enabled, add extra bottom padding to push seekbar up
+            if (this.props.bottomButtonBar?.enabled) {
+              const buttonBarPadding = (this.props.bottomButtonBar.style?.paddingVertical || 8) * 2;
+              const buttonHeight = 22; // Icon size from button bar
+              const buttonBarHeight = buttonBarPadding + buttonHeight;
+              const extraSpacing = 8; // Small gap between seekbar and button bar
+              
+              return {
+                paddingBottom: buttonBarHeight + extraSpacing
+              };
+            }
+            return {};
+          })()}>
+            <BottomControls
+              status={status}
+              onPlayPause={this.handlePlayPause}
+              onMuteToggle={this.handleMuteToggle}
+              formatTime={formatTime}
+              getProgress={this.getProgress}
+              getCurrentPosition={this.getCurrentPosition}
+              seekBarRef={this.seekbarRef}
+              panResponder={this.panResponder}
+              backButtonPosition={backButtonPosition}
+              shareButtonPosition={shareButtonPosition}
+              isLandscape={isLandscape}
+              seekbar={seekBar}
+              fullScreen={fullScreen}
+              isFullScreen={isFullScreen}
+              onToggleFullScreen={this.handleToggleFullScreen}
+              playbackSpeed={playbackSpeed}
+              currentPlaybackSpeed={this.state.currentPlaybackSpeed}
+              onPlaybackSpeedChange={this.handlePlaybackSpeedChange}
+              isSpeedMenuVisible={this.state.isSpeedMenuVisible}
+              onToggleSpeedMenu={this.handleToggleSpeedMenu}
+              subtitles={subtitles}
+              currentSubtitle={this.state.currentSubtitle}
+              onSubtitleChange={this.handleSubtitleChange}
+              isSubtitlesMenuVisible={this.state.isSubtitlesMenuVisible}
+              onToggleSubtitlesMenu={this.handleToggleSubtitlesMenu}
+              buttonGroups={buttonGroups}
+            />
+          </View>
         </Animated.View>
 
         {/* Absolute positioned buttons - rendered outside animated overlay for proper positioning */}
@@ -585,6 +600,92 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
               return renderedButtons;
             })()}
           </>
+        )}
+
+        {/* Title and Subtitle in NW corner */}
+        {this.state.isControlsVisible && (this.props.title || this.props.subtitle) && (
+          <View style={[
+            {
+              position: 'absolute',
+              top: getTopPadding(isLandscape) + (isLandscape ? 6 : 8),
+              left: onBack && backButtonPosition === ButtonPosition.NW ? 80 : 20, // Offset if back button is in NW
+              zIndex: 15,
+              maxWidth: '60%', // Prevent overlap with right side buttons
+            }
+          ]}>
+            {this.props.title && (
+              <Text style={{
+                color: 'white',
+                fontSize: isLandscape ? 16 : 18,
+                fontWeight: 'bold',
+                textShadowColor: 'rgba(0,0,0,0.8)',
+                textShadowOffset: { width: 1, height: 1 },
+                textShadowRadius: 2,
+                marginBottom: 2,
+              }} numberOfLines={1}>
+                {this.props.title}
+              </Text>
+            )}
+            {this.props.subtitle && (
+              <Text style={{
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: isLandscape ? 12 : 14,
+                fontWeight: '500',
+                textShadowColor: 'rgba(0,0,0,0.8)',
+                textShadowOffset: { width: 1, height: 1 },
+                textShadowRadius: 2,
+              }} numberOfLines={1}>
+                {this.props.subtitle}
+              </Text>
+            )}
+          </View>
+        )}
+
+        {/* Bottom Button Bar - positioned below seekbar */}
+        {this.state.isControlsVisible && this.props.bottomButtonBar?.enabled && (
+          <View style={[
+            {
+              position: 'absolute',
+              bottom: (() => {
+                // Position button bar below the seekbar (closer to screen bottom)
+                // Use a small bottom value to place it below the seekbar
+                const spacingFromBottom = 0;
+                
+                return spacingFromBottom;
+              })(),
+              left: this.props.bottomButtonBar.style?.marginHorizontal || 20,
+              right: this.props.bottomButtonBar.style?.marginHorizontal || 20,
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              zIndex: 1, // Lower than seekbar and bottom controls
+              backgroundColor: this.props.bottomButtonBar.style?.backgroundColor || 'rgba(0,0,0,0.7)',
+              borderRadius: this.props.bottomButtonBar.style?.borderRadius || 20,
+              paddingHorizontal: this.props.bottomButtonBar.style?.paddingHorizontal || 16,
+              paddingVertical: this.props.bottomButtonBar.style?.paddingVertical || 8,
+              marginBottom: this.props.bottomButtonBar.style?.marginBottom || 0,
+            }
+          ]}>
+            {this.props.bottomButtonBar.buttons.map((button, index) => (
+              <TouchableOpacity
+                key={`bottom-bar-${index}`}
+                style={{
+                  marginRight: index < this.props.bottomButtonBar!.buttons.length - 1 ? 32 : 0,
+                  paddingVertical: 8,
+                  paddingHorizontal: 4,
+                  backgroundColor: button.backgroundColor || 'transparent',
+                  borderRadius: button.backgroundColor ? 15 : 0,
+                }}
+                onPress={button.onPress}
+              >
+                <Ionicons 
+                  name={button.icon as any} 
+                  size={button.size || 20} 
+                  color={button.color || 'white'} 
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
         )}
       </TouchableOpacity>
     );

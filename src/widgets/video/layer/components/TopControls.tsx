@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { TopControlsProps, ButtonPosition, ButtonLayoutDirection } from '../types';
 import { styles, getResponsiveStyles } from '../styles';
@@ -41,6 +41,8 @@ export const TopControls: React.FC<TopControlsProps> = ({
         return {};
     }
   };
+
+
 
   // Create default full screen button if enabled
   const defaultFullScreenButton = fullScreen?.enabled === true && fullScreen?.button ? {
@@ -124,7 +126,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
           ))}
         </View>
 
-        {/* Center - N positioned button */}
+        {/* Center - N positioned buttons */}
         <View style={{ flexDirection: 'row' }}>
           {onBack && backButtonPosition === ButtonPosition.N && (
             <TouchableOpacity 
