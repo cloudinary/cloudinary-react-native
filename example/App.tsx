@@ -15,6 +15,7 @@ import VideoLayerDemo from './VideoLayerDemo';
 import { ActiveLayerLayoutDemo } from './ActiveLayerLayoutDemo';
 import YouTubeLayerDemo from './YouTubeLayerDemo';
 import NetflixLayerDemo from './NetflixLayerDemo';
+import TikTokLayerDemo from './TikTokLayerDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -28,7 +29,7 @@ const getTopPadding = () => {
   return 35;
 };
 
-type CurrentScreen = 'home' | 'video' | 'videoLayer' | 'buttonLayout' | 'youtubeLayer' | 'netflixLayer';
+type CurrentScreen = 'home' | 'video' | 'videoLayer' | 'buttonLayout' | 'youtubeLayer' | 'netflixLayer' | 'tiktokLayer';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
@@ -49,6 +50,10 @@ export default function App() {
     setCurrentScreen('netflixLayer');
   };
 
+  const navigateToTikTok = () => {
+    setCurrentScreen('tiktokLayer');
+  };
+
 
 
   const renderCurrentScreen = () => {
@@ -63,6 +68,8 @@ export default function App() {
         return <YouTubeLayerDemo onBack={navigateHome} />;
       case 'netflixLayer':
         return <NetflixLayerDemo onBack={navigateHome} />;
+      case 'tiktokLayer':
+        return <TikTokLayerDemo onBack={navigateHome} />;
       default:
         return renderHomeScreen();
     }
@@ -152,6 +159,18 @@ export default function App() {
               <Text style={[styles.gridTitle, styles.netflixGridTitle]}>Netflix</Text>
               <Text style={[styles.gridSubtitle, styles.netflixGridSubtitle]}>Streaming experience</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.gridCard, styles.tiktokCard]}
+              onPress={() => navigateToScreen('tiktokLayer')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.gridIconContainer, styles.tiktokIcon]}>
+                <Text style={styles.gridIconText}>🎵</Text>
+              </View>
+              <Text style={[styles.gridTitle, styles.tiktokGridTitle]}>TikTok</Text>
+              <Text style={[styles.gridSubtitle, styles.tiktokGridSubtitle]}>Endless feed</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -199,6 +218,15 @@ export default function App() {
       <View style={styles.fullScreenContainer}>
         <StatusBar hidden />
         <NetflixLayerDemo onBack={navigateHome} />
+      </View>
+    );
+  }
+
+  if (currentScreen === 'tiktokLayer') {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <StatusBar hidden />
+        <TikTokLayerDemo onBack={navigateHome} />
       </View>
     );
   }
@@ -396,6 +424,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#27272a',
   },
+  tiktokCard: {
+    backgroundColor: '#1a1a1a',
+    borderWidth: 1,
+    borderColor: '#ff0050',
+  },
   // Icon Colors
   videoIcon: {
     backgroundColor: '#6366f1',
@@ -412,11 +445,20 @@ const styles = StyleSheet.create({
   netflixIcon: {
     backgroundColor: '#e50914',
   },
+  tiktokIcon: {
+    backgroundColor: '#ff0050',
+  },
   // Netflix Special Styling
   netflixGridTitle: {
     color: '#ffffff',
   },
   netflixGridSubtitle: {
+    color: '#cccccc',
+  },
+  tiktokGridTitle: {
+    color: '#ffffff',
+  },
+  tiktokGridSubtitle: {
     color: '#cccccc',
   },
   footerContainer: {

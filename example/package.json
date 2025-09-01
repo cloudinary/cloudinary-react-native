@@ -23,7 +23,8 @@
     "isomorphic-fetch": "^3.0.0",
     "react": "19.0.0",
     "react-native": "0.79.5",
-    "util": "^0.10.4"
+    "util": "^0.10.4",
+    "react-native-svg": "15.11.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
