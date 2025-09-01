@@ -83,100 +83,76 @@ export default function App() {
         </View>
         
         <View style={styles.featuresContainer}>
+          {/* Hero Feature Card */}
           <TouchableOpacity
-            style={[styles.featureCard, styles.primaryCard]}
+            style={[styles.heroCard, styles.primaryCard]}
             onPress={() => navigateToScreen('video')}
-            activeOpacity={0.8}
+            activeOpacity={0.75}
           >
-            <View style={styles.cardHeader}>
-              <View style={[styles.iconContainer, styles.videoIcon]}>
-                <Text style={styles.iconText}>▶</Text>
+            <View style={styles.heroCardContent}>
+              <View style={[styles.heroIconContainer, styles.videoIcon]}>
+                <Text style={styles.heroIconText}>▶</Text>
               </View>
-              <View style={styles.cardTitleContainer}>
-                <Text style={styles.cardTitle}>Advanced Video Player</Text>
-                <Text style={styles.cardSubtitle}>Smart playback & analytics</Text>
+              <View style={styles.heroTextContainer}>
+                <Text style={styles.heroTitle}>Advanced Video Player</Text>
+                <Text style={styles.heroSubtitle}>Smart playback & analytics</Text>
+                <Text style={styles.heroDescription}>
+                  Experience next-gen video playback with real-time analytics and intelligent controls.
+                </Text>
               </View>
             </View>
-            <Text style={styles.cardDescription}>
-              Experience next-gen video playback with real-time analytics, adaptive streaming, and intelligent controls.
-            </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.featureCard, styles.secondaryCard]}
-            onPress={() => navigateToScreen('videoLayer')}
-            activeOpacity={0.8}
-          >
-            <View style={styles.cardHeader}>
-              <View style={[styles.iconContainer, styles.layerIcon]}>
-                <Text style={styles.iconText}>⚡</Text>
+          {/* Grid Features */}
+          <View style={styles.gridContainer}>
+            <TouchableOpacity
+              style={[styles.gridCard, styles.secondaryCard]}
+              onPress={() => navigateToScreen('videoLayer')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.gridIconContainer, styles.layerIcon]}>
+                <Text style={styles.gridIconText}>⚡</Text>
               </View>
-              <View style={styles.cardTitleContainer}>
-                <Text style={styles.cardTitle}>Immersive Video Layer</Text>
-                <Text style={styles.cardSubtitle}>Full-screen experience</Text>
-              </View>
-            </View>
-            <Text style={styles.cardDescription}>
-              Cinematic full-screen video with elegant overlay controls and seamless user interactions.
-            </Text>
-          </TouchableOpacity>
+              <Text style={styles.gridTitle}>Immersive Layer</Text>
+              <Text style={styles.gridSubtitle}>Full-screen experience</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.featureCard, styles.accentCard]}
-            onPress={() => navigateToScreen('buttonLayout')}
-            activeOpacity={0.8}
-          >
-            <View style={styles.cardHeader}>
-              <View style={[styles.iconContainer, styles.interactiveIcon]}>
-                <Text style={styles.iconText}>◉</Text>
+            <TouchableOpacity
+              style={[styles.gridCard, styles.accentCard]}
+              onPress={() => navigateToScreen('buttonLayout')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.gridIconContainer, styles.interactiveIcon]}>
+                <Text style={styles.gridIconText}>◉</Text>
               </View>
-              <View style={styles.cardTitleContainer}>
-                <Text style={styles.cardTitle}>Interactive Components</Text>
-                <Text style={styles.cardSubtitle}>Dynamic controls</Text>
-              </View>
-            </View>
-            <Text style={styles.cardDescription}>
-              Explore advanced interactive layer components with custom controls and responsive layouts.
-            </Text>
-          </TouchableOpacity>
+              <Text style={styles.gridTitle}>Interactive UI</Text>
+              <Text style={styles.gridSubtitle}>Dynamic controls</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.featureCard, styles.youtubeCard]}
-            onPress={() => navigateToScreen('youtubeLayer')}
-            activeOpacity={0.8}
-          >
-            <View style={styles.cardHeader}>
-              <View style={[styles.iconContainer, styles.youtubeIcon]}>
-                <Text style={styles.iconText}>▣</Text>
+            <TouchableOpacity
+              style={[styles.gridCard, styles.youtubeCard]}
+              onPress={() => navigateToScreen('youtubeLayer')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.gridIconContainer, styles.youtubeIcon]}>
+                <Text style={styles.gridIconText}>▣</Text>
               </View>
-              <View style={styles.cardTitleContainer}>
-                <Text style={styles.cardTitle}>YouTube Integration</Text>
-                <Text style={styles.cardSubtitle}>Seamless embedding</Text>
-              </View>
-            </View>
-            <Text style={styles.cardDescription}>
-              Professional YouTube video integration with custom branding and enhanced user experience.
-            </Text>
-          </TouchableOpacity>
+              <Text style={styles.gridTitle}>YouTube</Text>
+              <Text style={styles.gridSubtitle}>Seamless embedding</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.featureCard, styles.netflixCard]}
-            onPress={() => navigateToScreen('netflixLayer')}
-            activeOpacity={0.8}
-          >
-            <View style={styles.cardHeader}>
-              <View style={[styles.iconContainer, styles.netflixIcon]}>
-                <Text style={styles.iconText}>N</Text>
+            <TouchableOpacity
+              style={[styles.gridCard, styles.netflixCard]}
+              onPress={() => navigateToScreen('netflixLayer')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.gridIconContainer, styles.netflixIcon]}>
+                <Text style={styles.gridIconText}>N</Text>
               </View>
-              <View style={styles.cardTitleContainer}>
-                <Text style={[styles.cardTitle, styles.netflixCardTitle]}>Netflix Integration</Text>
-                <Text style={[styles.cardSubtitle, styles.netflixCardSubtitle]}>Streaming experience</Text>
-              </View>
-            </View>
-            <Text style={[styles.cardDescription, styles.netflixCardDescription]}>
-              Authentic Netflix-style streaming interface with advanced playback controls and Netflix branding.
-            </Text>
-          </TouchableOpacity>
+              <Text style={[styles.gridTitle, styles.netflixGridTitle]}>Netflix</Text>
+              <Text style={[styles.gridSubtitle, styles.netflixGridSubtitle]}>Streaming experience</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.footerContainer}>
@@ -290,61 +266,137 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   featuresContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 20,
     paddingBottom: 40,
   },
-  featureCard: {
-    marginBottom: 20,
-    padding: 24,
+  // Hero Card Styles
+  heroCard: {
+    marginBottom: 24,
+    borderRadius: 24,
+    overflow: 'hidden',
+    shadowColor: '#6366f1',
+    shadowOffset: {
+      width: 0,
+      height: 16,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+    elevation: 15,
+  },
+  heroCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 28,
+  },
+  heroIconContainer: {
+    width: 64,
+    height: 64,
     borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  heroIconText: {
+    fontSize: 28,
+    color: '#ffffff',
+    fontWeight: '700',
+  },
+  heroTextContainer: {
+    flex: 1,
+  },
+  heroTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    marginBottom: 4,
+  },
+  heroSubtitle: {
+    fontSize: 16,
+    color: '#64748b',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  heroDescription: {
+    fontSize: 15,
+    color: '#475569',
+    lineHeight: 20,
+    fontWeight: 'normal',
+  },
+  // Grid Container & Cards
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  gridCard: {
+    width: '48%',
+    marginBottom: 16,
+    padding: 20,
+    borderRadius: 20,
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 8,
     },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.12,
     shadowRadius: 16,
     elevation: 8,
   },
-  primaryCard: {
-    backgroundColor: '#ffffff',
-    borderLeftWidth: 6,
-    borderLeftColor: '#6366f1',
-  },
-  secondaryCard: {
-    backgroundColor: '#f8fafc',
-    borderLeftWidth: 6,
-    borderLeftColor: '#06b6d4',
-  },
-  accentCard: {
-    backgroundColor: '#fefce8',
-    borderLeftWidth: 6,
-    borderLeftColor: '#eab308',
-  },
-  youtubeCard: {
-    backgroundColor: '#fef2f2',
-    borderLeftWidth: 6,
-    borderLeftColor: '#ef4444',
-  },
-  netflixCard: {
-    backgroundColor: '#1a1a1a',
-    borderLeftWidth: 6,
-    borderLeftColor: '#e50914',
-  },
-  cardHeader: {
-    flexDirection: 'row',
+  gridIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
+  gridIconText: {
+    fontSize: 24,
+    color: '#ffffff',
+    fontWeight: '700',
   },
+  gridTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  gridSubtitle: {
+    fontSize: 13,
+    color: '#64748b',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  // Card Theme Colors
+  primaryCard: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  secondaryCard: {
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e0f2fe',
+  },
+  accentCard: {
+    backgroundColor: '#fefce8',
+    borderWidth: 1,
+    borderColor: '#fef3c7',
+  },
+  youtubeCard: {
+    backgroundColor: '#fef2f2',
+    borderWidth: 1,
+    borderColor: '#fecaca',
+  },
+  netflixCard: {
+    backgroundColor: '#18181b',
+    borderWidth: 1,
+    borderColor: '#27272a',
+  },
+  // Icon Colors
   videoIcon: {
     backgroundColor: '#6366f1',
   },
@@ -352,7 +404,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#06b6d4',
   },
   interactiveIcon: {
-    backgroundColor: '#eab308',
+    backgroundColor: '#f59e0b',
   },
   youtubeIcon: {
     backgroundColor: '#ef4444',
@@ -360,39 +412,12 @@ const styles = StyleSheet.create({
   netflixIcon: {
     backgroundColor: '#e50914',
   },
-  netflixCardTitle: {
+  // Netflix Special Styling
+  netflixGridTitle: {
     color: '#ffffff',
   },
-  netflixCardSubtitle: {
+  netflixGridSubtitle: {
     color: '#cccccc',
-  },
-  netflixCardDescription: {
-    color: '#aaaaaa',
-  },
-  iconText: {
-    fontSize: 20,
-    color: '#ffffff',
-    fontWeight: '600',
-  },
-  cardTitleContainer: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    marginBottom: 2,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    color: '#64748b',
-    fontWeight: '500',
-  },
-  cardDescription: {
-    fontSize: 16,
-    color: '#475569',
-    lineHeight: 22,
-    fontWeight: 'normal',
   },
   footerContainer: {
     paddingHorizontal: 24,
