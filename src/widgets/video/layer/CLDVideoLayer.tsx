@@ -394,7 +394,8 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       fullScreen,
       playbackSpeed,
       subtitles,
-      buttonGroups = []
+      buttonGroups = [],
+      titleLeftOffset
     } = this.props;
     const { status, isLandscape, isFullScreen } = this.state;
     const progress = this.getProgress();
@@ -608,7 +609,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             {
               position: 'absolute',
               top: getTopPadding(isLandscape) + (isLandscape ? 6 : 8),
-              left: onBack && backButtonPosition === ButtonPosition.NW ? 80 : 20, // Offset if back button is in NW
+              left: titleLeftOffset !== undefined ? titleLeftOffset : (onBack && backButtonPosition === ButtonPosition.NW ? 80 : 20), // Custom offset or default positioning
               zIndex: 15,
               maxWidth: '60%', // Prevent overlap with right side buttons
             }

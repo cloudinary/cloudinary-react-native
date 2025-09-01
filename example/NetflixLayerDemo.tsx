@@ -121,6 +121,7 @@ export default function NetflixLayerDemo({ onBack }: NetflixLayerDemoProps) {
         backButtonPosition={ButtonPosition.NW}
         title="S7:E9 'Mort: Ragnarick'"
         subtitle=""
+        titleLeftOffset={75} // Position title to the right of Netflix logo
         fullScreen={{
           enabled: true,
           landscapeOnly: true,

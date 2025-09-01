@@ -58,7 +58,7 @@ export default function App() {
       case 'videoLayer':
         return <VideoLayerDemo onBack={navigateHome} />;
       case 'buttonLayout':
-        return <ActiveLayerLayoutDemo onNavigateToYouTube={navigateToYouTube} />;
+        return <ActiveLayerLayoutDemo onNavigateToYouTube={navigateToYouTube} onBack={navigateHome} />;
       case 'youtubeLayer':
         return <YouTubeLayerDemo onBack={navigateHome} />;
       case 'netflixLayer':
@@ -204,7 +204,7 @@ export default function App() {
     return (
       <View style={styles.fullScreenContainer}>
         <StatusBar style="auto" />
-        <ActiveLayerLayoutDemo onNavigateToYouTube={navigateToYouTube} />
+        <ActiveLayerLayoutDemo onNavigateToYouTube={navigateToYouTube} onBack={navigateHome} />
       </View>
     );
   }

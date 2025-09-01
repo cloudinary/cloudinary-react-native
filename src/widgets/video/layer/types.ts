@@ -111,6 +111,7 @@ export interface CLDVideoLayerProps {
   };  // Bottom button bar positioned below seekbar
   title?: string;
   subtitle?: string;
+  titleLeftOffset?: number;  // Custom left offset for title/subtitle positioning
 }
 
 export interface TopControlsProps {

@@ -6,9 +6,10 @@ import { Cloudinary } from '@cloudinary/url-gen';
 
 interface ActiveLayerLayoutDemoProps {
   onNavigateToYouTube?: () => void;
+  onBack?: () => void;
 }
 
-export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ onNavigateToYouTube }) => {
+export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ onNavigateToYouTube, onBack }) => {
   const [currentExample, setCurrentExample] = useState('horizontal');
 
   // Create a sample video
@@ -227,6 +228,13 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
 
   return (
     <View style={styles.container}>
+      {/* Back button */}
+      {onBack && (
+        <TouchableOpacity style={styles.backButton} onPress={onBack}>
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+      )}
+      
       {/* Header with Example Selector */}
       <View style={styles.header}>
         <Text style={styles.title}> Active Layer Examples</Text>
@@ -476,5 +484,20 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     color: '#444',
     lineHeight: 16,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 1000,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  backButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
