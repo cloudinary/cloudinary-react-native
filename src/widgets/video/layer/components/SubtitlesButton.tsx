@@ -14,12 +14,7 @@ interface SubtitlesButtonProps {
   onToggleMenu?: () => void;
 }
 
-const DEFAULT_SUBTITLES: SubtitleOption[] = [
-  { code: 'off', label: 'Off' },
-  { code: 'en', label: 'English' },
-  { code: 'es', label: 'Spanish' },
-  { code: 'ar', label: 'Arabic' },
-];
+// Remove hardcoded default subtitles - now dynamically loaded from HLS manifest
 
 export const SubtitlesButton: React.FC<SubtitlesButtonProps> = ({
   subtitles,
@@ -31,12 +26,17 @@ export const SubtitlesButton: React.FC<SubtitlesButtonProps> = ({
 }) => {
   const responsiveStyles = getResponsiveStyles(isLandscape);
 
-  // Don't render if subtitles are not enabled
+  // Don't render if subtitles are not enabled or no options available
   if (!subtitles?.enabled) {
     return null;
   }
 
-  const subtitleOptions = subtitles.languages || DEFAULT_SUBTITLES;
+  const subtitleOptions = subtitles.languages || [];
+  
+  // Don't render if no subtitle options available (should not happen with our logic but defensive)
+  if (subtitleOptions.length === 0) {
+    return null;
+  }
   const currentSubtitleLabel = subtitleOptions.find(option => option.code === currentSubtitle)?.label || 'Off';
 
   const handleSubtitleSelect = (languageCode: string) => {

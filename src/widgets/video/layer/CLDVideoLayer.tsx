@@ -3,10 +3,11 @@ import { View, TouchableOpacity, Text, PanResponder, ActivityIndicator, Animated
 
 import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideo from '../../../AdvancedVideo';
-import { CLDVideoLayerProps, ButtonPosition, ButtonLayoutDirection } from './types';
-import { formatTime, handleDefaultShare } from './utils';
+import { CLDVideoLayerProps, ButtonPosition, ButtonLayoutDirection, SubtitleOption } from './types';
+import { formatTime, handleDefaultShare, isHLSVideo, parseHLSManifest, getVideoUrl } from './utils';
+import { SubtitleCue, fetchSubtitleFile, findActiveSubtitle } from './utils/subtitleUtils';
 import { styles, getResponsiveStyles } from './styles';
-import { TopControls, CenterControls, BottomControls, CustomButton } from './components';
+import { TopControls, CenterControls, BottomControls, CustomButton, SubtitleDisplay } from './components';
 import { ICON_SIZES, calculateButtonPosition, getBottomControlsPadding, BOTTOM_BUTTON_SIZE, SEEKBAR_HEIGHT, getTopPadding } from './constants';
 
 interface CLDVideoLayerState {
@@ -23,6 +24,9 @@ interface CLDVideoLayerState {
   isSpeedMenuVisible: boolean;
   currentSubtitle: string;
   isSubtitlesMenuVisible: boolean;
+  availableSubtitleTracks: SubtitleOption[];
+  subtitleCues: SubtitleCue[];
+  activeSubtitleText: string | null;
 }
 
 export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoLayerState> {
@@ -58,6 +62,9 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       isSpeedMenuVisible: false,
       currentSubtitle: props.subtitles?.defaultLanguage || 'off',
       isSubtitlesMenuVisible: false,
+      availableSubtitleTracks: [],
+      subtitleCues: [],
+      activeSubtitleText: null,
     };
 
     this.panResponder = PanResponder.create({
@@ -142,6 +149,10 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       this.startAutoHideTimer();
     }
   
+    // Parse HLS manifest for subtitle tracks if video is HLS
+    setTimeout(() => {
+      this.parseHLSSubtitlesIfNeeded();
+    }, 100);
     
     // Try multiple approaches for orientation detection
     this.orientationSubscription = Dimensions.addEventListener('change', this.handleOrientationChange);
@@ -154,6 +165,13 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
         this.setState({ isLandscape });
       }
     }, 500);
+  }
+
+  componentDidUpdate(prevProps: CLDVideoLayerProps) {
+    // Re-parse subtitles if video URL changed
+    if (prevProps.videoUrl !== this.props.videoUrl) {
+      this.parseHLSSubtitlesIfNeeded();
+    }
   }
 
   componentWillUnmount() {
@@ -253,16 +271,6 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   };
 
   handleStatusUpdate = (s: any) => {
-    console.log('CLDVideoLayer - Status Update:', {
-      isLoaded: s?.isLoaded,
-      durationMillis: s?.durationMillis,
-      positionMillis: s?.positionMillis,
-      isPlaying: s?.isPlaying,
-      error: s?.error,
-      hasFullStatus: !!s,
-      currentVideoLoaded: this.state.status?.isLoaded
-    });
-    
     // Always update status to handle loading states properly
     if (this.state.isSeekingComplete && this.state.lastSeekPosition > 0 && s?.isLoaded) {
       const currentVideoPosition = s.positionMillis || 0;
@@ -277,6 +285,9 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
         return;
       }
     }
+    
+    // Update subtitle text based on current time
+    this.updateActiveSubtitle(s);
     
     this.setState({ status: s });
   };
@@ -320,19 +331,84 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     this.setState({ isSpeedMenuVisible: !this.state.isSpeedMenuVisible });
   };
 
-  handleSubtitleChange = (languageCode: string) => {
-    // For now, just update the state. In the future, this will control actual subtitle display
-    console.log('Subtitle changed to:', languageCode);
-    this.setState({ currentSubtitle: languageCode });
+  handleSubtitleChange = async (languageCode: string) => {
+    this.setState({ currentSubtitle: languageCode, activeSubtitleText: null });
     
-    // TODO: In future versions, this will:
-    // 1. Load subtitle file from URL
-    // 2. Apply subtitles to video player
-    // 3. Handle subtitle rendering
+    if (languageCode === 'off') {
+      // Clear subtitle cues when turned off
+      this.setState({ subtitleCues: [], activeSubtitleText: null });
+      return;
+    }
+    
+    // Find the selected subtitle track
+    const selectedTrack = this.state.availableSubtitleTracks.find(
+      track => track.code === languageCode
+    );
+    
+    if (selectedTrack?.url) {
+      try {
+        const subtitleCues = await fetchSubtitleFile(selectedTrack.url);
+        this.setState({ subtitleCues });
+      } catch (error) {
+        console.warn('Failed to load subtitle file:', error);
+        this.setState({ subtitleCues: [] });
+      }
+    } else {
+      console.warn('No URL found for subtitle track:', languageCode);
+      this.setState({ subtitleCues: [] });
+    }
   };
 
   handleToggleSubtitlesMenu = () => {
     this.setState({ isSubtitlesMenuVisible: !this.state.isSubtitlesMenuVisible });
+  };
+
+  /**
+   * Parse HLS manifest to get available subtitle tracks if video is HLS
+   */
+  parseHLSSubtitlesIfNeeded = async () => {
+    const videoUrl = getVideoUrl(this.props.videoUrl, this.props.cldVideo);
+    
+    if (isHLSVideo(videoUrl)) {
+      try {
+        const subtitleTracks = await parseHLSManifest(videoUrl);
+        
+        // Always include "Off" option
+        const availableSubtitleTracks: SubtitleOption[] = [
+          { code: 'off', label: 'Off' },
+          ...subtitleTracks
+        ];
+        
+        this.setState({ availableSubtitleTracks });
+      } catch (error) {
+        console.warn('Failed to parse HLS subtitles:', error);
+        this.setState({ availableSubtitleTracks: [{ code: 'off', label: 'Off' }] });
+      }
+    }
+  };
+
+  /**
+   * Update active subtitle text based on current video time
+   */
+  updateActiveSubtitle = (status: any) => {
+    const { subtitleCues, currentSubtitle } = this.state;
+    
+    // Don't update if subtitles are off or no cues loaded
+    if (currentSubtitle === 'off' || subtitleCues.length === 0 || !status?.isLoaded) {
+      if (this.state.activeSubtitleText !== null) {
+        this.setState({ activeSubtitleText: null });
+      }
+      return;
+    }
+    
+    const currentTimeSeconds = (status.positionMillis || 0) / 1000;
+    const activeSubtitle = findActiveSubtitle(subtitleCues, currentTimeSeconds);
+    const newSubtitleText = activeSubtitle?.text || null;
+    
+    // Only update state if subtitle text changed to avoid unnecessary re-renders
+    if (this.state.activeSubtitleText !== newSubtitleText) {
+      this.setState({ activeSubtitleText: newSubtitleText });
+    }
   };
 
   handleShare = async () => {
@@ -397,10 +473,21 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       buttonGroups = [],
       titleLeftOffset
     } = this.props;
-    const { status, isLandscape, isFullScreen } = this.state;
+    const { status, isLandscape, isFullScreen, availableSubtitleTracks } = this.state;
     const progress = this.getProgress();
     const currentPosition = this.getCurrentPosition();
     const isVideoLoaded = status?.isLoaded === true;
+    
+    // Get the effective video URL for HLS detection
+    const effectiveVideoUrl = getVideoUrl(videoUrl, cldVideo);
+
+    // Create dynamic subtitles config based on HLS availability
+    const dynamicSubtitles = isHLSVideo(effectiveVideoUrl) && subtitles?.enabled ? {
+      ...subtitles,
+      enabled: true,
+      languages: availableSubtitleTracks.length > 0 ? availableSubtitleTracks : [{ code: 'off', label: 'Off' }],
+      defaultLanguage: subtitles?.defaultLanguage || 'off'
+    } : subtitles;
 
     // Get responsive styles based on current orientation
     const responsiveStyles = getResponsiveStyles(isLandscape);
@@ -413,7 +500,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       >
         <AdvancedVideo
           ref={this.videoRef}
-          cldVideo={cldVideo}
+          cldVideo={videoUrl ? undefined : cldVideo}
           videoUrl={videoUrl}
           videoStyle={StyleSheet.absoluteFill}
           onPlaybackStatusUpdate={this.handleStatusUpdate}
@@ -426,6 +513,13 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
             <Text style={styles.loadingText}>Loading video...</Text>
           </View>
         )}
+
+        {/* Subtitle Display */}
+        <SubtitleDisplay
+          text={this.state.activeSubtitleText || undefined}
+          isLandscape={isLandscape}
+          visible={!!this.state.activeSubtitleText && this.state.currentSubtitle !== 'off'}
+        />
 
         <Animated.View 
           style={[styles.overlay, { opacity: this.fadeAnim }]}
@@ -480,7 +574,7 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
               onPlaybackSpeedChange={this.handlePlaybackSpeedChange}
               isSpeedMenuVisible={this.state.isSpeedMenuVisible}
               onToggleSpeedMenu={this.handleToggleSpeedMenu}
-              subtitles={subtitles}
+              subtitles={dynamicSubtitles}
               currentSubtitle={this.state.currentSubtitle}
               onSubtitleChange={this.handleSubtitleChange}
               isSubtitlesMenuVisible={this.state.isSubtitlesMenuVisible}

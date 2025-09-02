@@ -154,17 +154,12 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
   ];
 
   // Example 4: Subtitles Button Demo
+  // For HLS videos, subtitles are automatically detected from the manifest
+  // No need to specify languages manually - they will be dynamically loaded
   const subtitlesButtonDemo = {
     subtitles: {
       enabled: true,
       defaultLanguage: 'off',
-      languages: [
-        { code: 'off', label: 'Off' },
-        { code: 'en', label: 'English' },
-        { code: 'es', label: 'Spanish' },
-        { code: 'fr', label: 'French' },
-        { code: 'de', label: 'German' },
-      ],
       button: {
         position: ButtonPosition.SE,
         color: '#FF6B6B',
@@ -266,6 +261,7 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
       <View style={styles.videoContainer}>
         <CLDVideoLayer
           cldVideo={createMyVideoObject()}
+          videoUrl={currentExample === 'subtitles' ? 'https://res.cloudinary.com/demo/video/upload/sp_sd:subtitles_((code_en-US;file_outdoors.vtt);(code_es;file_outdoors-es.vtt))/sea_turtle.m3u8' : undefined}
           autoPlay={false}
           muted={true}
           showCenterPlayButton={true}
@@ -360,19 +356,13 @@ const getCodeExample = (example: string) => {
 />`;
 
     case 'subtitles':
-      return `// Subtitles button with language options
+      return `// HLS Subtitles - automatically detected from manifest
 <CLDVideoLayer
-  cldVideo={cldVideo}
+  videoUrl='https://res.cloudinary.com/demo/video/upload/sp_sd:subtitles_((code_en-US;file_outdoors.vtt);(code_es;file_outdoors-es.vtt))/sea_turtle.m3u8'
   subtitles={{
     enabled: true,
     defaultLanguage: 'off',
-    languages: [
-      { code: 'off', label: 'Off' },
-      { code: 'en', label: 'English' },
-      { code: 'es', label: 'Spanish' },
-      { code: 'fr', label: 'French' },
-      { code: 'de', label: 'German' },
-    ],
+    // languages are automatically detected from HLS manifest
     button: {
       position: ButtonPosition.SE,
       color: '#FF6B6B',

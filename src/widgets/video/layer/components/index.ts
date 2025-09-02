@@ -4,4 +4,5 @@ export { BottomControls } from './BottomControls';
 export { Seekbar } from './Seekbar';
 export { CustomButton } from './CustomButton';
 export { PlaybackSpeedButton } from './PlaybackSpeedButton';
-export { SubtitlesButton } from './SubtitlesButton'; 
+export { SubtitlesButton } from './SubtitlesButton';
+export { SubtitleDisplay } from './SubtitleDisplay'; 
