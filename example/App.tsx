@@ -7,7 +7,8 @@ import {
   Platform, 
   Dimensions,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
+  Image
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AdvancedVideoDemo from './AdvancedVideoDemo';
@@ -77,7 +78,7 @@ export default function App() {
 
   const renderHomeScreen = () => (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor="#1a1a2e" />
+      <StatusBar style="light" backgroundColor="#000000" />
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollContainer}>
         <View style={styles.headerContainer}>
           <View style={styles.titleContainer}>
@@ -90,86 +91,90 @@ export default function App() {
         </View>
         
         <View style={styles.featuresContainer}>
-          {/* Hero Feature Card */}
-          <TouchableOpacity
-            style={[styles.heroCard, styles.primaryCard]}
-            onPress={() => navigateToScreen('video')}
-            activeOpacity={0.75}
-          >
-            <View style={styles.heroCardContent}>
-              <View style={[styles.heroIconContainer, styles.videoIcon]}>
-                <Text style={styles.heroIconText}>▶</Text>
-              </View>
-              <View style={styles.heroTextContainer}>
-                <Text style={styles.heroTitle}>Advanced Video Player</Text>
-                <Text style={styles.heroSubtitle}>Smart playback & analytics</Text>
-                <Text style={styles.heroDescription}>
-                  Experience next-gen video playback with real-time analytics and intelligent controls.
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          {/* Grid Features */}
-          <View style={styles.gridContainer}>
+          {/* Main Features Grid - All 6 items with consistent large icons */}
+          <View style={styles.mainGridContainer}>
             <TouchableOpacity
-              style={[styles.gridCard, styles.secondaryCard]}
+              style={[styles.mainGridCard, styles.primaryCard]}
+              onPress={() => navigateToScreen('video')}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.mainIconContainer, styles.videoIcon]}>
+                <Text style={styles.mainIconText}>▶</Text>
+              </View>
+              <Text style={styles.mainTitle}>Advanced Video</Text>
+              <Text style={styles.mainSubtitle}>Smart playback</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.mainGridCard, styles.secondaryCard]}
               onPress={() => navigateToScreen('videoLayer')}
               activeOpacity={0.7}
             >
-              <View style={[styles.gridIconContainer, styles.layerIcon]}>
-                <Text style={styles.gridIconText}>⚡</Text>
+              <View style={[styles.mainIconContainer, styles.layerIcon]}>
+                <Text style={styles.mainIconText}>⚡</Text>
               </View>
-              <Text style={styles.gridTitle}>Immersive Layer</Text>
-              <Text style={styles.gridSubtitle}>Full-screen experience</Text>
+              <Text style={styles.mainTitle}>Immersive Layer</Text>
+              <Text style={styles.mainSubtitle}>Full-screen</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.gridCard, styles.accentCard]}
+              style={[styles.mainGridCard, styles.accentCard]}
               onPress={() => navigateToScreen('buttonLayout')}
               activeOpacity={0.7}
             >
-              <View style={[styles.gridIconContainer, styles.interactiveIcon]}>
-                <Text style={styles.gridIconText}>◉</Text>
+              <View style={[styles.mainIconContainer, styles.interactiveIcon]}>
+                <Text style={styles.mainIconText}>◉</Text>
               </View>
-              <Text style={styles.gridTitle}>Interactive UI</Text>
-              <Text style={styles.gridSubtitle}>Dynamic controls</Text>
+              <Text style={styles.mainTitle}>Interactive UI</Text>
+              <Text style={styles.mainSubtitle}>Dynamic controls</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.gridCard, styles.youtubeCard]}
+              style={[styles.mainGridCard, styles.youtubeCard]}
               onPress={() => navigateToScreen('youtubeLayer')}
               activeOpacity={0.7}
             >
-              <View style={[styles.gridIconContainer, styles.youtubeIcon]}>
-                <Text style={styles.gridIconText}>▣</Text>
+              <View style={[styles.mainIconContainer, styles.youtubeIcon]}>
+                <Image 
+                  source={require('./assets/youtube.png')} 
+                  style={styles.youtubeIconImage}
+                  resizeMode="contain"
+                />
               </View>
-              <Text style={styles.gridTitle}>YouTube</Text>
-              <Text style={styles.gridSubtitle}>Seamless embedding</Text>
+              <Text style={styles.mainTitle}>YouTube</Text>
+              <Text style={styles.mainSubtitle}>Seamless embed</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.gridCard, styles.netflixCard]}
+              style={[styles.mainGridCard, styles.netflixCard]}
               onPress={() => navigateToScreen('netflixLayer')}
               activeOpacity={0.7}
             >
-              <View style={[styles.gridIconContainer, styles.netflixIcon]}>
-                <Text style={styles.gridIconText}>N</Text>
+              <View style={[styles.mainIconContainer, styles.netflixIcon]}>
+                <Image 
+                  source={require('./assets/netlfix.png')} 
+                  style={styles.netflixIconImage}
+                  resizeMode="contain"
+                />
               </View>
-              <Text style={[styles.gridTitle, styles.netflixGridTitle]}>Netflix</Text>
-              <Text style={[styles.gridSubtitle, styles.netflixGridSubtitle]}>Streaming experience</Text>
+              <Text style={[styles.mainTitle, styles.netflixGridTitle]}>Netflix</Text>
+              <Text style={[styles.mainSubtitle, styles.netflixGridSubtitle]}>Streaming</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.gridCard, styles.tiktokCard]}
+              style={[styles.mainGridCard, styles.tiktokCard]}
               onPress={() => navigateToScreen('tiktokLayer')}
               activeOpacity={0.7}
             >
-              <View style={[styles.gridIconContainer, styles.tiktokIcon]}>
-                <Text style={styles.gridIconText}>🎵</Text>
+              <View style={[styles.mainIconContainer, styles.tiktokIcon]}>
+                <Image 
+                  source={require('./assets/tiktok-seeklogo.png')} 
+                  style={styles.tiktokIconImage}
+                  resizeMode="contain"
+                />
               </View>
-              <Text style={[styles.gridTitle, styles.tiktokGridTitle]}>TikTok</Text>
-              <Text style={[styles.gridSubtitle, styles.tiktokGridSubtitle]}>Endless feed</Text>
+              <Text style={[styles.mainTitle, styles.tiktokGridTitle]}>TikTok</Text>
+              <Text style={[styles.mainSubtitle, styles.tiktokGridSubtitle]}>Endless feed</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -233,7 +238,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="light" backgroundColor="#1a1a2e" />
+      <StatusBar style="light" backgroundColor="#000000" />
       {currentScreen !== 'home' && (
         <View style={styles.backButtonContainer}>
           <TouchableOpacity style={styles.backButton} onPress={navigateHome}>
@@ -249,7 +254,7 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#000000',
   },
   fullScreenContainer: {
     flex: 1,
@@ -257,18 +262,18 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#000000',
   },
   scrollContainer: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#000000',
   },
   headerContainer: {
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 40,
     alignItems: 'center',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#000000',
   },
   titleContainer: {
     alignItems: 'center',
@@ -298,105 +303,65 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 40,
   },
-  // Hero Card Styles
-  heroCard: {
-    marginBottom: 24,
-    borderRadius: 24,
-    overflow: 'hidden',
-    shadowColor: '#6366f1',
-    shadowOffset: {
-      width: 0,
-      height: 16,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
-    elevation: 15,
-  },
-  heroCardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 28,
-  },
-  heroIconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 20,
-  },
-  heroIconText: {
-    fontSize: 28,
-    color: '#ffffff',
-    fontWeight: '700',
-  },
-  heroTextContainer: {
-    flex: 1,
-  },
-  heroTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  heroSubtitle: {
-    fontSize: 16,
-    color: '#64748b',
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  heroDescription: {
-    fontSize: 15,
-    color: '#475569',
-    lineHeight: 20,
-    fontWeight: 'normal',
-  },
-  // Grid Container & Cards
-  gridContainer: {
+  // Main Grid Container & Cards - New unified design
+  mainGridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    paddingHorizontal: 4,
   },
-  gridCard: {
+  mainGridCard: {
     width: '48%',
-    marginBottom: 16,
-    padding: 20,
-    borderRadius: 20,
+    marginBottom: 20,
+    padding: 24,
+    borderRadius: 24,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 8,
+      height: 12,
     },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 10,
+    minHeight: 160,
+    justifyContent: 'center',
   },
-  gridIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
+  mainIconContainer: {
+    width: 88,
+    height: 88,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  gridIconText: {
-    fontSize: 24,
+  mainIconText: {
+    fontSize: 42,
     color: '#ffffff',
     fontWeight: '700',
   },
-  gridTitle: {
-    fontSize: 16,
+  mainTitle: {
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#1e293b',
     textAlign: 'center',
     marginBottom: 4,
+    lineHeight: 18,
   },
-  gridSubtitle: {
-    fontSize: 13,
+  mainSubtitle: {
+    fontSize: 11,
     color: '#64748b',
     fontWeight: '500',
     textAlign: 'center',
+    lineHeight: 14,
   },
   // Card Theme Colors
   primaryCard: {
@@ -440,15 +405,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#f59e0b',
   },
   youtubeIcon: {
-    backgroundColor: '#ef4444',
+    backgroundColor: '#ffffff',
   },
   netflixIcon: {
-    backgroundColor: '#e50914',
+    backgroundColor: '#1a1a1a',
   },
   tiktokIcon: {
-    backgroundColor: '#ff0050',
+    backgroundColor: '#ffffff',
   },
   // Netflix Special Styling
+  netflixIconImage: {
+    width: 60,
+    height: 60,
+  },
+  // TikTok Special Styling
+  tiktokIconImage: {
+    width: 60,
+    height: 60,
+  },
+  // YouTube Special Styling
+  youtubeIconImage: {
+    width: 60,
+    height: 60,
+  },
   netflixGridTitle: {
     color: '#ffffff',
   },
@@ -465,7 +444,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 40,
     alignItems: 'center',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#000000',
   },
   footerText: {
     fontSize: 16,
@@ -483,7 +462,7 @@ const styles = StyleSheet.create({
   backButtonContainer: {
     paddingHorizontal: 20,
     paddingTop: 10,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#000000',
   },
   backButton: {
     backgroundColor: '#6366f1',

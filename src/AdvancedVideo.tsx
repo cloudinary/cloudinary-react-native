@@ -4,13 +4,14 @@ import type { CloudinaryVideo } from '@cloudinary/url-gen';
 import { SDKAnalyticsConstants } from './internal/SDKAnalyticsConstants';
 import { VideoPlayerAdapter, VideoPlayerRef, VideoPlayerFactory } from './adapters';
 
-interface AdvancedVideoProps {
+export interface AdvancedVideoProps {
   videoUrl?: string;
   cldVideo?: CloudinaryVideo;
   videoStyle?: StyleProp<ViewStyle>;
   enableAnalytics?: boolean;
   autoTrackAnalytics?: boolean;
   onPlaybackStatusUpdate?: (status: any) => void;
+  useNativeControls?: boolean;
   analyticsOptions?: {
     customData?: any;
     videoPlayerType?: string;
@@ -279,6 +280,7 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
       const videoElement = this.state.videoAdapter.renderVideo({
         videoUri,
         style: this.props.videoStyle,
+        useNativeControls: this.props.useNativeControls,
         onPlaybackStatusUpdate: this.onPlaybackStatusUpdate,
         onLoadStart: () => {
           console.log('AdvancedVideo - Load Start');

@@ -43,7 +43,7 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
       },
       source: { uri: props.videoUri },
       style: props.style,
-      useNativeControls: false,
+      useNativeControls: props.useNativeControls || false,
       shouldPlay: false,
       isLooping: false,
       resizeMode: 'contain',

@@ -89,6 +89,7 @@ export default function AdvancedVideoDemo() {
           ref={videoPlayer}
           videoStyle={styles.video}
           cldVideo={createMyVideoObject()}
+          useNativeControls={true}
           enableAnalytics={analyticsEnabled}
           autoTrackAnalytics={autoTracking}
           analyticsOptions={{

@@ -10,6 +10,7 @@ export interface VideoPlayerRef {
 export interface VideoPlayerProps {
   videoUri: string;
   style?: StyleProp<ViewStyle>;
+  useNativeControls?: boolean;
   onPlaybackStatusUpdate?: (status: any) => void;
   onLoadStart?: (data: any) => void;
   onLoad?: (data: any) => void;
