@@ -102,7 +102,7 @@ export default function App() {
                 <Text style={styles.mainIconText}>▶</Text>
               </View>
               <Text style={styles.mainTitle}>Advanced Video</Text>
-              <Text style={styles.mainSubtitle}>Smart playback</Text>
+              <Text style={styles.mainSubtitle}>Native Video Player</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -114,7 +114,7 @@ export default function App() {
                 <Text style={styles.mainIconText}>⚡</Text>
               </View>
               <Text style={styles.mainTitle}>Immersive Layer</Text>
-              <Text style={styles.mainSubtitle}>Full-screen</Text>
+              <Text style={styles.mainSubtitle}>Cloudinary Active Layer</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
