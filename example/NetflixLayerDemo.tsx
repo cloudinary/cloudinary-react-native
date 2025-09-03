@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, StatusBar, Image 
 import { CLDVideoLayer, ButtonPosition, TimePosition } from '../src/widgets/video/layer';
 import { Cloudinary } from '@cloudinary/url-gen';
 import { ButtonLayoutDirection } from '../src/widgets/video/layer/types';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 const cld = new Cloudinary({
   cloud: {
@@ -19,6 +20,26 @@ interface NetflixLayerDemoProps {
 
 export default function NetflixLayerDemo({ onBack }: NetflixLayerDemoProps) {
   const [isDemoPlaying, setIsDemoPlaying] = useState(false);
+
+  // Lock orientation to landscape when component mounts
+  useEffect(() => {
+    const lockOrientation = async () => {
+      try {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+      } catch (error) {
+        console.warn('Failed to lock orientation:', error);
+      }
+    };
+
+    lockOrientation();
+
+    // Cleanup: unlock orientation when component unmounts
+    return () => {
+      ScreenOrientation.unlockAsync().catch((error) => {
+        console.warn('Failed to unlock orientation:', error);
+      });
+    };
+  }, []);
 
   function createNetflixStyleVideo() {
     // Using a demo video that simulates Netflix-style content
@@ -102,7 +123,14 @@ export default function NetflixLayerDemo({ onBack }: NetflixLayerDemoProps) {
       </View>
 
       {/* Back button */}
-      <TouchableOpacity style={styles.backButton} onPress={onBack}>
+      <TouchableOpacity style={styles.backButton} onPress={async () => {
+        try {
+          await ScreenOrientation.unlockAsync();
+        } catch (error) {
+          console.warn('Failed to unlock orientation on back:', error);
+        }
+        onBack();
+      }}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
 

@@ -89,9 +89,9 @@ export const parseHLSManifest = async (manifestUrl: string): Promise<SubtitleOpt
     const baseUrl = manifestUrl.substring(0, manifestUrl.lastIndexOf('/') + 1);
     
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+      const line = lines[i]?.trim();
       
-      if (line.startsWith('#EXT-X-MEDIA:') && line.includes('TYPE=SUBTITLES')) {
+      if (line?.startsWith('#EXT-X-MEDIA:') && line.includes('TYPE=SUBTITLES')) {
         const attributes = parseM3U8Attributes(line);
         
         if (attributes.LANGUAGE && attributes.NAME) {

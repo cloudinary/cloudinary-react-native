@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, StatusBar } from 
 import { CLDVideoLayer, ButtonPosition, TimePosition } from '../src/widgets/video/layer';
 import { Cloudinary } from '@cloudinary/url-gen';
 import { ButtonLayoutDirection } from '../src/widgets/video/layer/types';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 const cld = new Cloudinary({
   cloud: {
@@ -19,6 +20,26 @@ interface YouTubeLayerDemoProps {
 
 export default function YouTubeLayerDemo({ onBack }: YouTubeLayerDemoProps) {
   const [isDemoPlaying, setIsDemoPlaying] = useState(false);
+
+  // Lock orientation to landscape when component mounts
+  useEffect(() => {
+    const lockOrientation = async () => {
+      try {
+        await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+      } catch (error) {
+        console.warn('Failed to lock orientation:', error);
+      }
+    };
+
+    lockOrientation();
+
+    // Cleanup: unlock orientation when component unmounts
+    return () => {
+      ScreenOrientation.unlockAsync().catch((error) => {
+        console.warn('Failed to unlock orientation:', error);
+      });
+    };
+  }, []);
 
   function createYouTubeStyleVideo() {
     // Using a demo video that simulates YouTube-style content
@@ -90,7 +111,14 @@ export default function YouTubeLayerDemo({ onBack }: YouTubeLayerDemoProps) {
       <StatusBar hidden />
       
       {/* Back button */}
-      <TouchableOpacity style={styles.backButton} onPress={onBack}>
+      <TouchableOpacity style={styles.backButton} onPress={async () => {
+        try {
+          await ScreenOrientation.unlockAsync();
+        } catch (error) {
+          console.warn('Failed to unlock orientation on back:', error);
+        }
+        onBack();
+      }}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
 

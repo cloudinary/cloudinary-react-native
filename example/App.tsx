@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -32,8 +32,35 @@ const getTopPadding = () => {
 
 type CurrentScreen = 'home' | 'video' | 'videoLayer' | 'buttonLayout' | 'youtubeLayer' | 'netflixLayer' | 'tiktokLayer';
 
+// Local orientation hook to avoid import path issues
+const useLocalOrientation = () => {
+  const [isLandscape, setIsLandscape] = useState(false);
+
+  useEffect(() => {
+    const updateOrientation = () => {
+      const { width, height } = Dimensions.get('window');
+      setIsLandscape(width > height);
+    };
+
+    // Set initial orientation
+    updateOrientation();
+
+    // Listen for orientation changes
+    const subscription = Dimensions.addEventListener('change', updateOrientation);
+
+    return () => {
+      if (subscription?.remove) {
+        subscription.remove();
+      }
+    };
+  }, []);
+
+  return { isLandscape };
+};
+
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
+  const { isLandscape } = useLocalOrientation();
 
   const navigateToScreen = (screen: CurrentScreen) => {
     setCurrentScreen(screen);
@@ -80,110 +107,174 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" backgroundColor="#000000" />
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollContainer}>
-        <View style={styles.headerContainer}>
+        <View style={[styles.headerContainer, isLandscape && styles.headerContainerLandscape]}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>Cloudinary</Text>
-            <Text style={styles.titleAccent}>Video Studio</Text>
+            <Text style={[styles.title, isLandscape && styles.titleLandscape]}>Cloudinary</Text>
+            <Text style={[styles.titleAccent, isLandscape && styles.titleAccentLandscape]}>Video Studio</Text>
           </View>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.subtitle, isLandscape && styles.subtitleLandscape]}>
             Professional video experiences for mobile
           </Text>
         </View>
         
-        <View style={styles.featuresContainer}>
+        <View style={[styles.featuresContainer, isLandscape && styles.featuresContainerLandscape]}>
           {/* Main Features Grid - All 6 items with consistent large icons */}
-          <View style={styles.mainGridContainer}>
+          <View style={[styles.mainGridContainer, isLandscape && styles.mainGridContainerLandscape]}>
             <TouchableOpacity
-              style={[styles.mainGridCard, styles.primaryCard]}
+              style={[
+                styles.mainGridCard, 
+                styles.primaryCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
               onPress={() => navigateToScreen('video')}
               activeOpacity={0.7}
             >
-              <View style={[styles.mainIconContainer, styles.videoIcon]}>
-                <Text style={styles.mainIconText}>▶</Text>
+              <View style={[
+                styles.mainIconContainer, 
+                styles.videoIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
+                <Text style={[styles.mainIconText, isLandscape && styles.mainIconTextLandscape]}>▶</Text>
               </View>
-              <Text style={styles.mainTitle}>Advanced Video</Text>
-              <Text style={styles.mainSubtitle}>Native Video Player</Text>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>Advanced Video</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Native Video Player</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.mainGridCard, styles.secondaryCard]}
+              style={[
+                styles.mainGridCard, 
+                styles.secondaryCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
               onPress={() => navigateToScreen('videoLayer')}
               activeOpacity={0.7}
             >
-              <View style={[styles.mainIconContainer, styles.layerIcon]}>
-                <Text style={styles.mainIconText}>⚡</Text>
+              <View style={[
+                styles.mainIconContainer, 
+                styles.layerIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
+                <Text style={[styles.mainIconText, isLandscape && styles.mainIconTextLandscape]}>⚡</Text>
               </View>
-              <Text style={styles.mainTitle}>Immersive Layer</Text>
-              <Text style={styles.mainSubtitle}>Cloudinary Active Layer</Text>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>Immersive Layer</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Cloudinary Active Layer</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.mainGridCard, styles.accentCard]}
+              style={[
+                styles.mainGridCard, 
+                styles.accentCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
               onPress={() => navigateToScreen('buttonLayout')}
               activeOpacity={0.7}
             >
-              <View style={[styles.mainIconContainer, styles.interactiveIcon]}>
-                <Text style={styles.mainIconText}>◉</Text>
+              <View style={[
+                styles.mainIconContainer, 
+                styles.interactiveIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
+                <Text style={[styles.mainIconText, isLandscape && styles.mainIconTextLandscape]}>◉</Text>
               </View>
-              <Text style={styles.mainTitle}>Interactive UI</Text>
-              <Text style={styles.mainSubtitle}>Dynamic controls</Text>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>Interactive UI</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Dynamic controls</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.mainGridCard, styles.youtubeCard]}
+              style={[
+                styles.mainGridCard, 
+                styles.youtubeCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
               onPress={() => navigateToScreen('youtubeLayer')}
               activeOpacity={0.7}
             >
-              <View style={[styles.mainIconContainer, styles.youtubeIcon]}>
+              <View style={[
+                styles.mainIconContainer, 
+                styles.youtubeIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
                 <Image 
                   source={require('./assets/youtube.png')} 
-                  style={styles.youtubeIconImage}
+                  style={[styles.youtubeIconImage, isLandscape && { width: 50, height: 50 }]}
                   resizeMode="contain"
                 />
               </View>
-              <Text style={styles.mainTitle}>YouTube</Text>
-              <Text style={styles.mainSubtitle}>Seamless embed</Text>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>YouTube</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Seamless embed</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.mainGridCard, styles.netflixCard]}
+              style={[
+                styles.mainGridCard, 
+                styles.netflixCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
               onPress={() => navigateToScreen('netflixLayer')}
               activeOpacity={0.7}
             >
-              <View style={[styles.mainIconContainer, styles.netflixIcon]}>
+              <View style={[
+                styles.mainIconContainer, 
+                styles.netflixIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
                 <Image 
                   source={require('./assets/netlfix.png')} 
-                  style={styles.netflixIconImage}
+                  style={[styles.netflixIconImage, isLandscape && { width: 50, height: 50 }]}
                   resizeMode="contain"
                 />
               </View>
-              <Text style={[styles.mainTitle, styles.netflixGridTitle]}>Netflix</Text>
-              <Text style={[styles.mainSubtitle, styles.netflixGridSubtitle]}>Streaming</Text>
+              <Text style={[
+                styles.mainTitle, 
+                styles.netflixGridTitle,
+                isLandscape && styles.mainTitleLandscape
+              ]}>Netflix</Text>
+              <Text style={[
+                styles.mainSubtitle, 
+                styles.netflixGridSubtitle,
+                isLandscape && styles.mainSubtitleLandscape
+              ]}>Streaming</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.mainGridCard, styles.tiktokCard]}
+              style={[
+                styles.mainGridCard, 
+                styles.tiktokCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
               onPress={() => navigateToScreen('tiktokLayer')}
               activeOpacity={0.7}
             >
-              <View style={[styles.mainIconContainer, styles.tiktokIcon]}>
+              <View style={[
+                styles.mainIconContainer, 
+                styles.tiktokIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
                 <Image 
                   source={require('./assets/tiktok-seeklogo.png')} 
-                  style={styles.tiktokIconImage}
+                  style={[styles.tiktokIconImage, isLandscape && { width: 50, height: 50 }]}
                   resizeMode="contain"
                 />
               </View>
-              <Text style={[styles.mainTitle, styles.tiktokGridTitle]}>TikTok</Text>
-              <Text style={[styles.mainSubtitle, styles.tiktokGridSubtitle]}>Endless feed</Text>
+              <Text style={[
+                styles.mainTitle, 
+                styles.tiktokGridTitle,
+                isLandscape && styles.mainTitleLandscape
+              ]}>TikTok</Text>
+              <Text style={[
+                styles.mainSubtitle, 
+                styles.tiktokGridSubtitle,
+                isLandscape && styles.mainSubtitleLandscape
+              ]}>Endless feed</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>
+        <View style={[styles.footerContainer, isLandscape && styles.footerContainerLandscape]}>
+          <Text style={[styles.footerText, isLandscape && styles.footerTextLandscape]}>
             Powered by Cloudinary React Native SDK
           </Text>
-          <Text style={styles.footerSubtext}>
+          <Text style={[styles.footerSubtext, isLandscape && styles.footerSubtextLandscape]}>
             Built for developers, designed for users
           </Text>
         </View>
@@ -439,6 +530,74 @@ const styles = StyleSheet.create({
   },
   tiktokGridSubtitle: {
     color: '#cccccc',
+  },
+  // Landscape-specific styles
+  headerContainerLandscape: {
+    paddingTop: 30,
+    paddingBottom: 20,
+    paddingHorizontal: 40,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  titleLandscape: {
+    fontSize: 28,
+  },
+  titleAccentLandscape: {
+    fontSize: 28,
+  },
+  subtitleLandscape: {
+    fontSize: 16,
+    maxWidth: 300,
+    textAlign: 'left',
+    marginTop: 0,
+  },
+  featuresContainerLandscape: {
+    paddingHorizontal: 32,
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
+  mainGridContainerLandscape: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+  },
+  mainGridCardLandscape: {
+    width: '30%', // 3 cards per row in landscape
+    marginBottom: 16,
+    minHeight: 140,
+    padding: 20,
+  },
+  mainIconContainerLandscape: {
+    width: 70,
+    height: 70,
+    marginBottom: 16,
+  },
+  mainIconTextLandscape: {
+    fontSize: 36,
+  },
+  mainTitleLandscape: {
+    fontSize: 14,
+  },
+  mainSubtitleLandscape: {
+    fontSize: 10,
+  },
+  footerContainerLandscape: {
+    paddingHorizontal: 40,
+    paddingBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  footerTextLandscape: {
+    fontSize: 14,
+    marginBottom: 0,
+    textAlign: 'left',
+  },
+  footerSubtextLandscape: {
+    fontSize: 12,
+    textAlign: 'right',
   },
   footerContainer: {
     paddingHorizontal: 24,

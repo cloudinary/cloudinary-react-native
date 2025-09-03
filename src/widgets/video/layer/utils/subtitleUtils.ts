@@ -20,19 +20,19 @@ export const parseWebVTT = (content: string): SubtitleCue[] => {
   let i = 0;
   
   // Skip header
-  while (i < lines.length && !lines[i].includes('-->')) {
+  while (i < lines.length && !lines[i]?.includes('-->')) {
     i++;
   }
   
   // Parse cues
   while (i < lines.length) {
-    const line = lines[i].trim();
+    const line = lines[i]?.trim();
     
-    if (line.includes('-->')) {
+    if (line?.includes('-->')) {
       // Found a time line
       const timeMatch = line.match(/(\d{2}:\d{2}:\d{2}\.\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}\.\d{3})/);
       
-      if (timeMatch) {
+      if (timeMatch && timeMatch[1] && timeMatch[2]) {
         const startTime = parseVTTTime(timeMatch[1]);
         const endTime = parseVTTTime(timeMatch[2]);
         
@@ -40,8 +40,8 @@ export const parseWebVTT = (content: string): SubtitleCue[] => {
         i++;
         const textLines: string[] = [];
         
-        while (i < lines.length && lines[i].trim() !== '') {
-          const textLine = lines[i].trim();
+        while (i < lines.length && lines[i]?.trim() !== '') {
+          const textLine = lines[i]?.trim();
           if (textLine) {
             textLines.push(textLine);
           }
@@ -69,12 +69,15 @@ export const parseWebVTT = (content: string): SubtitleCue[] => {
  */
 const parseVTTTime = (timeStr: string): number => {
   const parts = timeStr.split(':');
-  const seconds = parts[parts.length - 1].split('.');
+  const lastPart = parts[parts.length - 1];
+  if (!lastPart) return 0;
   
-  const hours = parseInt(parts[0], 10);
-  const minutes = parseInt(parts[1], 10);
-  const secs = parseInt(seconds[0], 10);
-  const milliseconds = parseInt(seconds[1], 10);
+  const seconds = lastPart.split('.');
+  
+  const hours = parseInt(parts[0] || '0', 10);
+  const minutes = parseInt(parts[1] || '0', 10);
+  const secs = parseInt(seconds[0] || '0', 10);
+  const milliseconds = parseInt(seconds[1] || '0', 10);
   
   return hours * 3600 + minutes * 60 + secs + milliseconds / 1000;
 };
