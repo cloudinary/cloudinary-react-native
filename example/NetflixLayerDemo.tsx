@@ -123,14 +123,7 @@ export default function NetflixLayerDemo({ onBack }: NetflixLayerDemoProps) {
       </View>
 
       {/* Back button */}
-      <TouchableOpacity style={styles.backButton} onPress={async () => {
-        try {
-          await ScreenOrientation.unlockAsync();
-        } catch (error) {
-          console.warn('Failed to unlock orientation on back:', error);
-        }
-        onBack();
-      }}>
+      <TouchableOpacity style={styles.backButton} onPress={onBack}>
         <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
 
