@@ -7,7 +7,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 
 const cld = new Cloudinary({
   cloud: {
-    cloudName: 'demo'
+    cloudName: 'mobiledemoapp'
   },
   url: {
     secure: true
@@ -43,7 +43,7 @@ export default function YouTubeLayerDemo({ onBack }: YouTubeLayerDemoProps) {
 
   function createYouTubeStyleVideo() {
     // Using a demo video that simulates YouTube-style content
-    const myVideo = cld.video('samples/cld-sample-video');
+    const myVideo = cld.video('xx75bwdmd1xq0ihl6u7o');
     return myVideo;
   }
 
@@ -133,8 +133,8 @@ export default function YouTubeLayerDemo({ onBack }: YouTubeLayerDemoProps) {
         }}
         bottomButtonBar={bottomButtonBarConfig}
         backButtonPosition={ButtonPosition.NW}
-        title="Cloudinary Video SDK - Advanced Features Demo"
-        subtitle="Cloudinary"
+        title="Wiz Khalifa - See You Again ft. Charlie Puth [Official Video]"
+        subtitle="Furious 7 Soundtrack"
       />
 
 

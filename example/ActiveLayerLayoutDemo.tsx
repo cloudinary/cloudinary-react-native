@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar, Dimensions } from 'react-native';
 import { CLDVideoLayer } from '../src/widgets/video/layer/CLDVideoLayer';
 import { ButtonPosition, ButtonLayoutDirection } from '../src/widgets/video/layer/types';
 import { Cloudinary } from '@cloudinary/url-gen';
@@ -23,8 +23,8 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
   });
 
   function createMyVideoObject() {
-    const myVideo = cld.video('samples/elephants')
-    return myVideo
+    const myVideo = cld.video('samples/cld-sample-video');
+    return myVideo;
   }
 
   // Example 1: Button Groups with Horizontal Layout
@@ -214,280 +214,261 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
   };
 
   const examples = [
-    { id: 'horizontal', title: 'Horizontal Button Groups', description: 'Buttons arranged horizontally in corners' },
-    { id: 'vertical', title: 'Vertical Button Groups', description: 'Buttons arranged vertically on sides' },
-    { id: 'mixed', title: 'Mixed Layout Directions', description: 'Different layouts for different positions' },
-    { id: 'subtitles', title: 'Subtitles Button', description: 'Interactive subtitles selection with language options' },
-    { id: 'playbackSpeed', title: 'Playback Speed Button', description: 'Adjustable video playback speed controls' }
+    { id: 'horizontal', title: 'Horizontal Layout', description: 'Side-by-side button arrangements for compact interfaces' },
+    { id: 'vertical', title: 'Vertical Layout', description: 'Stacked button arrangements for enhanced accessibility' },
+    { id: 'mixed', title: 'Hybrid Layouts', description: 'Strategic combination of horizontal and vertical groupings' },
+    { id: 'subtitles', title: 'Subtitle Controls', description: 'Professional multi-language subtitle management' },
+    { id: 'playbackSpeed', title: 'Speed Controls', description: 'Granular playback speed adjustment for optimal viewing' }
   ];
 
   return (
     <View style={styles.container}>
-      {/* Back button */}
-      {onBack && (
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-      )}
+      <StatusBar barStyle="light-content" backgroundColor="#1a1a2e" />
       
-      {/* Header with Example Selector */}
+      {/* Professional Header */}
       <View style={styles.header}>
-        <Text style={styles.title}> Active Layer Examples</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.examplesContainer}>
-          {examples.map(example => (
+        <View style={styles.headerContent}>
+          <View style={styles.brandSection}>
+            <Text style={styles.brandTitle}>Cloudinary Video SDK</Text>
+            <Text style={styles.brandSubtitle}>Interactive Button Layout Showcase</Text>
+          </View>
+          
+          {onBack && (
+            <TouchableOpacity style={styles.backButton} onPress={onBack}>
+              <Text style={styles.backButtonText}>← Back</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        
+        {/* Professional Example Selector */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.examplesContainer}
+          contentContainerStyle={styles.examplesContent}
+        >
+          {examples.map((example, index) => (
             <TouchableOpacity
               key={example.id}
               style={[
-                styles.exampleButton,
-                currentExample === example.id && styles.activeExampleButton
+                styles.exampleCard,
+                currentExample === example.id && styles.activeExampleCard
               ]}
               onPress={() => setCurrentExample(example.id)}
             >
-              <Text style={[
-                styles.exampleButtonText,
-                currentExample === example.id && styles.activeExampleButtonText
-              ]}>
-                {example.title}
-              </Text>
+              <View style={styles.exampleNumber}>
+                <Text style={[
+                  styles.exampleNumberText,
+                  currentExample === example.id && styles.activeExampleNumberText
+                ]}>
+                  {index + 1}
+                </Text>
+              </View>
+              <View style={styles.exampleContent}>
+                <Text style={[
+                  styles.exampleTitle,
+                  currentExample === example.id && styles.activeExampleTitle
+                ]}>
+                  {example.title}
+                </Text>
+                <Text style={[
+                  styles.exampleDescription,
+                  currentExample === example.id && styles.activeExampleDescription
+                ]}>
+                  {example.description}
+                </Text>
+              </View>
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Text style={styles.description}>
-          {examples.find(ex => ex.id === currentExample)?.description}
-        </Text>
       </View>
 
-      {/* Video Player with Custom Buttons */}
+      {/* Enhanced Video Player */}
       <View style={styles.videoContainer}>
-        <CLDVideoLayer
-          cldVideo={createMyVideoObject()}
-          videoUrl={currentExample === 'subtitles' ? 'https://res.cloudinary.com/demo/video/upload/sp_sd:subtitles_((code_en-US;file_outdoors.vtt);(code_es;file_outdoors-es.vtt))/sea_turtle.m3u8' : undefined}
-          autoPlay={false}
-          muted={true}
-          showCenterPlayButton={true}
-          fullScreen={{ enabled: true }}
-          {...getVideoLayerProps()}
-        />
-      </View>
-
-      {/* Code Example */}
-      <View style={styles.codeContainer}>
-        <Text style={styles.codeTitle}>Code Example:</Text>
-        <ScrollView style={styles.codeScroll}>
-          <Text style={styles.codeText}>
-            {getCodeExample(currentExample)}
+        <View style={styles.videoWrapper}>
+          <CLDVideoLayer
+            cldVideo={createMyVideoObject()}
+            videoUrl={currentExample === 'subtitles' ? 'https://res.cloudinary.com/demo/video/upload/sp_sd:subtitles_((code_en-US;file_outdoors.vtt);(code_es;file_outdoors-es.vtt))/sea_turtle.m3u8' : undefined}
+            autoPlay={false}
+            muted={true}
+            showCenterPlayButton={true}
+            fullScreen={{ enabled: true }}
+            {...getVideoLayerProps()}
+          />
+        </View>
+        
+        {/* Feature Indicator */}
+        <View style={styles.featureIndicator}>
+          <Text style={styles.featureTitle}>
+            {examples.find(ex => ex.id === currentExample)?.title}
           </Text>
-        </ScrollView>
+          <Text style={styles.featureDescription}>
+            {examples.find(ex => ex.id === currentExample)?.description}
+          </Text>
+        </View>
       </View>
     </View>
   );
 };
 
-const getCodeExample = (example: string) => {
-  switch (example) {
-    case 'horizontal':
-      return `// Button groups with horizontal layout
-<CLDVideoLayer
-  cldVideo={cldVideo}
-  buttonGroups={[
-    {
-      position: ButtonPosition.NE,
-      layoutDirection: ButtonLayoutDirection.HORIZONTAL,
-      buttons: [
-        {
-          icon: 'star',
-          position: ButtonPosition.NE,
-          onPress: () => console.log('Star pressed'),
-          color: '#FFD700'
-        },
-        {
-          icon: 'heart',
-          position: ButtonPosition.NE,
-          onPress: () => console.log('Heart pressed'),
-          color: '#FF69B4'
-        }
-      ]
-    }
-  ]}
-/>`;
 
-    case 'vertical':
-      return `// Button groups with vertical layout
-<CLDVideoLayer
-  cldVideo={cldVideo}
-  buttonGroups={[
-    {
-      position: ButtonPosition.E,
-      layoutDirection: ButtonLayoutDirection.VERTICAL,
-      buttons: [
-        {
-          icon: 'camera',
-          position: ButtonPosition.E,
-          onPress: () => console.log('Camera pressed'),
-          color: '#FF6347'
-        },
-        {
-          icon: 'image',
-          position: ButtonPosition.E,
-          onPress: () => console.log('Image pressed'),
-          color: '#9370DB'
-        }
-      ]
-    }
-  ]}
-/>`;
 
-    case 'mixed':
-      return `// Mixed layout directions
-<CLDVideoLayer
-  cldVideo={cldVideo}
-  buttonGroups={[
-    {
-      position: ButtonPosition.N,
-      layoutDirection: ButtonLayoutDirection.HORIZONTAL,
-      buttons: [/* horizontal buttons */]
-    },
-    {
-      position: ButtonPosition.S,
-      layoutDirection: ButtonLayoutDirection.VERTICAL,
-      buttons: [/* vertical buttons */]
-    }
-  ]}
-/>`;
-
-    case 'subtitles':
-      return `// HLS Subtitles - automatically detected from manifest
-<CLDVideoLayer
-  videoUrl='https://res.cloudinary.com/demo/video/upload/sp_sd:subtitles_((code_en-US;file_outdoors.vtt);(code_es;file_outdoors-es.vtt))/sea_turtle.m3u8'
-  subtitles={{
-    enabled: true,
-    defaultLanguage: 'off',
-    // languages are automatically detected from HLS manifest
-    button: {
-      position: ButtonPosition.SE,
-      color: '#FF6B6B',
-      size: 28,
-    }
-  }}
-/>`;
-
-    case 'playbackSpeed':
-      return `// Playback speed button with multiple speeds
-<CLDVideoLayer
-  cldVideo={cldVideo}
-  playbackSpeed={{
-    enabled: true,
-    defaultSpeed: 1.0,
-    speeds: [
-      { value: 0.25, label: '0.25×' },
-      { value: 0.5, label: '0.5×' },
-      { value: 0.75, label: '0.75×' },
-      { value: 1.0, label: '1.0×' },
-      { value: 1.25, label: '1.25×' },
-      { value: 1.5, label: '1.5×' },
-      { value: 2.0, label: '2.0×' },
-    ],
-    button: {
-      position: ButtonPosition.NE,
-      color: '#4CAF50',
-      size: 28,
-    }
-  }}
-/>`;
-
-    default:
-      return '';
-  }
-};
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#0f0f23',
   },
   header: {
-    backgroundColor: 'white',
-    padding: 16,
+    backgroundColor: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
     paddingTop: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    paddingBottom: 24,
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
-  title: {
-    fontSize: 24,
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+  },
+  brandSection: {
+    flex: 1,
+  },
+  brandTitle: {
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 16,
+    color: '#ffffff',
+    marginBottom: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  brandSubtitle: {
+    fontSize: 16,
+    color: '#a0a0d4',
+    fontWeight: '500',
+    opacity: 0.9,
+  },
+  backButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    backdropFilter: 'blur(10px)',
+  },
+  backButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   examplesContainer: {
-    marginBottom: 16,
+    flexGrow: 0,
   },
-  exampleButton: {
-    backgroundColor: '#e0e0e0',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+  examplesContent: {
+    paddingLeft: 4,
+  },
+  exampleCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
+    padding: 16,
+    marginRight: 16,
+    width: SCREEN_WIDTH * 0.7,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  activeExampleCard: {
+    backgroundColor: 'rgba(99, 102, 241, 0.2)',
+    borderColor: '#6366f1',
+    transform: [{ scale: 1.02 }],
+    shadowColor: '#6366f1',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  exampleNumber: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 12,
   },
-  activeExampleButton: {
-    backgroundColor: '#2196F3',
+  exampleNumberText: {
+    color: '#a0a0d4',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
-  exampleButtonText: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
+  activeExampleNumberText: {
+    color: '#ffffff',
   },
-  activeExampleButtonText: {
-    color: 'white',
+  exampleContent: {
+    flex: 1,
   },
-  description: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    fontStyle: 'italic',
+  exampleTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#e0e0e0',
+    marginBottom: 4,
+  },
+  activeExampleTitle: {
+    color: '#ffffff',
+  },
+  exampleDescription: {
+    fontSize: 12,
+    color: '#a0a0d4',
+    opacity: 0.8,
+    lineHeight: 16,
+  },
+  activeExampleDescription: {
+    color: '#e0e0ff',
+    opacity: 1,
   },
   videoContainer: {
     flex: 1,
-    backgroundColor: 'black',
-    margin: 16,
-    borderRadius: 12,
-    overflow: 'hidden',
+    margin: 20,
+    marginTop: 16,
   },
-  codeContainer: {
-    backgroundColor: 'white',
-    margin: 16,
-    borderRadius: 12,
-    padding: 16,
-    maxHeight: 200,
-  },
-  codeTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  codeScroll: {
+  videoWrapper: {
     flex: 1,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#000000',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 16,
   },
-  codeText: {
-    fontSize: 12,
-    fontFamily: 'monospace',
-    color: '#444',
-    lineHeight: 16,
+  featureIndicator: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backdropFilter: 'blur(10px)',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 1000,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
+  featureTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 4,
   },
-  backButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+  featureDescription: {
+    fontSize: 14,
+    color: '#a0a0d4',
+    lineHeight: 18,
   },
 });

@@ -29,7 +29,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const cld = new Cloudinary({
   cloud: {
-    cloudName: 'demo'
+    cloudName: 'mobiledemoapp'
   },
   url: {
     secure: true
@@ -68,8 +68,21 @@ export default function TikTokLayerDemo({ onBack }: TikTokLayerDemoProps) {
   const flatListRef = useRef<FlatList>(null);
   const videoRefs = useRef<{ [key: string]: any }>({});
 
-  function createMyVideoObject() {
-    const myVideo = cld.video('sea_turtle');
+  // Array of video IDs to cycle through
+  const videoIds = [
+    'on62djua7bnddlqg3uax',
+    'zdbreg8lnyflhengm0f7',
+    'k2ysiacllbdfjwh6ytuy',
+    'vsm6o2jm3xq7vdwrhxvy',
+    'pyqfeubkgw0z6sxlsohu',
+    'n9nbziezbloxshrrdyz7',
+    'qyamk3x9gmgihbvjftgt'
+  ];
+
+  function createMyVideoObject(index: number) {
+    // Cycle through the video IDs based on the index
+    const videoId = videoIds[index % videoIds.length];
+    const myVideo = cld.video(videoId);
     return myVideo;
   }
 
@@ -117,7 +130,7 @@ export default function TikTokLayerDemo({ onBack }: TikTokLayerDemoProps) {
             videoRefs.current[item.id] = ref;
           }
         }}
-        cldVideo={createMyVideoObject()}
+        cldVideo={createMyVideoObject(index)}
         videoStyle={styles.video}
         enableAnalytics={false}
       />

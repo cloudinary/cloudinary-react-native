@@ -7,7 +7,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 
 const cld = new Cloudinary({
   cloud: {
-    cloudName: 'demo'
+    cloudName: 'mobiledemoapp'
   },
   url: {
     secure: true
@@ -43,7 +43,7 @@ export default function NetflixLayerDemo({ onBack }: NetflixLayerDemoProps) {
 
   function createNetflixStyleVideo() {
     // Using a demo video that simulates Netflix-style content
-    const myVideo = cld.video('samples/cld-sample-video');
+    const myVideo = cld.video('vsiy3cso2qwsy7qsp4ya');
     return myVideo;
   }
 
@@ -140,8 +140,8 @@ export default function NetflixLayerDemo({ onBack }: NetflixLayerDemoProps) {
         }}
         bottomButtonBar={bottomButtonBarConfig}
         backButtonPosition={ButtonPosition.NW}
-        title="S7:E9 'Mort: Ragnarick'"
-        subtitle=""
+        title="Leanne | Official Trailer"
+        subtitle="Netflix"
         titleLeftOffset={75} // Position title to the right of Netflix logo
         fullScreen={{
           enabled: true,
