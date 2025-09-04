@@ -81,6 +81,21 @@ export interface SubtitlesConfig {
   button?: Partial<ButtonConfig>;  // Custom button configuration (position not needed as it's fixed in bottom controls)
 }
 
+export interface QualityOption {
+  value: string;               // Quality identifier (e.g., 'auto', '1080p', '720p', '480p', '360p')
+  label: string;               // Display label (e.g., 'Auto', '1080p', '720p', '480p', '360p')
+  bandwidth?: number;          // Bandwidth in bits per second
+  resolution?: string;         // Resolution (e.g., '1920x1080', '1280x720')
+  url?: string;                // URL to specific quality stream
+}
+
+export interface QualityConfig {
+  enabled?: boolean;           // Enable/disable quality selection functionality
+  defaultQuality?: string;     // Default quality value (default: 'auto')
+  qualities?: QualityOption[]; // Available quality options
+  button?: Partial<ButtonConfig>;  // Custom button configuration (position not needed as it's fixed in bottom controls)
+}
+
 export interface CLDVideoLayerProps {
   cldVideo: CloudinaryVideo;
   videoUrl?: string;
@@ -96,6 +111,7 @@ export interface CLDVideoLayerProps {
   fullScreen?: FullScreenConfig;
   playbackSpeed?: PlaybackSpeedConfig;
   subtitles?: SubtitlesConfig;
+  quality?: QualityConfig;
   buttonGroups?: ButtonGroupConfig[];  // Button groups with layout control
   bottomButtonBar?: {
     enabled: boolean;
@@ -157,6 +173,11 @@ export interface BottomControlsProps {
   onSubtitleChange?: (languageCode: string) => void;
   isSubtitlesMenuVisible?: boolean;
   onToggleSubtitlesMenu?: () => void;
+  quality?: QualityConfig;
+  currentQuality?: string;
+  onQualityChange?: (qualityValue: string) => void;
+  isQualityMenuVisible?: boolean;
+  onToggleQualityMenu?: () => void;
   buttonGroups?: ButtonGroupConfig[];
 }
 

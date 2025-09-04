@@ -5,4 +5,5 @@ export { Seekbar } from './Seekbar';
 export { CustomButton } from './CustomButton';
 export { PlaybackSpeedButton } from './PlaybackSpeedButton';
 export { SubtitlesButton } from './SubtitlesButton';
+export { QualityButton } from './QualityButton';
 export { SubtitleDisplay } from './SubtitleDisplay'; 

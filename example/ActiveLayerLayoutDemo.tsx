@@ -190,6 +190,21 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
     }
   };
 
+  // Example 6: Quality Selection Demo
+  // For HLS videos, quality levels are automatically detected from the manifest
+  // No need to specify quality levels manually - they will be dynamically loaded
+  const qualitySelectionDemo = {
+    quality: {
+      enabled: true,
+      defaultQuality: 'auto',
+      button: {
+        position: ButtonPosition.SE,
+        color: '#9C27B0',
+        size: 28,
+      }
+    }
+  };
+
   const getVideoLayerProps = () => {
     switch (currentExample) {
       case 'horizontal':
@@ -208,6 +223,8 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
         return subtitlesButtonDemo;
       case 'playbackSpeed':
         return playbackSpeedDemo;
+      case 'quality':
+        return qualitySelectionDemo;
       default:
         return {};
     }
@@ -218,7 +235,8 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
     { id: 'vertical', title: 'Vertical Layout', description: 'Stacked button arrangements for enhanced accessibility' },
     { id: 'mixed', title: 'Hybrid Layouts', description: 'Strategic combination of horizontal and vertical groupings' },
     { id: 'subtitles', title: 'Subtitle Controls', description: 'Professional multi-language subtitle management' },
-    { id: 'playbackSpeed', title: 'Speed Controls', description: 'Granular playback speed adjustment for optimal viewing' }
+    { id: 'playbackSpeed', title: 'Speed Controls', description: 'Granular playback speed adjustment for optimal viewing' },
+    { id: 'quality', title: 'Quality Selection', description: 'Adaptive bitrate streaming with manual quality selection' }
   ];
 
   return (
@@ -288,7 +306,7 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
         <View style={styles.videoWrapper}>
           <CLDVideoLayer
             cldVideo={createMyVideoObject()}
-            videoUrl={currentExample === 'subtitles' ? 'https://res.cloudinary.com/demo/video/upload/sp_sd:subtitles_((code_en-US;file_outdoors.vtt);(code_es;file_outdoors-es.vtt))/sea_turtle.m3u8' : undefined}
+            videoUrl={(currentExample === 'subtitles' || currentExample === 'quality') ? 'https://res.cloudinary.com/demo/video/upload/sp_sd:subtitles_((code_en-US;file_outdoors.vtt);(code_es;file_outdoors-es.vtt))/sea_turtle.m3u8' : undefined}
             autoPlay={false}
             muted={true}
             showCenterPlayButton={true}
@@ -362,7 +380,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
-    backdropFilter: 'blur(10px)',
   },
   backButtonText: {
     color: '#ffffff',
@@ -458,7 +475,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(10px)',
   },
   featureTitle: {
     fontSize: 18,

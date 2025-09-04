@@ -1,6 +1,6 @@
 import { Share, Platform } from 'react-native';
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
-import { SubtitleOption } from './types';
+import { SubtitleOption, QualityOption } from './types';
 
 /**
  * Formats time in milliseconds to MM:SS format
@@ -119,6 +119,108 @@ export const parseHLSManifest = async (manifestUrl: string): Promise<SubtitleOpt
     return subtitleTracks;
   } catch (error) {
     console.warn('Failed to parse HLS manifest:', error);
+    return [];
+  }
+};
+
+/**
+ * Parses HLS manifest to extract quality levels/bitrates
+ */
+export const parseHLSQualityLevels = async (manifestUrl: string): Promise<QualityOption[]> => {
+  try {
+    const response = await fetch(manifestUrl);
+    if (!response.ok) {
+      console.warn('Failed to fetch HLS manifest for quality parsing:', response.status);
+      return [];
+    }
+    
+    const manifestText = await response.text();
+    const qualityLevels: QualityOption[] = [];
+    
+    // Parse for stream variants with different qualities
+    // Look for EXT-X-STREAM-INF tags that define different quality streams
+    const lines = manifestText.split('\n');
+    
+    // Get base URL for resolving relative URLs
+    const baseUrl = manifestUrl.substring(0, manifestUrl.lastIndexOf('/') + 1);
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]?.trim();
+      
+      if (line?.startsWith('#EXT-X-STREAM-INF:')) {
+        const attributes = parseM3U8Attributes(line);
+        const streamUrl = lines[i + 1]?.trim(); // Next line contains the stream URL
+        
+        if (streamUrl && attributes.BANDWIDTH) {
+          const bandwidth = parseInt(attributes.BANDWIDTH);
+          const resolution = attributes.RESOLUTION;
+          let qualityLabel = 'Auto';
+          let qualityValue = 'auto';
+          
+          // Determine quality label based on resolution or bandwidth
+          if (resolution) {
+            const [width, height] = resolution.split('x').map(Number);
+            
+            // Standard quality mapping based on height (with safety check)
+            if (height && height >= 1080) {
+              qualityLabel = '1080p';
+              qualityValue = '1080p';
+            } else if (height && height >= 720) {
+              qualityLabel = '720p';
+              qualityValue = '720p';
+            } else if (height && height >= 480) {
+              qualityLabel = '480p';
+              qualityValue = '480p';
+            } else if (height && height >= 360) {
+              qualityLabel = '360p';
+              qualityValue = '360p';
+            } else if (height && height >= 240) {
+              qualityLabel = '240p';
+              qualityValue = '240p';
+            } else if (height) {
+              qualityLabel = `${height}p`;
+              qualityValue = `${height}p`;
+            }
+          } else {
+            // Fallback to bandwidth-based labeling
+            if (bandwidth >= 2000000) {
+              qualityLabel = 'High';
+              qualityValue = 'high';
+            } else if (bandwidth >= 1000000) {
+              qualityLabel = 'Medium';
+              qualityValue = 'medium';
+            } else {
+              qualityLabel = 'Low';
+              qualityValue = 'low';
+            }
+          }
+          
+          // Resolve relative stream URL
+          let fullStreamUrl = streamUrl;
+          if (!streamUrl.startsWith('http')) {
+            fullStreamUrl = baseUrl + streamUrl;
+          }
+          
+          // Only add if not already present (avoid duplicates)
+          if (!qualityLevels.some(level => level.value === qualityValue)) {
+            qualityLevels.push({
+              value: qualityValue,
+              label: qualityLabel,
+              bandwidth,
+              resolution,
+              url: fullStreamUrl
+            });
+          }
+        }
+      }
+    }
+    
+    // Sort by bandwidth (highest first) for better UX
+    qualityLevels.sort((a, b) => (b.bandwidth || 0) - (a.bandwidth || 0));
+    
+    return qualityLevels;
+  } catch (error) {
+    console.warn('Failed to parse HLS quality levels:', error);
     return [];
   }
 };

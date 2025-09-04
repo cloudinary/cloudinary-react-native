@@ -7,6 +7,7 @@ import { ICON_SIZES } from '../constants';
 import { Seekbar } from './Seekbar';
 import { PlaybackSpeedButton } from './PlaybackSpeedButton';
 import { SubtitlesButton } from './SubtitlesButton';
+import { QualityButton } from './QualityButton';
 
 export const BottomControls: React.FC<BottomControlsProps> = ({
   status,
@@ -31,6 +32,11 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
   onSubtitleChange,
   isSubtitlesMenuVisible,
   onToggleSubtitlesMenu,
+  quality,
+  currentQuality,
+  onQualityChange,
+  isQualityMenuVisible,
+  onToggleQualityMenu,
 }) => {
   const responsiveStyles = getResponsiveStyles(isLandscape);
   const progress = getProgress();
@@ -70,6 +76,14 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
       </View>
       
       <View style={responsiveStyles.bottomRightControls}>
+        <QualityButton
+          quality={quality}
+          currentQuality={currentQuality}
+          onQualityChange={onQualityChange}
+          isLandscape={isLandscape}
+          isMenuVisible={isQualityMenuVisible}
+          onToggleMenu={onToggleQualityMenu}
+        />
         <SubtitlesButton
           subtitles={subtitles}
           currentSubtitle={currentSubtitle}

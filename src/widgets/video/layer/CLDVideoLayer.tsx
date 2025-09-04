@@ -3,8 +3,8 @@ import { View, TouchableOpacity, Text, PanResponder, ActivityIndicator, Animated
 
 import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideo from '../../../AdvancedVideo';
-import { CLDVideoLayerProps, ButtonPosition, ButtonLayoutDirection, SubtitleOption } from './types';
-import { formatTime, handleDefaultShare, isHLSVideo, parseHLSManifest, getVideoUrl } from './utils';
+import { CLDVideoLayerProps, ButtonPosition, ButtonLayoutDirection, SubtitleOption, QualityOption } from './types';
+import { formatTime, handleDefaultShare, isHLSVideo, parseHLSManifest, parseHLSQualityLevels, getVideoUrl } from './utils';
 import { SubtitleCue, fetchSubtitleFile, findActiveSubtitle } from './utils/subtitleUtils';
 import { styles, getResponsiveStyles } from './styles';
 import { TopControls, CenterControls, BottomControls, CustomButton, SubtitleDisplay } from './components';
@@ -27,6 +27,9 @@ interface CLDVideoLayerState {
   availableSubtitleTracks: SubtitleOption[];
   subtitleCues: SubtitleCue[];
   activeSubtitleText: string | null;
+  currentQuality: string;
+  isQualityMenuVisible: boolean;
+  availableQualityLevels: QualityOption[];
 }
 
 export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoLayerState> {
@@ -65,6 +68,9 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       availableSubtitleTracks: [],
       subtitleCues: [],
       activeSubtitleText: null,
+      currentQuality: props.quality?.defaultQuality || 'auto',
+      isQualityMenuVisible: false,
+      availableQualityLevels: [],
     };
 
     this.panResponder = PanResponder.create({
@@ -149,9 +155,10 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       this.startAutoHideTimer();
     }
   
-    // Parse HLS manifest for subtitle tracks if video is HLS
+    // Parse HLS manifest for subtitle tracks and quality levels if video is HLS
     setTimeout(() => {
       this.parseHLSSubtitlesIfNeeded();
+      this.parseHLSQualityLevelsIfNeeded();
     }, 100);
     
     // Try multiple approaches for orientation detection
@@ -168,9 +175,10 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   }
 
   componentDidUpdate(prevProps: CLDVideoLayerProps) {
-    // Re-parse subtitles if video URL changed
+    // Re-parse subtitles and quality levels if video URL changed
     if (prevProps.videoUrl !== this.props.videoUrl) {
       this.parseHLSSubtitlesIfNeeded();
+      this.parseHLSQualityLevelsIfNeeded();
     }
   }
 
@@ -363,6 +371,50 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
     this.setState({ isSubtitlesMenuVisible: !this.state.isSubtitlesMenuVisible });
   };
 
+  handleQualityChange = async (qualityValue: string) => {
+    this.setState({ currentQuality: qualityValue });
+    
+    if (qualityValue === 'auto') {
+      // Reset to original URL for automatic quality selection
+      const originalUrl = getVideoUrl(this.props.videoUrl, this.props.cldVideo);
+      if (this.videoRef.current) {
+        try {
+          await this.videoRef.current.setStatusAsync({
+            uri: originalUrl,
+            shouldPlay: this.state.status?.shouldPlay || false,
+            positionMillis: this.state.status?.positionMillis || 0
+          });
+        } catch (error) {
+          console.warn('Failed to switch to auto quality:', error);
+        }
+      }
+      return;
+    }
+    
+    // Find the selected quality level
+    const selectedQuality = this.state.availableQualityLevels.find(
+      level => level.value === qualityValue
+    );
+    
+    if (selectedQuality?.url && this.videoRef.current) {
+      try {
+        await this.videoRef.current.setStatusAsync({
+          uri: selectedQuality.url,
+          shouldPlay: this.state.status?.shouldPlay || false,
+          positionMillis: this.state.status?.positionMillis || 0
+        });
+      } catch (error) {
+        console.warn('Failed to switch to quality level:', qualityValue, error);
+      }
+    } else {
+      console.warn('No URL found for quality level:', qualityValue);
+    }
+  };
+
+  handleToggleQualityMenu = () => {
+    this.setState({ isQualityMenuVisible: !this.state.isQualityMenuVisible });
+  };
+
   /**
    * Parse HLS manifest to get available subtitle tracks if video is HLS
    */
@@ -383,6 +435,30 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       } catch (error) {
         console.warn('Failed to parse HLS subtitles:', error);
         this.setState({ availableSubtitleTracks: [{ code: 'off', label: 'Off' }] });
+      }
+    }
+  };
+
+  /**
+   * Parse HLS manifest to get available quality levels if video is HLS
+   */
+  parseHLSQualityLevelsIfNeeded = async () => {
+    const videoUrl = getVideoUrl(this.props.videoUrl, this.props.cldVideo);
+    
+    if (isHLSVideo(videoUrl)) {
+      try {
+        const qualityLevels = await parseHLSQualityLevels(videoUrl);
+        
+        // Always include "Auto" option
+        const availableQualityLevels: QualityOption[] = [
+          { value: 'auto', label: 'Auto' },
+          ...qualityLevels
+        ];
+        
+        this.setState({ availableQualityLevels });
+      } catch (error) {
+        console.warn('Failed to parse HLS quality levels:', error);
+        this.setState({ availableQualityLevels: [{ value: 'auto', label: 'Auto' }] });
       }
     }
   };
@@ -470,10 +546,11 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       fullScreen,
       playbackSpeed,
       subtitles,
+      quality,
       buttonGroups = [],
       titleLeftOffset
     } = this.props;
-    const { status, isLandscape, isFullScreen, availableSubtitleTracks } = this.state;
+    const { status, isLandscape, isFullScreen, availableSubtitleTracks, availableQualityLevels } = this.state;
     const progress = this.getProgress();
     const currentPosition = this.getCurrentPosition();
     const isVideoLoaded = status?.isLoaded === true;
@@ -488,6 +565,14 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       languages: availableSubtitleTracks.length > 0 ? availableSubtitleTracks : [{ code: 'off', label: 'Off' }],
       defaultLanguage: subtitles?.defaultLanguage || 'off'
     } : subtitles;
+
+    // Create dynamic quality config based on HLS availability
+    const dynamicQuality = isHLSVideo(effectiveVideoUrl) && quality?.enabled ? {
+      ...quality,
+      enabled: true,
+      qualities: availableQualityLevels.length > 0 ? availableQualityLevels : [{ value: 'auto', label: 'Auto' }],
+      defaultQuality: quality?.defaultQuality || 'auto'
+    } : quality;
 
     // Get responsive styles based on current orientation
     const responsiveStyles = getResponsiveStyles(isLandscape);
@@ -579,6 +664,11 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
               onSubtitleChange={this.handleSubtitleChange}
               isSubtitlesMenuVisible={this.state.isSubtitlesMenuVisible}
               onToggleSubtitlesMenu={this.handleToggleSubtitlesMenu}
+              quality={dynamicQuality}
+              currentQuality={this.state.currentQuality}
+              onQualityChange={this.handleQualityChange}
+              isQualityMenuVisible={this.state.isQualityMenuVisible}
+              onToggleQualityMenu={this.handleToggleQualityMenu}
               buttonGroups={buttonGroups}
             />
           </View>
