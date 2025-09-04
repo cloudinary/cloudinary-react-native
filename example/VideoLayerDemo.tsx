@@ -6,7 +6,7 @@ import { Cloudinary } from '@cloudinary/url-gen';
 
 const cld = new Cloudinary({
   cloud: {
-    cloudName: 'demo'
+    cloudName: 'mobiledemoapp'
   },
   url: {
     secure: true
@@ -24,7 +24,7 @@ export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
   }, []);
 
   function createMyVideoObject() {
-    const myVideo = cld.video('sea_turtle')
+    const myVideo = cld.video('y1phaeze5h2l7zwu9zmq')
     return myVideo
   }
 

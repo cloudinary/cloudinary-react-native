@@ -15,7 +15,7 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
   // Create a sample video
   const cld = new Cloudinary({
     cloud: {
-      cloudName: 'demo'
+      cloudName: 'mobiledemoapp'
     },
     url: {
       secure: true
@@ -23,7 +23,7 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
   });
 
   function createMyVideoObject() {
-    const myVideo = cld.video('samples/cld-sample-video');
+    const myVideo = cld.video('fzsu0bo1m21oxoxwsznm');
     return myVideo;
   }
 
