@@ -68,6 +68,19 @@ export default function TikTokLayerDemo({ onBack }: TikTokLayerDemoProps) {
   const flatListRef = useRef<FlatList>(null);
   const videoRefs = useRef<{ [key: string]: any }>({});
 
+  // Auto-play the first video when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const firstVideoId = videoData[0]?.id;
+      if (firstVideoId && videoRefs.current[firstVideoId]) {
+        console.log('Auto-playing first video:', firstVideoId);
+        videoRefs.current[firstVideoId].setStatusAsync({ shouldPlay: true }).catch(console.error);
+      }
+    }, 1500); // Wait a bit longer for the video to load
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Array of video IDs to cycle through
   const videoIds = [
     'on62djua7bnddlqg3uax',
@@ -89,16 +102,18 @@ export default function TikTokLayerDemo({ onBack }: TikTokLayerDemoProps) {
   const handleViewabilityChange = ({ viewableItems }: any) => {
     if (viewableItems.length > 0) {
       const visibleIndex = viewableItems[0].index;
+      const visibleItem = viewableItems[0].item;
       setCurrentIndex(visibleIndex);
       
       // Pause all videos except the current one
-      Object.keys(videoRefs.current).forEach((key, index) => {
+      Object.keys(videoRefs.current).forEach((key) => {
         const videoRef = videoRefs.current[key];
         if (videoRef) {
-          if (index === visibleIndex) {
-            videoRef.playAsync();
+          if (key === visibleItem.id) {
+            console.log('Playing video:', key);
+            videoRef.setStatusAsync({ shouldPlay: true }).catch(console.error);
           } else {
-            videoRef.pauseAsync();
+            videoRef.setStatusAsync({ shouldPlay: false }).catch(console.error);
           }
         }
       });
@@ -121,10 +136,23 @@ export default function TikTokLayerDemo({ onBack }: TikTokLayerDemoProps) {
     Alert.alert('Follow', `Following user ${index + 1}!`);
   };
 
+  const handleVideoPress = (videoId: string) => {
+    const videoRef = videoRefs.current[videoId];
+    if (videoRef) {
+      console.log('Manual play trigger for:', videoId);
+      videoRef.setStatusAsync({ shouldPlay: true }).catch(console.error);
+    }
+  };
+
   const renderVideoItem = ({ item, index }: { item: VideoItem; index: number }) => (
     <View style={styles.videoContainer}>
       {/* Video Player */}
-      <AdvancedVideo
+      <TouchableOpacity 
+        activeOpacity={1} 
+        onPress={() => handleVideoPress(item.id)}
+        style={StyleSheet.absoluteFill}
+      >
+        <AdvancedVideo
         ref={(ref) => {
           if (ref) {
             videoRefs.current[item.id] = ref;
@@ -133,7 +161,16 @@ export default function TikTokLayerDemo({ onBack }: TikTokLayerDemoProps) {
         cldVideo={createMyVideoObject(index)}
         videoStyle={styles.video}
         enableAnalytics={false}
-      />
+        useNativeControls={false}
+        onPlaybackStatusUpdate={(status) => {
+          // Auto-play the first video when it loads
+          if (index === 0 && status.isLoaded && !status.isPlaying && status.positionMillis === 0) {
+            console.log('First video loaded, starting playback');
+            videoRefs.current[item.id]?.setStatusAsync({ shouldPlay: true }).catch(console.error);
+          }
+        }}
+        />
+      </TouchableOpacity>
 
       {/* Top Navigation */}
       <View style={styles.topNavigation}>
