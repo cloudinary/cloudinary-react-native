@@ -6,6 +6,7 @@ import { VideoPlayerAdapter, VideoPlayerProps, VideoPlayerRef, VideoPlayerType }
 
 export class ExpoVideoAdapter implements VideoPlayerAdapter {
   private expoVideoModule: any = null;
+  private playerCache: Map<string, any> = new Map();
 
   constructor() {
     this.loadExpoVideo();
@@ -13,28 +14,15 @@ export class ExpoVideoAdapter implements VideoPlayerAdapter {
 
   private loadExpoVideo(): void {
     try {
-      console.log('ExpoVideoAdapter - Attempting to load expo-video...');
       this.expoVideoModule = require('expo-video');
-      console.log('ExpoVideoAdapter - expo-video loaded successfully:', {
-        hasVideoView: !!this.expoVideoModule?.VideoView,
-        hasCreateVideoPlayer: !!this.expoVideoModule?.createVideoPlayer,
-        exports: Object.keys(this.expoVideoModule || {})
-      });
     } catch (error) {
-      console.log('ExpoVideoAdapter - Failed to load expo-video:', error);
       this.expoVideoModule = null;
     }
   }
 
   isAvailable(): boolean {
     // Check if expo-video module loaded successfully and has Video component
-    const available = !!(this.expoVideoModule && this.expoVideoModule.VideoView);
-    console.log('ExpoVideoAdapter - isAvailable():', {
-      hasModule: !!this.expoVideoModule,
-      hasVideoView: !!this.expoVideoModule?.VideoView,
-      result: available
-    });
-    return available;
+    return !!(this.expoVideoModule && this.expoVideoModule.VideoView);
   }
 
   getAdapterName(): string {
@@ -42,62 +30,152 @@ export class ExpoVideoAdapter implements VideoPlayerAdapter {
   }
 
   renderVideo(props: VideoPlayerProps, ref: RefObject<VideoPlayerRef | null>): ReactElement {
-    console.log('ExpoVideoAdapter - renderVideo() called with:', {
-      videoUri: props.videoUri,
-      hasStyle: !!props.style,
-      useNativeControls: props.useNativeControls
-    });
 
     if (!this.isAvailable()) {
-      console.log('ExpoVideoAdapter - renderVideo() failed: not available');
       throw new Error('expo-video is not available');
     }
 
     const { VideoView, createVideoPlayer } = this.expoVideoModule;
-    console.log('ExpoVideoAdapter - Using expo-video components:', {
-      hasVideoView: !!VideoView,
-      hasCreateVideoPlayer: !!createVideoPlayer
-    });
     
-    // Create VideoPlayer instance for expo-video
-    const player = createVideoPlayer({ uri: props.videoUri });
-    
-    // Configure player properties
-    player.loop = false;
-    player.muted = false;
-    
-    // Set up event listeners for status updates
-    if (props.onPlaybackStatusUpdate) {
-      // Listen to various player events and map them to status updates
-      player.addListener('playingChange', (isPlaying: boolean) => {
-        const status = {
-          uri: props.videoUri,
-          isLoaded: true,
-          shouldPlay: isPlaying,
-          isPlaying: isPlaying,
-          positionMillis: player.currentTime * 1000,
-          durationMillis: player.duration * 1000,
-          isMuted: player.muted,
-          rate: 1.0,
-          volume: player.muted ? 0 : 1.0
-        };
-        props.onPlaybackStatusUpdate!(status);
-      });
+    // Get or create cached player for this URI
+    let player = this.playerCache.get(props.videoUri);
+    if (!player) {
+      player = createVideoPlayer({ uri: props.videoUri });
       
-      player.addListener('timeUpdate', () => {
+      // Configure player properties with initial values
+      player.loop = false;
+      player.muted = false;
+      player.playbackRate = 1.0;
+      
+      this.playerCache.set(props.videoUri, player);
+    }
+    
+    // Handle URI changes for quality/source switching
+    if (player.source?.uri !== props.videoUri) {
+      try {
+        // Store current playback state
+        const wasPlaying = player.playing;
+        const currentTime = player.currentTime || 0;
+        
+        // Update source
+        player.source = { uri: props.videoUri };
+        
+        // Restore playback state after a brief delay
+        setTimeout(() => {
+          try {
+            if (currentTime > 0) {
+              player.currentTime = currentTime;
+            }
+            if (wasPlaying) {
+              player.play();
+            }
+          } catch (error) {
+            // Silently handle playback state restoration errors
+          }
+        }, 100);
+      } catch (error) {
+        // Silently handle source update errors
+      }
+    }
+    
+    // Set up event listeners for status updates only once per player
+    if (props.onPlaybackStatusUpdate && !player._listenersSetup) {
+      
+      const sendStatusUpdate = () => {
         const status = {
           uri: props.videoUri,
           isLoaded: true,
-          shouldPlay: player.playing,
-          isPlaying: player.playing,
-          positionMillis: player.currentTime * 1000,
-          durationMillis: player.duration * 1000,
-          isMuted: player.muted,
-          rate: 1.0,
+          shouldPlay: player.playing || false,
+          isPlaying: player.playing || false,
+          positionMillis: (player.currentTime || 0) * 1000,
+          durationMillis: (player.duration || 0) * 1000,
+          isMuted: player.muted || false,
+          rate: player.playbackRate || 1.0,
           volume: player.muted ? 0 : 1.0
         };
-        props.onPlaybackStatusUpdate!(status);
-      });
+        if (props.onPlaybackStatusUpdate) {
+          props.onPlaybackStatusUpdate(status);
+        }
+        return status;
+      };
+      
+      // Listen to various player events and map them to status updates
+      const playingChangeHandler = () => {
+        sendStatusUpdate();
+      };
+      
+      const statusChangeHandler = () => {
+        sendStatusUpdate();
+      };
+      
+      const timeUpdateHandler = () => {
+        // Send time updates for seekbar
+        sendStatusUpdate();
+      };
+      
+      const loadedHandler = () => {
+        sendStatusUpdate();
+      };
+      
+      // Set up a timer to continuously update time during playback
+      let timeUpdateInterval: NodeJS.Timeout | null = null;
+      
+      const startTimeUpdates = () => {
+        if (timeUpdateInterval) clearInterval(timeUpdateInterval);
+        timeUpdateInterval = setInterval(() => {
+          if (player.playing) {
+            sendStatusUpdate();
+          }
+        }, 250); // Update 4 times per second
+      };
+      
+      const stopTimeUpdates = () => {
+        if (timeUpdateInterval) {
+          clearInterval(timeUpdateInterval);
+          timeUpdateInterval = null;
+        }
+      };
+      
+      const enhancedPlayingChangeHandler = (isPlaying: boolean) => {
+        if (isPlaying) {
+          startTimeUpdates();
+        } else {
+          stopTimeUpdates();
+        }
+        sendStatusUpdate();
+      };
+      
+      player.addListener('playingChange', enhancedPlayingChangeHandler);
+      player.addListener('statusChange', statusChangeHandler);
+      
+      // Try multiple possible event names for time updates
+      try {
+        player.addListener('timeUpdate', timeUpdateHandler);
+      } catch (e) {
+      }
+      
+      try {
+        player.addListener('playbackStatusUpdate', timeUpdateHandler);
+      } catch (e) {
+      }
+      
+      try {
+        player.addListener('loadeddata', loadedHandler);
+      } catch (e) {
+      }
+      
+      // Mark listeners as setup to prevent duplicates
+      player._listenersSetup = true;
+      player._handlers = { 
+        playingChangeHandler: enhancedPlayingChangeHandler, 
+        statusChangeHandler, 
+        timeUpdateHandler,
+        loadedHandler,
+        stopTimeUpdates
+      };
+      
+      // Send initial status
+      setTimeout(() => sendStatusUpdate(), 100);
     }
     
     // Handle errors
@@ -115,27 +193,138 @@ export class ExpoVideoAdapter implements VideoPlayerAdapter {
             ...videoInstance,
             // Add expo-av compatible methods for backward compatibility
             setStatusAsync: async (status: any) => {
-              if (status.shouldPlay !== undefined) {
-                if (status.shouldPlay) {
-                  player.play();
-                } else {
-                  player.pause();
+              try {
+                let statusChanged = false;
+                
+                if (status.shouldPlay !== undefined) {
+                  if (status.shouldPlay) {
+                    await player.play();
+                    statusChanged = true;
+                  } else {
+                    player.pause();
+                    statusChanged = true;
+                  }
                 }
+                if (status.positionMillis !== undefined) {
+                  player.currentTime = status.positionMillis / 1000;
+                  statusChanged = true;
+                }
+                if (status.isMuted !== undefined) {
+                  player.muted = status.isMuted;
+                  statusChanged = true;
+                }
+                if (status.rate !== undefined) {
+                  player.playbackRate = status.rate;
+                  statusChanged = true;
+                }
+                if (status.uri !== undefined && status.uri !== props.videoUri) {
+                  try {
+                    // Handle source changes (quality switching)
+                    const wasPlaying = player.playing;
+                    const currentTime = player.currentTime || 0;
+                    
+                    player.source = { uri: status.uri };
+                    
+                    // Restore state
+                    setTimeout(() => {
+                      if (status.positionMillis !== undefined) {
+                        player.currentTime = status.positionMillis / 1000;
+                      } else if (currentTime > 0) {
+                        player.currentTime = currentTime;
+                      }
+                      if (status.shouldPlay !== undefined ? status.shouldPlay : wasPlaying) {
+                        player.play();
+                      }
+                    }, 100);
+                    
+                    statusChanged = true;
+                  } catch (error) {
+                    console.warn('ExpoVideoAdapter - URI change failed:', error);
+                  }
+                }
+                
+                // Send status update after changes
+                if (statusChanged && props.onPlaybackStatusUpdate) {
+                  setTimeout(() => {
+                    const newStatus = {
+                      uri: props.videoUri,
+                      isLoaded: true,
+                      shouldPlay: player.playing || false,
+                      isPlaying: player.playing || false,
+                      positionMillis: (player.currentTime || 0) * 1000,
+                      durationMillis: (player.duration || 0) * 1000,
+                      isMuted: player.muted || false,
+                      rate: player.playbackRate || 1.0,
+                      volume: player.muted ? 0 : 1.0
+                    };
+                    props.onPlaybackStatusUpdate!(newStatus);
+                  }, 50);
+                }
+              } catch (error) {
+                console.warn('ExpoVideoAdapter - setStatusAsync error:', error);
               }
-              if (status.positionMillis !== undefined) {
-                player.currentTime = status.positionMillis / 1000;
+            },
+            // Add missing expo-av compatible method for mute toggle
+            setIsMutedAsync: async (isMuted: boolean) => {
+              try {
+                player.muted = isMuted;
+                // Send status update after mute change
+                if (props.onPlaybackStatusUpdate) {
+                  setTimeout(() => {
+                    const newStatus = {
+                      uri: props.videoUri,
+                      isLoaded: true,
+                      shouldPlay: player.playing || false,
+                      isPlaying: player.playing || false,
+                      positionMillis: (player.currentTime || 0) * 1000,
+                      durationMillis: (player.duration || 0) * 1000,
+                      isMuted: player.muted || false,
+                      rate: player.playbackRate || 1.0,
+                      volume: player.muted ? 0 : 1.0
+                    };
+                    if (props.onPlaybackStatusUpdate) {
+                      props.onPlaybackStatusUpdate(newStatus);
+                    }
+                  }, 50);
+                }
+              } catch (error) {
+                // Silently handle mute errors
               }
-              if (status.isMuted !== undefined) {
-                player.muted = status.isMuted;
+            },
+            // Add cleanup method
+            _cleanup: () => {
+              try {
+                if (player._handlers) {
+                  player.removeListener('playingChange', player._handlers.playingChangeHandler);
+                  player.removeListener('statusChange', player._handlers.statusChangeHandler);
+                  
+                  // Clean up time update interval
+                  if (player._handlers.stopTimeUpdates) {
+                    player._handlers.stopTimeUpdates();
+                  }
+                  
+                  try {
+                    player.removeListener('timeUpdate', player._handlers.timeUpdateHandler);
+                  } catch (e) {}
+                  
+                  try {
+                    player.removeListener('loadeddata', player._handlers.loadedHandler);
+                  } catch (e) {}
+                }
+                player.remove();
+              } catch (error) {
+                console.warn('ExpoVideoAdapter - cleanup error:', error);
               }
             },
             _currentStatus: {
               uri: props.videoUri,
               isLoaded: true,
-              shouldPlay: player.playing,
-              positionMillis: player.currentTime * 1000,
-              durationMillis: player.duration * 1000,
-              isMuted: player.muted
+              shouldPlay: player.playing || false,
+              positionMillis: (player.currentTime || 0) * 1000,
+              durationMillis: (player.duration || 0) * 1000,
+              isMuted: player.muted || false,
+              rate: player.playbackRate || 1.0,
+              volume: player.muted ? 0 : 1.0
             }
           };
         }

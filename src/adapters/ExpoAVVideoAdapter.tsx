@@ -17,11 +17,7 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
   }
 
   isAvailable(): boolean {
-    const hasModule = !!this.expoAVModule;
-    const hasVideo = !!(this.expoAVModule && this.expoAVModule.Video);
-    const isAvailable = hasModule && hasVideo;
-    
-    return isAvailable;
+    return !!(this.expoAVModule && this.expoAVModule.Video);
   }
 
   getAdapterName(): string {

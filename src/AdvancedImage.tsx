@@ -8,9 +8,9 @@ interface AdvancedImageProps extends Omit<ImageProps, 'source'> {
 }
 
 const AdvancedImage: React.FC<AdvancedImageProps> = ({
-                                                       cldImg,
-                                                       ...rest
-                                                     }) => {
+  cldImg,
+  ...rest
+}) => {
   const uri = cldImg.toURL({trackedAnalytics: SDKAnalyticsConstants});
   return (
     <Image

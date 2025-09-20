@@ -83,12 +83,12 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   private getVideoUri = (): string => {
     if (this.props.videoUrl) {
       return this.props.videoUrl;
-      }
+    }
     if (this.props.cldVideo) {
       return this.props.cldVideo.toURL({ trackedAnalytics: SDKAnalyticsConstants });
-      }
-      return '';
-    };
+    }
+    return '';
+  };
 
   private initializeAnalytics = async () => {
     if (!this.props.enableAnalytics || !this.videoRef.current || this.state.analyticsInitialized) {
@@ -123,12 +123,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   };
 
   private onPlaybackStatusUpdate = (status: any) => {
-    console.log('AdvancedVideo - Status Update:', {
-      adapterName: this.state.videoAdapter.getAdapterName(),
-      videoUri: this.getVideoUri(),
-      status: status,
-      hasCallback: !!this.props.onPlaybackStatusUpdate
-    });
     
     if (this.props.enableAnalytics && this.videoRef.current && this.state.analyticsInitialized) {
       if (!this.videoRef.current._currentStatus) {
@@ -146,7 +140,6 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         }
         this.setState({ previousStatus: status });
       } catch (error) {
-        console.log('AdvancedVideo - Status processing error:', error);
       }
     }
 
@@ -262,14 +255,8 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
 
   render() {
     const videoUri = this.getVideoUri();
-    console.log('AdvancedVideo - Render:', {
-      videoUri,
-      adapterName: this.state.videoAdapter.getAdapterName(),
-      isAdapterAvailable: this.state.videoAdapter.isAvailable()
-    });
 
     if (!videoUri) {
-      console.log('AdvancedVideo - No video URI provided');
       return this.state.videoAdapter.renderVideo({
         videoUri: '',
         style: this.props.videoStyle,
@@ -283,19 +270,15 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         useNativeControls: this.props.useNativeControls,
         onPlaybackStatusUpdate: this.onPlaybackStatusUpdate,
         onLoadStart: () => {
-          console.log('AdvancedVideo - Load Start');
         },
         onLoad: () => {
-          console.log('AdvancedVideo - Load Complete');
         },
-        onError: (error: any) => {
-          console.log('AdvancedVideo - Load Error:', error);
+        onError: () => {
         },
       }, this.videoRef);
       
       return videoElement;
     } catch (error) {
-      console.log('AdvancedVideo - Adapter Error:', error);
       // If the adapter fails, fall back to a fallback adapter
       const { FallbackVideoAdapter } = require('./adapters/FallbackVideoAdapter');
       const fallbackAdapter = new FallbackVideoAdapter(

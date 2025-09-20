@@ -488,10 +488,14 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
   };
 
   handleShare = async () => {
-    if (this.props.onShare) {
-      this.props.onShare();
-    } else {
-      await handleDefaultShare(this.props.cldVideo);
+    try {
+      if (this.props.onShare) {
+        this.props.onShare();
+      } else {
+        await handleDefaultShare(this.props.cldVideo);
+      }
+    } catch (error) {
+      console.warn('CLDVideoLayer: Failed to handle share:', error);
     }
   };
 
@@ -585,8 +589,8 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       >
         <AdvancedVideo
           ref={this.videoRef}
-          cldVideo={videoUrl ? undefined : cldVideo}
-          videoUrl={videoUrl}
+          cldVideo={undefined}
+          videoUrl={effectiveVideoUrl}
           videoStyle={StyleSheet.absoluteFill}
           onPlaybackStatusUpdate={this.handleStatusUpdate}
         />

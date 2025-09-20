@@ -20,7 +20,6 @@ interface VideoLayerDemoProps {
 export default function VideoLayerDemo({ onBack }: VideoLayerDemoProps) {
   useEffect(() => {
     const currentAdapter = VideoPlayerFactory.getAvailableAdapter();
-    console.log(`🎥 Video Package: ${currentAdapter.getAdapterName()}`);
   }, []);
 
   function createMyVideoObject() {

@@ -1,6 +1,7 @@
 import { Share, Platform } from 'react-native';
 import type { CloudinaryVideo } from '@cloudinary/url-gen';
 import { SubtitleOption, QualityOption } from './types';
+import { SDKAnalyticsConstants } from '../../../internal/SDKAnalyticsConstants';
 
 /**
  * Formats time in milliseconds to MM:SS format
@@ -17,7 +18,20 @@ export const formatTime = (milliseconds: number): string => {
  */
 export const handleDefaultShare = async (cldVideo: CloudinaryVideo): Promise<void> => {
   try {
-    const videoUrl = cldVideo.toURL();
+    // Create analytics object with feature 'G' for CLDVideoLayer
+    const videoLayerAnalytics = {
+      ...SDKAnalyticsConstants,
+      feature: 'G',
+    };
+
+    let videoUrl: string;
+    try {
+      videoUrl = cldVideo.toURL({ trackedAnalytics: videoLayerAnalytics });
+    } catch (analyticsError) {
+      console.warn('CLDVideoLayer: Failed to generate URL with analytics, falling back:', analyticsError);
+      videoUrl = cldVideo.toURL();
+    }
+
     await Share.share({
       message: Platform.OS === 'ios' ? '' : videoUrl,
       url: videoUrl,
@@ -250,7 +264,25 @@ const parseM3U8Attributes = (line: string): Record<string, string> => {
 
 /**
  * Determines the final video URL to use, prioritizing videoUrl over generated URL
+ * When generating URL from cldVideo, includes feature 'G' analytics for CLDVideoLayer
  */
 export const getVideoUrl = (videoUrl: string | undefined, cldVideo: CloudinaryVideo): string => {
-  return videoUrl || cldVideo.toURL();
+  // If videoUrl is provided directly, use it as-is
+  if (videoUrl) {
+    return videoUrl;
+  }
+
+  // Generate URL with CLDVideoLayer analytics (feature 'G')
+  try {
+    const videoLayerAnalytics = {
+      ...SDKAnalyticsConstants,
+      feature: 'G',
+    };
+    
+    return cldVideo.toURL({ trackedAnalytics: videoLayerAnalytics });
+  } catch (error) {
+    console.error('CLDVideoLayer: Error generating video URL with analytics, falling back:', error);
+    // Fallback to URL without analytics if there's an issue
+    return cldVideo.toURL();
+  }
 }; 
