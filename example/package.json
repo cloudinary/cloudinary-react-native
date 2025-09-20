@@ -9,7 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@cloudinary/url-gen": "^1.21.0",
+    "@cloudinary/url-gen": "^1.22.0",
     "@expo/config": "^11.0.0",
     "@expo/metro-config": "~0.20.0",
     "@expo/vector-icons": "^14.0.2",

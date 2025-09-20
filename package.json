@@ -77,7 +77,7 @@
     "typescript": "^5.3.0"
   },
   "dependencies": {
-    "@cloudinary/url-gen": "^1.10.0",
+    "@cloudinary/url-gen": "^1.22.0",
     "expo-constants": "^17.0.0",
     "expo-crypto": "^14.1.5",
     "isomorphic-fetch": "^3.0.0",

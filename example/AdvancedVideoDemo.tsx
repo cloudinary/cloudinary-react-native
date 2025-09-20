@@ -16,7 +16,7 @@ export default function AdvancedVideoDemo() {
   const videoPlayer = useRef<any>(null);
 
   function createMyVideoObject() {
-    const myVideo = cld.video('vancbaaof5rffx3p95qe')
+    const myVideo = cld.video('fzsu0bo1m21oxoxwsznm')
     return myVideo
   }
 

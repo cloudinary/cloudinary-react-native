@@ -12,11 +12,9 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AdvancedVideoDemo from './AdvancedVideoDemo';
+import AdvancedImageDemo from './AdvancedImageDemo';
 import VideoLayerDemo from './VideoLayerDemo';
 import { ActiveLayerLayoutDemo } from './ActiveLayerLayoutDemo';
-import YouTubeLayerDemo from './YouTubeLayerDemo';
-import NetflixLayerDemo from './NetflixLayerDemo';
-import TikTokLayerDemo from './TikTokLayerDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -30,7 +28,7 @@ const getTopPadding = () => {
   return 35;
 };
 
-type CurrentScreen = 'home' | 'video' | 'videoLayer' | 'buttonLayout' | 'youtubeLayer' | 'netflixLayer' | 'tiktokLayer';
+type CurrentScreen = 'home' | 'video' | 'image' | 'videoLayer' | 'buttonLayout';
 
 // Local orientation hook to avoid import path issues
 const useLocalOrientation = () => {
@@ -70,17 +68,6 @@ export default function App() {
     setCurrentScreen('home');
   };
 
-  const navigateToYouTube = () => {
-    setCurrentScreen('youtubeLayer');
-  };
-
-  const navigateToNetflix = () => {
-    setCurrentScreen('netflixLayer');
-  };
-
-  const navigateToTikTok = () => {
-    setCurrentScreen('tiktokLayer');
-  };
 
 
 
@@ -88,16 +75,12 @@ export default function App() {
     switch (currentScreen) {
       case 'video':
         return <AdvancedVideoDemo />;
+      case 'image':
+        return <AdvancedImageDemo />;
       case 'videoLayer':
         return <VideoLayerDemo onBack={navigateHome} />;
       case 'buttonLayout':
-        return <ActiveLayerLayoutDemo onNavigateToYouTube={navigateToYouTube} onBack={navigateHome} />;
-      case 'youtubeLayer':
-        return <YouTubeLayerDemo onBack={navigateHome} />;
-      case 'netflixLayer':
-        return <NetflixLayerDemo onBack={navigateHome} />;
-      case 'tiktokLayer':
-        return <TikTokLayerDemo onBack={navigateHome} />;
+        return <ActiveLayerLayoutDemo onBack={navigateHome} />;
       default:
         return renderHomeScreen();
     }
@@ -183,90 +166,23 @@ export default function App() {
             <TouchableOpacity
               style={[
                 styles.mainGridCard, 
-                styles.youtubeCard,
+                styles.imageCard,
                 isLandscape && styles.mainGridCardLandscape
               ]}
-              onPress={() => navigateToScreen('youtubeLayer')}
+              onPress={() => navigateToScreen('image')}
               activeOpacity={0.7}
             >
               <View style={[
                 styles.mainIconContainer, 
-                styles.youtubeIcon,
+                styles.imageIcon,
                 isLandscape && styles.mainIconContainerLandscape
               ]}>
-                <Image 
-                  source={require('./assets/youtube.png')} 
-                  style={[styles.youtubeIconImage, isLandscape && { width: 50, height: 50 }]}
-                  resizeMode="contain"
-                />
+                <Text style={[styles.mainIconText, isLandscape && styles.mainIconTextLandscape]}>🖼</Text>
               </View>
-              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>YouTube</Text>
-              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Seamless embed</Text>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>Advanced Image</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Image transformations</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[
-                styles.mainGridCard, 
-                styles.netflixCard,
-                isLandscape && styles.mainGridCardLandscape
-              ]}
-              onPress={() => navigateToScreen('netflixLayer')}
-              activeOpacity={0.7}
-            >
-              <View style={[
-                styles.mainIconContainer, 
-                styles.netflixIcon,
-                isLandscape && styles.mainIconContainerLandscape
-              ]}>
-                <Image 
-                  source={require('./assets/netlfix.png')} 
-                  style={[styles.netflixIconImage, isLandscape && { width: 50, height: 50 }]}
-                  resizeMode="contain"
-                />
-              </View>
-              <Text style={[
-                styles.mainTitle, 
-                styles.netflixGridTitle,
-                isLandscape && styles.mainTitleLandscape
-              ]}>Netflix</Text>
-              <Text style={[
-                styles.mainSubtitle, 
-                styles.netflixGridSubtitle,
-                isLandscape && styles.mainSubtitleLandscape
-              ]}>Streaming</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.mainGridCard, 
-                styles.tiktokCard,
-                isLandscape && styles.mainGridCardLandscape
-              ]}
-              onPress={() => navigateToScreen('tiktokLayer')}
-              activeOpacity={0.7}
-            >
-              <View style={[
-                styles.mainIconContainer, 
-                styles.tiktokIcon,
-                isLandscape && styles.mainIconContainerLandscape
-              ]}>
-                <Image 
-                  source={require('./assets/tiktok-seeklogo.png')} 
-                  style={[styles.tiktokIconImage, isLandscape && { width: 50, height: 50 }]}
-                  resizeMode="contain"
-                />
-              </View>
-              <Text style={[
-                styles.mainTitle, 
-                styles.tiktokGridTitle,
-                isLandscape && styles.mainTitleLandscape
-              ]}>TikTok</Text>
-              <Text style={[
-                styles.mainSubtitle, 
-                styles.tiktokGridSubtitle,
-                isLandscape && styles.mainSubtitleLandscape
-              ]}>Endless feed</Text>
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -295,34 +211,7 @@ export default function App() {
     return (
       <View style={styles.fullScreenContainer}>
         <StatusBar style="auto" />
-        <ActiveLayerLayoutDemo onNavigateToYouTube={navigateToYouTube} onBack={navigateHome} />
-      </View>
-    );
-  }
-
-  if (currentScreen === 'youtubeLayer') {
-    return (
-      <View style={styles.fullScreenContainer}>
-        <StatusBar hidden />
-        <YouTubeLayerDemo onBack={navigateHome} />
-      </View>
-    );
-  }
-
-  if (currentScreen === 'netflixLayer') {
-    return (
-      <View style={styles.fullScreenContainer}>
-        <StatusBar hidden />
-        <NetflixLayerDemo onBack={navigateHome} />
-      </View>
-    );
-  }
-
-  if (currentScreen === 'tiktokLayer') {
-    return (
-      <View style={styles.fullScreenContainer}>
-        <StatusBar hidden />
-        <TikTokLayerDemo onBack={navigateHome} />
+        <ActiveLayerLayoutDemo onBack={navigateHome} />
       </View>
     );
   }
@@ -470,20 +359,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#fef3c7',
   },
-  youtubeCard: {
-    backgroundColor: '#fef2f2',
+  imageCard: {
+    backgroundColor: '#f0f9ff',
     borderWidth: 1,
-    borderColor: '#fecaca',
-  },
-  netflixCard: {
-    backgroundColor: '#18181b',
-    borderWidth: 1,
-    borderColor: '#27272a',
-  },
-  tiktokCard: {
-    backgroundColor: '#1a1a1a',
-    borderWidth: 1,
-    borderColor: '#ff0050',
+    borderColor: '#bae6fd',
   },
   // Icon Colors
   videoIcon: {
@@ -495,41 +374,8 @@ const styles = StyleSheet.create({
   interactiveIcon: {
     backgroundColor: '#f59e0b',
   },
-  youtubeIcon: {
-    backgroundColor: '#ffffff',
-  },
-  netflixIcon: {
-    backgroundColor: '#1a1a1a',
-  },
-  tiktokIcon: {
-    backgroundColor: '#ffffff',
-  },
-  // Netflix Special Styling
-  netflixIconImage: {
-    width: 60,
-    height: 60,
-  },
-  // TikTok Special Styling
-  tiktokIconImage: {
-    width: 60,
-    height: 60,
-  },
-  // YouTube Special Styling
-  youtubeIconImage: {
-    width: 60,
-    height: 60,
-  },
-  netflixGridTitle: {
-    color: '#ffffff',
-  },
-  netflixGridSubtitle: {
-    color: '#cccccc',
-  },
-  tiktokGridTitle: {
-    color: '#ffffff',
-  },
-  tiktokGridSubtitle: {
-    color: '#cccccc',
+  imageIcon: {
+    backgroundColor: '#0ea5e9',
   },
   // Landscape-specific styles
   headerContainerLandscape: {
