@@ -27,15 +27,18 @@ Transform and optimize assets. Visit our documentation to learn more about [medi
 | 1.2.x         | >= 0.72              | 50-53         | expo-av / expo-video |
 
 ## Installation
-### Install using your favorite package manager (yarn, npm)
+
+You can install the package using your preferred package manager:
+
 ```bash
+# Using npm
 npm install cloudinary-react-native
 
-```
-Or
-```bash
-yarn add cloudinary-react-native --save
-```
+# Using yarn
+yarn add cloudinary-react-native
+
+# Using pnpm
+pnpm add cloudinary-react-native
 
 ### For Video Player functionality
 The SDK supports both `expo-av` and `expo-video` libraries. The appropriate library will be automatically detected and used:
