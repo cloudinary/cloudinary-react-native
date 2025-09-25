@@ -305,6 +305,7 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
       <View style={styles.videoContainer}>
         <View style={styles.videoWrapper}>
           <CLDVideoLayer
+            key={currentExample} // Force remount when switching examples to reset state
             cldVideo={createMyVideoObject()}
             videoUrl={(currentExample === 'subtitles' || currentExample === 'quality') ? 'https://res.cloudinary.com/demo/video/upload/sp_sd:subtitles_((code_en-US;file_outdoors.vtt);(code_es;file_outdoors-es.vtt))/sea_turtle.m3u8' : undefined}
             autoPlay={false}

@@ -87,6 +87,7 @@ export const isHLSVideo = (videoUrl: string | undefined): boolean => {
 export const parseHLSManifest = async (manifestUrl: string): Promise<SubtitleOption[]> => {
   try {
     const response = await fetch(manifestUrl);
+    
     if (!response.ok) {
       console.warn('Failed to fetch HLS manifest:', response.status);
       return [];
@@ -109,13 +110,21 @@ export const parseHLSManifest = async (manifestUrl: string): Promise<SubtitleOpt
         const attributes = parseM3U8Attributes(line);
         
         if (attributes.LANGUAGE && attributes.NAME) {
-          const languageCode = attributes.LANGUAGE;
-          const displayName = attributes.NAME.replace(/"/g, ''); // Remove quotes
+          const languageCode = attributes.LANGUAGE.replace(/"/g, ''); // Remove quotes from language code
+          const displayName = attributes.NAME.replace(/"/g, ''); // Remove quotes from display name
           let subtitleUrl = attributes.URI ? attributes.URI.replace(/"/g, '') : undefined;
           
-          // Resolve relative URLs
+          // Resolve relative URLs properly
           if (subtitleUrl && !subtitleUrl.startsWith('http')) {
-            subtitleUrl = baseUrl + subtitleUrl;
+            // Handle URLs that start with /
+            if (subtitleUrl.startsWith('/')) {
+              // Extract the base domain from the manifest URL
+              const urlObj = new URL(manifestUrl);
+              subtitleUrl = `${urlObj.protocol}//${urlObj.host}${subtitleUrl}`;
+            } else {
+              // For other relative URLs, use baseUrl
+              subtitleUrl = baseUrl + subtitleUrl;
+            }
           }
           
           // Only add if not already present

@@ -95,12 +95,49 @@ export const findActiveSubtitle = (cues: SubtitleCue[], currentTime: number): Su
 export const fetchSubtitleFile = async (url: string): Promise<SubtitleCue[]> => {
   try {
     const response = await fetch(url);
+    
     if (!response.ok) {
       throw new Error(`Failed to fetch subtitle file: ${response.status}`);
     }
     
     const content = await response.text();
-    return parseWebVTT(content);
+    
+    // Check if this is an M3U8 playlist instead of a VTT file
+    if (content.trim().startsWith('#EXTM3U')) {
+      // Parse the M3U8 to find the actual VTT file URL
+      const lines = content.split('\n');
+      let vttUrl = null;
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        // Look for lines that end with .vtt and don't start with #
+        if (!trimmedLine.startsWith('#') && trimmedLine.includes('.vtt')) {
+          vttUrl = trimmedLine;
+          break;
+        }
+      }
+      
+      if (vttUrl) {
+        // Resolve relative URL if needed
+        if (vttUrl.startsWith('/')) {
+          const urlObj = new URL(url);
+          vttUrl = `${urlObj.protocol}//${urlObj.host}${vttUrl}`;
+        } else if (!vttUrl.startsWith('http')) {
+          const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
+          vttUrl = baseUrl + vttUrl;
+        }
+        
+        // Recursively fetch the actual VTT file
+        return await fetchSubtitleFile(vttUrl);
+      } else {
+        console.warn('No VTT URL found in M3U8 playlist');
+        return [];
+      }
+    }
+    
+    // Content is already VTT, parse it directly
+    const cues = parseWebVTT(content);
+    return cues;
   } catch (error) {
     console.warn('Failed to fetch subtitle file:', error);
     return [];
