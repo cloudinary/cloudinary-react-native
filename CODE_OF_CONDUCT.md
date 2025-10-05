@@ -1,9 +1,3 @@
-# Contributor Code of Conduct
-
-As contributors and maintainers of this project, we pledge to make participation in our community a harassment-free experience for everyone. We pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.
-
-This Code of Conduct outlines our expectations for participant behavior, as well as the consequences for unacceptable behavior.
-
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
@@ -33,6 +27,27 @@ Examples of unacceptable behavior include:
 Project maintainers are responsible for clarifying and enforcing this Code of Conduct. Maintainers have the right and responsibility to remove, edit, or reject content, and to suspend or ban participants who violate this Code of Conduct.
 
 Maintainers will attempt to follow a fair and transparent process when handling reports and enforcement actions.
+
+## Scope
+
+This Code of Conduct applies to all spaces managed by the Cloudinary React Native project, including:
+
+- GitHub repository (issues, pull requests, discussions, code reviews)
+- Cloudinary support forums and community channels
+- Official Cloudinary events and meetups
+- Social media when representing the project
+
+It also applies when an individual is representing the project or its community in public spaces. Examples include using an official Cloudinary email address, posting via official social media accounts, or acting as an appointed representative at online or offline events.
+
+## Enforcement
+
+When a violation is reported, the project team will review and investigate it and determine an appropriate response, which may include:
+
+- A warning message
+- Temporary or permanent removal of access to project resources (e.g., repositories, issue trackers, chat rooms)
+- In severe or repeated cases, a public or private statement explaining the violation and the actions taken
+
+Where applicable, we will strive to follow a transparent, timely, and fair process for handling reports.
 
 ## Reporting Guidelines
 
@@ -80,27 +95,6 @@ Community leaders will follow these Community Impact Guidelines in determining t
 - **Community Impact**: Demonstrating a pattern of violation of community standards, including sustained inappropriate behavior, harassment of an individual, or aggression toward or disparagement of classes of individuals.
 
 - **Consequence**: A permanent ban from any sort of public interaction within the community.
-
-## Scope
-
-This Code of Conduct applies to all spaces managed by the Cloudinary React Native project, including:
-
-- GitHub repository (issues, pull requests, discussions, code reviews)
-- Cloudinary support forums and community channels
-- Official Cloudinary events and meetups
-- Social media when representing the project
-
-It also applies when an individual is representing the project or its community in public spaces. Examples include using an official Cloudinary email address, posting via official social media accounts, or acting as an appointed representative at online or offline events.
-
-## Enforcement
-
-When a violation is reported, the project team will review and investigate it and determine an appropriate response, which may include:
-
-- A warning message
-- Temporary or permanent removal of access to project resources (e.g., repositories, issue trackers, chat rooms)
-- In severe or repeated cases, a public or private statement explaining the violation and the actions taken
-
-Where applicable, we will strive to follow a transparent, timely, and fair process for handling reports.
 
 ## Attribution
 
