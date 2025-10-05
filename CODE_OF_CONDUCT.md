@@ -116,22 +116,3 @@ enforcement ladder](https://github.com/mozilla/diversity).
 For answers to common questions about this code of conduct, see the FAQ at
 https://www.contributor-covenant.org/faq. Translations are available at
 https://www.contributor-covenant.org/translations.
-
-
-
-## Notes for Maintainers
-
-**Current Maintainers**: Cloudinary Development Team ([cld-dev-pub@cloudinary.com](mailto:cld-dev-pub@cloudinary.com))
-
-**Action Items**:
-- Ensure all maintainers are familiar with the enforcement guidelines and process outlined above
-- Review reports within 72 hours of receipt
-- Coordinate with Cloudinary's legal and HR teams for serious violations
-- Document all enforcement actions taken (privately)
-- Consider setting up additional reporting mechanisms such as anonymous forms or third-party mediation services if needed
-- Regularly review and update this Code of Conduct to reflect community needs
-
-**Resources**:
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Technical contribution guidelines
-- [Cloudinary Support](https://support.cloudinary.com) - General support and community help
-- [GitHub Community Guidelines](https://docs.github.com/en/site-policy/github-terms/github-community-guidelines)
