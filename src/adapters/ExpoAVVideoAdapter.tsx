@@ -3,6 +3,7 @@ import { VideoPlayerAdapter, VideoPlayerProps, VideoPlayerRef, VideoPlayerType }
 
 export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
   private expoAVModule: any = null;
+  private loadError: Error | null = null;
 
   constructor() {
     this.loadExpoAV();
@@ -12,16 +13,33 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
     try {
       this.expoAVModule = require('expo-av');
     } catch (error) {
+      this.loadError = error as Error;
       this.expoAVModule = null;
     }
   }
 
   isAvailable(): boolean {
-    const hasModule = !!this.expoAVModule;
-    const hasVideo = !!(this.expoAVModule && this.expoAVModule.Video);
-    const isAvailable = hasModule && hasVideo;
+    return !!this.expoAVModule && !!this.expoAVModule.Video;
+  }
+
+  /**
+   * Get detailed information about adapter availability
+   * @returns Object containing availability status, error details, and installation guidance
+   */
+  getAvailabilityInfo(): { 
+    available: boolean; 
+    error?: string; 
+    installationCommand?: string;
+  } {
+    if (this.isAvailable()) {
+      return { available: true };
+    }
     
-    return isAvailable;
+    return {
+      available: false,
+      error: this.loadError?.message || 'expo-av not installed',
+      installationCommand: 'npx expo install expo-av'
+    };
   }
 
   getAdapterName(): string {
@@ -30,7 +48,10 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
 
   renderVideo(props: VideoPlayerProps, ref: RefObject<VideoPlayerRef | null>): ReactElement {
     if (!this.isAvailable()) {
-      throw new Error('expo-av is not available');
+      const info = this.getAvailabilityInfo();
+      throw new Error(
+        `ExpoAVVideoAdapter: ${info.error}. Please install expo-av: "${info.installationCommand}"`
+      );
     }
 
     const { Video } = this.expoAVModule;
@@ -44,9 +65,9 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
       isLooping: false,
       resizeMode: 'contain',
       onPlaybackStatusUpdate: props.onPlaybackStatusUpdate,
-      onError: props.onError || (() => {}),
-      onLoad: props.onLoad || (() => {}),
-      onLoadStart: props.onLoadStart || (() => {}),
+      onError: props.onError,
+      onLoad: props.onLoad,
+      onLoadStart: props.onLoadStart,
     });
   }
 

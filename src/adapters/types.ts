@@ -31,6 +31,16 @@ export interface VideoPlayerAdapter {
   getAdapterName(): string;
 
   /**
+   * Get detailed information about adapter availability
+   * @returns Object containing availability status, error details, and installation guidance
+   */
+  getAvailabilityInfo?(): { 
+    available: boolean; 
+    error?: string; 
+    installationCommand?: string;
+  };
+
+  /**
    * Render the video component
    */
   renderVideo(props: VideoPlayerProps, ref: RefObject<VideoPlayerRef | null>): ReactElement;
