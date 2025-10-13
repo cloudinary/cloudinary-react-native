@@ -10,10 +10,10 @@ describe('Video Adapter Error Handling Improvements', () => {
       expect(typeof adapter.getAvailabilityInfo).toBe('function');
       
       const info = adapter.getAvailabilityInfo();
-      expect(info).toHaveProperty('available');
+      expect(info).toHaveProperty('isAvailable');
       expect(info).toHaveProperty('installationCommand', 'npx expo install expo-av');
       
-      if (!info.available) {
+      if (!info.isAvailable) {
         expect(info).toHaveProperty('error');
         expect(typeof info.error).toBe('string');
       }
@@ -29,7 +29,7 @@ describe('Video Adapter Error Handling Improvements', () => {
 
         expect(() => {
           adapter.renderVideo(props, ref);
-        }).toThrow(/ExpoAVVideoAdapter:.*Please install expo-av:/);
+        }).toThrow(/ExpoAVVideoAdapter:.*Please install:/);
       }
     });
 
@@ -50,10 +50,10 @@ describe('Video Adapter Error Handling Improvements', () => {
       expect(typeof adapter.getAvailabilityInfo).toBe('function');
       
       const info = adapter.getAvailabilityInfo();
-      expect(info).toHaveProperty('available');
+      expect(info).toHaveProperty('isAvailable');
       expect(info).toHaveProperty('installationCommand', 'npx expo install expo-video');
       
-      if (!info.available) {
+      if (!info.isAvailable) {
         expect(info).toHaveProperty('error');
         expect(typeof info.error).toBe('string');
       }
@@ -69,7 +69,7 @@ describe('Video Adapter Error Handling Improvements', () => {
 
         expect(() => {
           adapter.renderVideo(props, ref);
-        }).toThrow(/ExpoVideoAdapter:.*Please install expo-video:/);
+        }).toThrow(/ExpoVideoAdapter:.*Please install:/);
       }
     });
   });
@@ -82,7 +82,7 @@ describe('Video Adapter Error Handling Improvements', () => {
       
       const info = adapter.getAvailabilityInfo();
       expect(info).toEqual({
-        available: true,
+        isAvailable: true,
         error: 'Custom error message',
         installationCommand: 'npx expo install expo-video expo-av'
       });
@@ -93,7 +93,7 @@ describe('Video Adapter Error Handling Improvements', () => {
 
       const info = adapter.getAvailabilityInfo();
       expect(info).toEqual({
-        available: true,
+        isAvailable: true,
         error: 'No video player available',
         installationCommand: 'npx expo install expo-video expo-av'
       });

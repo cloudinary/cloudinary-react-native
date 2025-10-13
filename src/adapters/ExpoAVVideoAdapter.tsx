@@ -3,7 +3,6 @@ import { VideoPlayerAdapter, VideoPlayerProps, VideoPlayerRef, VideoPlayerType }
 
 export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
   private expoAVModule: any = null;
-  private loadError: Error | null = null;
 
   constructor() {
     this.loadExpoAV();
@@ -13,7 +12,6 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
     try {
       this.expoAVModule = require('expo-av');
     } catch (error) {
-      this.loadError = error as Error;
       this.expoAVModule = null;
     }
   }
@@ -27,19 +25,27 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
    * @returns Object containing availability status, error details, and installation guidance
    */
   getAvailabilityInfo(): { 
-    available: boolean; 
+    isAvailable: boolean; 
     error?: string; 
     installationCommand?: string;
   } {
-    if (this.isAvailable()) {
-      return { available: true };
+    if (!this.expoAVModule) {
+      return {
+        isAvailable: false,
+        error: 'Module not found: expo-av',
+        installationCommand: 'npx expo install expo-av'
+      };
     }
     
-    return {
-      available: false,
-      error: this.loadError?.message || 'expo-av not installed',
-      installationCommand: 'npx expo install expo-av'
-    };
+    if (!this.expoAVModule.Video) {
+      return {
+        isAvailable: false,
+        error: 'Video component not found in expo-av module',
+        installationCommand: 'npx expo install expo-av'
+      };
+    }
+    
+    return { isAvailable: true };
   }
 
   getAdapterName(): string {
@@ -50,7 +56,7 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
     if (!this.isAvailable()) {
       const info = this.getAvailabilityInfo();
       throw new Error(
-        `ExpoAVVideoAdapter: ${info.error}. Please install expo-av: "${info.installationCommand}"`
+        `ExpoAVVideoAdapter: ${info.error}. Please install: "${info.installationCommand}"`
       );
     }
 

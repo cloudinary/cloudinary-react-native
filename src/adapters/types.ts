@@ -35,7 +35,7 @@ export interface VideoPlayerAdapter {
    * @returns Object containing availability status, error details, and installation guidance
    */
   getAvailabilityInfo?(): { 
-    available: boolean; 
+    isAvailable: boolean; 
     error?: string; 
     installationCommand?: string;
   };

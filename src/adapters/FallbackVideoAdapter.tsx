@@ -22,12 +22,12 @@ export class FallbackVideoAdapter implements VideoPlayerAdapter {
    * @returns Object containing availability status and installation guidance for video libraries
    */
   getAvailabilityInfo(): { 
-    available: boolean; 
+    isAvailable: boolean; 
     error?: string; 
     installationCommand?: string;
   } {
     return {
-      available: true,
+      isAvailable: true,
       error: this.errorMessage,
       installationCommand: 'npx expo install expo-video expo-av'
     };

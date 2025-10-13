@@ -4,7 +4,6 @@ import { VideoPlayerAdapter, VideoPlayerProps, VideoPlayerRef, VideoPlayerType }
 export class ExpoVideoAdapter implements VideoPlayerAdapter {
   private expoVideoModule: any = null;
   private videoPlayer: any = null;
-  private loadError: Error | null = null;
 
   constructor() {
     this.loadExpoVideo();
@@ -14,7 +13,6 @@ export class ExpoVideoAdapter implements VideoPlayerAdapter {
     try {
       this.expoVideoModule = require('expo-video');
     } catch (error) {
-      this.loadError = error as Error;
       this.expoVideoModule = null;
     }
   }
@@ -31,19 +29,35 @@ export class ExpoVideoAdapter implements VideoPlayerAdapter {
    * @returns Object containing availability status, error details, and installation guidance
    */
   getAvailabilityInfo(): { 
-    available: boolean; 
+    isAvailable: boolean; 
     error?: string; 
     installationCommand?: string;
   } {
-    if (this.isAvailable()) {
-      return { available: true };
+    if (!this.expoVideoModule) {
+      return {
+        isAvailable: false,
+        error: 'Module not found: expo-video',
+        installationCommand: 'npx expo install expo-video'
+      };
     }
     
-    return {
-      available: false,
-      error: this.loadError?.message || 'expo-video not installed',
-      installationCommand: 'npx expo install expo-video'
-    };
+    if (!this.expoVideoModule.VideoView) {
+      return {
+        isAvailable: false,
+        error: 'VideoView component not found in expo-video module',
+        installationCommand: 'npx expo install expo-video'
+      };
+    }
+    
+    if (!this.expoVideoModule.createVideoPlayer) {
+      return {
+        isAvailable: false,
+        error: 'createVideoPlayer function not found in expo-video module',
+        installationCommand: 'npx expo install expo-video'
+      };
+    }
+    
+    return { isAvailable: true };
   }
 
   getAdapterName(): string {
@@ -54,7 +68,7 @@ export class ExpoVideoAdapter implements VideoPlayerAdapter {
     if (!this.isAvailable()) {
       const info = this.getAvailabilityInfo();
       throw new Error(
-        `ExpoVideoAdapter: ${info.error}. Please install expo-video: "${info.installationCommand}"`
+        `ExpoVideoAdapter: ${info.error}. Please install: "${info.installationCommand}"`
       );
     }
 

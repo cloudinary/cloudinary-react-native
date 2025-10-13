@@ -21,7 +21,7 @@ All video adapters now implement an optional `getAvailabilityInfo()` method that
 
 ```typescript
 {
-  available: boolean;
+  isAvailable: boolean;
   error?: string;
   installationCommand?: string;
 }
@@ -36,7 +36,7 @@ const adapter = VideoPlayerFactory.getAvailableAdapter();
 
 // Check availability with detailed information
 const info = adapter.getAvailabilityInfo?.();
-if (!info?.available) {
+if (!info?.isAvailable) {
   console.log(`Error: ${info.error}`);
   console.log(`Install with: ${info.installationCommand}`);
 }
@@ -51,7 +51,7 @@ Error: expo-av is not available
 
 ### After (Detailed)
 ```
-Error: ExpoAVVideoAdapter: Module not found: expo-av. Please install expo-av: "npx expo install expo-av"
+Error: ExpoAVVideoAdapter: Module not found: expo-av. Please install: "npx expo install expo-av"
 ```
 
 ## Benefits
@@ -88,7 +88,7 @@ try {
 // After (enhanced)
 if (!adapter.isAvailable()) {
   const info = adapter.getAvailabilityInfo?.();
-  if (info && !info.available) {
+  if (info && !info.isAvailable) {
     console.error(`Video adapter error: ${info.error}`);
     console.log(`Fix with: ${info.installationCommand}`);
     return;
