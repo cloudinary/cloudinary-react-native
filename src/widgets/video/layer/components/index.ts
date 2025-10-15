@@ -6,4 +6,7 @@ export { CustomButton } from './CustomButton';
 export { PlaybackSpeedButton } from './PlaybackSpeedButton';
 export { SubtitlesButton } from './SubtitlesButton';
 export { QualityButton } from './QualityButton';
-export { SubtitleDisplay } from './SubtitleDisplay'; 
+export { SubtitleDisplay } from './SubtitleDisplay';
+export { AbsoluteButtons } from './AbsoluteButtons';
+export { TitleSubtitle } from './TitleSubtitle';
+export { BottomButtonBar } from './BottomButtonBar'; 
