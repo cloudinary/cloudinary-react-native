@@ -90,6 +90,34 @@ export const findActiveSubtitle = (cues: SubtitleCue[], currentTime: number): Su
 };
 
 /**
+ * Parse M3U8 playlist content to extract VTT file URL
+ */
+const parseM3U8ForVTTUrl = (content: string, baseUrl: string): string | null => {
+  const lines = content.split('\n');
+  
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    // Look for lines that end with .vtt and don't start with #
+    if (!trimmedLine.startsWith('#') && trimmedLine.includes('.vtt')) {
+      let vttUrl = trimmedLine;
+      
+      // Resolve relative URL if needed
+      if (vttUrl.startsWith('/')) {
+        const urlObj = new URL(baseUrl);
+        vttUrl = `${urlObj.protocol}//${urlObj.host}${vttUrl}`;
+      } else if (!vttUrl.startsWith('http')) {
+        const basePath = baseUrl.substring(0, baseUrl.lastIndexOf('/') + 1);
+        vttUrl = basePath + vttUrl;
+      }
+      
+      return vttUrl;
+    }
+  }
+  
+  return null;
+};
+
+/**
  * Fetch and parse subtitle file from URL
  */
 export const fetchSubtitleFile = async (url: string): Promise<SubtitleCue[]> => {
@@ -104,29 +132,9 @@ export const fetchSubtitleFile = async (url: string): Promise<SubtitleCue[]> => 
     
     // Check if this is an M3U8 playlist instead of a VTT file
     if (content.trim().startsWith('#EXTM3U')) {
-      // Parse the M3U8 to find the actual VTT file URL
-      const lines = content.split('\n');
-      let vttUrl = null;
-      
-      for (const line of lines) {
-        const trimmedLine = line.trim();
-        // Look for lines that end with .vtt and don't start with #
-        if (!trimmedLine.startsWith('#') && trimmedLine.includes('.vtt')) {
-          vttUrl = trimmedLine;
-          break;
-        }
-      }
+      const vttUrl = parseM3U8ForVTTUrl(content, url);
       
       if (vttUrl) {
-        // Resolve relative URL if needed
-        if (vttUrl.startsWith('/')) {
-          const urlObj = new URL(url);
-          vttUrl = `${urlObj.protocol}//${urlObj.host}${vttUrl}`;
-        } else if (!vttUrl.startsWith('http')) {
-          const baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
-          vttUrl = baseUrl + vttUrl;
-        }
-        
         // Recursively fetch the actual VTT file
         return await fetchSubtitleFile(vttUrl);
       } else {
