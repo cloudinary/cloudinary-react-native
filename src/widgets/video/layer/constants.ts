@@ -1,14 +1,5 @@
-import { Platform, Dimensions } from 'react-native';
-import { ButtonLayoutDirection } from './types';
+import { Platform } from 'react-native';
 
-// Get device dimensions for responsive calculations
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
-// Helper function to determine if device is in landscape
-export const isLandscapeOrientation = () => {
-  const { width, height } = Dimensions.get('window');
-  return width > height;
-};
 
 // Animation and timing constants
 export const CONTROLS_AUTO_HIDE_DELAY = 3000; // 3 seconds
@@ -20,7 +11,7 @@ export const SEEK_BUFFER_MS = 100; // 100ms buffer from end
 
 // Responsive UI dimensions - now orientation-aware
 export const TOP_BUTTON_SIZE = Platform.select({ ios: 44, android: 48 });
-export const CENTER_PLAY_BUTTON_SIZE = Math.min(SCREEN_WIDTH * 0.15, 72); // Responsive center button
+export const CENTER_PLAY_BUTTON_SIZE = 72; // Center button size
 export const BOTTOM_BUTTON_SIZE = Platform.select({ ios: 40, android: 44 });
 export const SEEKBAR_HEIGHT = 20;
 export const SEEKBAR_TRACK_HEIGHT = 3;
@@ -36,13 +27,6 @@ export const LEGACY_TOP_PADDING_ANDROID = 20;
 export const TOP_PADDING_IOS_LANDSCAPE = 20;
 export const TOP_PADDING_ANDROID_LANDSCAPE = 6;
 
-// Get responsive top padding based on orientation
-export const getTopPadding = (isLandscape: boolean = false) => {
-  if (Platform.OS === 'ios') {
-    return isLandscape ? TOP_PADDING_IOS_LANDSCAPE : TOP_PADDING_IOS;
-  }
-  return isLandscape ? TOP_PADDING_ANDROID_LANDSCAPE : TOP_PADDING_ANDROID;
-};
 
 // Bottom controls alignment constants (responsive and orientation-aware)
 export const BOTTOM_CONTROLS_PADDING = Platform.select({ ios: 15, android: 12 });
@@ -55,150 +39,11 @@ export const SE_BUTTON_RIGHT_OFFSET = 28; // Align with volume button
 export const SE_BUTTON_BOTTOM_OFFSET = Platform.select({ ios: 32, android: 28 }); // Platform-specific bottom offset
 export const SE_BUTTON_BOTTOM_OFFSET_LANDSCAPE = Platform.select({ ios: 20, android: 18 });
 
-// Get responsive bottom controls padding
-export const getBottomControlsPadding = (isLandscape: boolean = false) => {
-  return isLandscape ? BOTTOM_CONTROLS_PADDING_LANDSCAPE : BOTTOM_CONTROLS_PADDING;
-};
-
-// Get responsive seekbar alignment offset
-export const getSeekbarAlignmentOffset = (isLandscape: boolean = false) => {
-  return isLandscape ? SEEKBAR_ALIGNMENT_OFFSET_LANDSCAPE : SEEKBAR_ALIGNMENT_OFFSET;
-};
-
-// Get responsive SE button bottom offset
-export const getSEButtonBottomOffset = (isLandscape: boolean = false) => {
-  return isLandscape ? SE_BUTTON_BOTTOM_OFFSET_LANDSCAPE : SE_BUTTON_BOTTOM_OFFSET;
-};
 
 // Button spacing constants for multiple buttons in the same position
 export const BUTTON_SPACING = Platform.select({ ios: 8, android: 6 }); // Space between buttons
 export const BUTTON_MARGIN = Platform.select({ ios: 4, android: 3 }); // Margin from edge
 
-// Calculate button positions with automatic spacing and layout direction support
-export const calculateButtonPosition = (
-  position: string,
-  index: number,
-  totalButtons: number,
-  isLandscape: boolean = false,
-  layoutDirection: ButtonLayoutDirection = ButtonLayoutDirection.VERTICAL
-) => {
-  const buttonSize = TOP_BUTTON_SIZE ?? 44;
-  const spacing = BUTTON_SPACING ?? 8;
-  const margin = BUTTON_MARGIN ?? 4;
-  
-  // Helper function to calculate horizontal layout
-  const getHorizontalLayout = () => {
-    const horizontalCenterOffset = ((totalButtons - 1) * (buttonSize + spacing)) / 2;
-    return {
-      marginLeft: (index * (buttonSize + spacing)) - horizontalCenterOffset,
-    };
-  };
-
-  // Helper function to calculate vertical layout
-  const getVerticalLayout = (baseOffset: number = 0) => {
-    const verticalCenterOffset = ((totalButtons - 1) * (buttonSize + spacing)) / 2;
-    return {
-      marginTop: baseOffset + (index * (buttonSize + spacing)) - verticalCenterOffset,
-    };
-  };
-  
-  switch (position) {
-    case 'SE':
-      // For SE position, account for volume button
-      const seBaseOffset = (getSEButtonBottomOffset(isLandscape) ?? 32) + (buttonSize + spacing);
-      if (layoutDirection === 'horizontal') {
-        return {
-          bottom: seBaseOffset,
-          ...getHorizontalLayout(),
-        };
-      }
-      // Default to vertical stacking upward
-      return {
-        bottom: seBaseOffset + (index * (buttonSize + spacing)),
-      };
-    
-    case 'SW':
-      // For SW position
-      const swBaseOffset = (getSEButtonBottomOffset(isLandscape) ?? 32);
-      if (layoutDirection === 'horizontal') {
-        return {
-          bottom: swBaseOffset,
-          ...getHorizontalLayout(),
-        };
-      }
-      // Default to vertical stacking upward
-      return {
-        bottom: swBaseOffset + (index * (buttonSize + spacing)),
-      };
-    
-    case 'S':
-      // For South position
-      const sBaseOffset = (getSEButtonBottomOffset(isLandscape) ?? 32);
-      if (layoutDirection === 'vertical') {
-        return {
-          bottom: sBaseOffset + (index * (buttonSize + spacing)),
-          alignSelf: 'center',
-        };
-      }
-      // Default to horizontal stacking
-      return {
-        bottom: sBaseOffset,
-        alignSelf: 'center',
-        ...getHorizontalLayout(),
-      };
-    
-    case 'NE':
-    case 'NW':
-      // For top positions
-      const topBaseOffset = (getTopPadding(isLandscape) ?? 60) + (isLandscape ? 6 : 8);
-      if (layoutDirection === 'horizontal') {
-        return {
-          top: topBaseOffset,
-          ...getHorizontalLayout(),
-        };
-      }
-      // Default to vertical stacking downward
-      return {
-        top: topBaseOffset + (index * (buttonSize + spacing)),
-      };
-    
-    case 'N':
-      // For North position
-      const nBaseOffset = (getTopPadding(isLandscape) ?? 60) + (isLandscape ? 6 : 8);
-      if (layoutDirection === 'vertical') {
-        return {
-          top: nBaseOffset + (index * (buttonSize + spacing)),
-          alignSelf: 'center',
-        };
-      }
-      // Default to horizontal stacking
-      return {
-        top: nBaseOffset,
-        alignSelf: 'center',
-        ...getHorizontalLayout(),
-      };
-    
-    case 'E':
-    case 'W':
-      // For middle positions
-      if (layoutDirection === 'horizontal') {
-        return {
-          top: '50%',
-          marginTop: -22,
-          ...getHorizontalLayout(),
-        };
-      }
-      // Default to vertical stacking around center
-      const centerOffset = ((totalButtons - 1) * (buttonSize + spacing)) / 2;
-      return {
-        top: '50%',
-        marginTop: -22 + (index * (buttonSize + spacing)) - centerOffset,
-      };
-    
-    default:
-      return {};
-  }
-};
 
 // Visual styling constants
 export const BORDER_RADIUS = {

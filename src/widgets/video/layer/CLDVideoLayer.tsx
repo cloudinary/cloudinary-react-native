@@ -8,7 +8,8 @@ import { formatTime, handleDefaultShare, isHLSVideo, parseHLSManifest, parseHLSQ
 import { SubtitleCue, fetchSubtitleFile, findActiveSubtitle } from './utils/subtitleUtils';
 import { styles, getResponsiveStyles } from './styles';
 import { TopControls, CenterControls, BottomControls, SubtitleDisplay, AbsoluteButtons, TitleSubtitle, BottomButtonBar } from './components';
-import { ICON_SIZES, calculateButtonPosition, getTopPadding } from './constants';
+import { ICON_SIZES } from './constants';
+import { calculateButtonPosition, getTopPadding } from './utils';
 import { parseHLSSubtitlesIfNeeded, parseHLSQualityLevelsIfNeeded } from './helpers/hlsHelpers';
 
 // Import the organized logic functions

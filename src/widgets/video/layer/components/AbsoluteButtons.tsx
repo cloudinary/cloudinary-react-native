@@ -2,7 +2,8 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ButtonPosition, ButtonLayoutDirection } from '../types';
-import { ICON_SIZES, calculateButtonPosition } from '../constants';
+import { ICON_SIZES } from '../constants';
+import { calculateButtonPosition } from '../utils';
 import { getResponsiveStyles } from '../styles';
 import { CustomButton } from './CustomButton';
 

@@ -17,11 +17,13 @@ import {
   SEEKBAR_ALIGNMENT_OFFSET,
   SE_BUTTON_RIGHT_OFFSET,
   SE_BUTTON_BOTTOM_OFFSET,
+} from './constants';
+import {
   getTopPadding,
   getBottomControlsPadding,
   getSeekbarAlignmentOffset,
   getSEButtonBottomOffset,
-} from './constants';
+} from './utils';
 
 // Base styles (orientation-independent)
 export const styles = StyleSheet.create({

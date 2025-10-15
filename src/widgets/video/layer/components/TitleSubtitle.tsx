@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { ButtonPosition } from '../types';
-import { getTopPadding } from '../constants';
+import { getTopPadding } from '../utils';
 
 interface TitleSubtitleProps {
   isControlsVisible: boolean;
