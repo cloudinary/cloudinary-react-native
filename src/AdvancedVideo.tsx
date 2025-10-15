@@ -144,9 +144,7 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
     }
 
     // Forward status updates to parent component
-    if (this.props.onPlaybackStatusUpdate) {
-      this.props.onPlaybackStatusUpdate(status);
-    }
+        this.props.onPlaybackStatusUpdate?.(status);
   };
 
 
