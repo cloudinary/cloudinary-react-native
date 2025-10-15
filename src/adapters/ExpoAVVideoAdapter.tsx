@@ -59,9 +59,7 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
         }
       },
       onLoadStart: (data: any) => {
-        if (props.onLoadStart) {
-          props.onLoadStart(data);
-        }
+        props.onLoadStart?.(data);
       },
     });
   }
