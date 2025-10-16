@@ -24,7 +24,7 @@ Transform and optimize assets. Visit our documentation to learn more about [medi
 | SDK Version   | React Native Version | Expo SDK Version | Video Library |
 |---------------|----------------------|---------------|---------|
 | 1.0.0 - 1.1.0 | >= 0.72              | 50            | expo-av |
-| 1.2.x         | >= 0.72              | 50-53         | expo-av / expo-video |
+| 1.2.x >       | >= 0.72              | 50-53         | expo-av / expo-video |
 
 ## Installation
 
