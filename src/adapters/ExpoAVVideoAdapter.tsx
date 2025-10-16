@@ -17,11 +17,7 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
   }
 
   isAvailable(): boolean {
-    const hasModule = !!this.expoAVModule;
-    const hasVideo = !!(this.expoAVModule && this.expoAVModule.Video);
-    const isAvailable = hasModule && hasVideo;
-    
-    return isAvailable;
+    return !!(this.expoAVModule && this.expoAVModule.Video);
   }
 
   getAdapterName(): string {
@@ -36,17 +32,33 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
     const { Video } = this.expoAVModule;
     
     return React.createElement(Video, {
-      ref,
+      ref: (videoInstance: any) => {
+        if (ref && typeof ref === 'object' && 'current' in ref) {
+          ref.current = videoInstance;
+        }
+      },
       source: { uri: props.videoUri },
       style: props.style,
-      useNativeControls: true,
+      useNativeControls: props.useNativeControls || false,
       shouldPlay: false,
       isLooping: false,
       resizeMode: 'contain',
-      onPlaybackStatusUpdate: props.onPlaybackStatusUpdate,
-      onError: props.onError || (() => {}),
-      onLoad: props.onLoad || (() => {}),
-      onLoadStart: props.onLoadStart || (() => {}),
+      onPlaybackStatusUpdate: (status: any) => {
+        if (props.onPlaybackStatusUpdate) {
+          props.onPlaybackStatusUpdate(status);
+        }
+      },
+      onError: (error: any) => {
+        if (props.onError) {
+          props.onError(error);
+        }
+      },
+      onLoad: (data: any) => {
+        props.onLoad?.(data);
+      },
+      onLoadStart: (data: any) => {
+        props.onLoadStart?.(data);
+      },
     });
   }
 
