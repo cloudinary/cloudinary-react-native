@@ -17,6 +17,22 @@ export class FallbackVideoAdapter implements VideoPlayerAdapter {
     return VideoPlayerType.FALLBACK;
   }
 
+  /**
+   * Get detailed information about adapter availability
+   * @returns Object containing availability status and installation guidance for video libraries
+   */
+  getAvailabilityInfo(): { 
+    isAvailable: boolean; 
+    error?: string; 
+    installationCommand?: string;
+  } {
+    return {
+      isAvailable: true,
+      error: this.errorMessage,
+      installationCommand: 'npx expo install expo-video expo-av'
+    };
+  }
+
   renderVideo(props: VideoPlayerProps, _ref: RefObject<VideoPlayerRef | null>): ReactElement {
     return React.createElement(View, {
       style: [

@@ -21,8 +21,46 @@ export class ExpoVideoAdapter implements VideoPlayerAdapter {
   }
 
   isAvailable(): boolean {
-    // Check if expo-video module loaded successfully and has Video component
-    return !!(this.expoVideoModule && this.expoVideoModule.VideoView);
+    const hasModule = !!this.expoVideoModule;
+    const hasVideoView = !!(this.expoVideoModule && this.expoVideoModule.VideoView);
+    const hasCreatePlayer = !!(this.expoVideoModule && this.expoVideoModule.createVideoPlayer);
+    return hasModule && hasVideoView && hasCreatePlayer;
+  }
+
+  /**
+   * Get detailed information about adapter availability
+   * @returns Object containing availability status, error details, and installation guidance
+   */
+  getAvailabilityInfo(): { 
+    isAvailable: boolean; 
+    error?: string; 
+    installationCommand?: string;
+  } {
+    if (!this.expoVideoModule) {
+      return {
+        isAvailable: false,
+        error: 'Module not found: expo-video',
+        installationCommand: 'npx expo install expo-video'
+      };
+    }
+    
+    if (!this.expoVideoModule.VideoView) {
+      return {
+        isAvailable: false,
+        error: 'VideoView component not found in expo-video module',
+        installationCommand: 'npx expo install expo-video'
+      };
+    }
+    
+    if (!this.expoVideoModule.createVideoPlayer) {
+      return {
+        isAvailable: false,
+        error: 'createVideoPlayer function not found in expo-video module',
+        installationCommand: 'npx expo install expo-video'
+      };
+    }
+    
+    return { isAvailable: true };
   }
 
   getAdapterName(): string {
@@ -30,9 +68,11 @@ export class ExpoVideoAdapter implements VideoPlayerAdapter {
   }
 
   renderVideo(props: VideoPlayerProps, ref: RefObject<VideoPlayerRef | null>): ReactElement {
-
     if (!this.isAvailable()) {
-      throw new Error('expo-video is not available');
+      const info = this.getAvailabilityInfo();
+      throw new Error(
+        `ExpoVideoAdapter: ${info.error}. Please install: "${info.installationCommand}"`
+      );
     }
 
     const { VideoView, createVideoPlayer } = this.expoVideoModule;

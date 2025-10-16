@@ -20,13 +20,44 @@ export class ExpoAVVideoAdapter implements VideoPlayerAdapter {
     return !!(this.expoAVModule && this.expoAVModule.Video);
   }
 
+  /**
+   * Get detailed information about adapter availability
+   * @returns Object containing availability status, error details, and installation guidance
+   */
+  getAvailabilityInfo(): { 
+    isAvailable: boolean; 
+    error?: string; 
+    installationCommand?: string;
+  } {
+    if (!this.expoAVModule) {
+      return {
+        isAvailable: false,
+        error: 'Module not found: expo-av',
+        installationCommand: 'npx expo install expo-av'
+      };
+    }
+    
+    if (!this.expoAVModule.Video) {
+      return {
+        isAvailable: false,
+        error: 'Video component not found in expo-av module',
+        installationCommand: 'npx expo install expo-av'
+      };
+    }
+    
+    return { isAvailable: true };
+  }
+
   getAdapterName(): string {
     return VideoPlayerType.EXPO_AV;
   }
 
   renderVideo(props: VideoPlayerProps, ref: RefObject<VideoPlayerRef | null>): ReactElement {
     if (!this.isAvailable()) {
-      throw new Error('expo-av is not available');
+      const info = this.getAvailabilityInfo();
+      throw new Error(
+        `ExpoAVVideoAdapter: ${info.error}. Please install: "${info.installationCommand}"`
+      );
     }
 
     const { Video } = this.expoAVModule;
