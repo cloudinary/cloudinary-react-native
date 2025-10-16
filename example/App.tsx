@@ -1,12 +1,20 @@
-import { StyleSheet, View, Text, TouchableOpacity, Alert, Platform, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  Platform, 
+  Dimensions,
+  ScrollView,
+  SafeAreaView,
+  Image
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-
-import {AdvancedImage, AdvancedVideo} from 'cloudinary-react-native';
-import {Cloudinary} from '@cloudinary/url-gen';
-import {scale} from "@cloudinary/url-gen/actions/resize";
-import {cartoonify} from "@cloudinary/url-gen/actions/effect";
-import {max} from "@cloudinary/url-gen/actions/roundCorners";
-import React, {useRef, useState} from "react";
+import AdvancedVideoDemo from './AdvancedVideoDemo';
+import AdvancedImageDemo from './AdvancedImageDemo';
+import VideoLayerDemo from './VideoLayerDemo';
+import { ActiveLayerLayoutDemo } from './ActiveLayerLayoutDemo';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -20,240 +28,465 @@ const getTopPadding = () => {
   return 35;
 };
 
-const cld = new Cloudinary({
-  cloud: {
-    cloudName: 'demo'
-  },
-  url: {
-    secure: true
-  }
-});
+type CurrentScreen = 'home' | 'video' | 'image' | 'videoLayer' | 'buttonLayout';
+
+// Local orientation hook to avoid import path issues
+const useLocalOrientation = () => {
+  const [isLandscape, setIsLandscape] = useState(false);
+
+  useEffect(() => {
+    const updateOrientation = () => {
+      const { width, height } = Dimensions.get('window');
+      setIsLandscape(width > height);
+    };
+
+    // Set initial orientation
+    updateOrientation();
+
+    // Listen for orientation changes
+    const subscription = Dimensions.addEventListener('change', updateOrientation);
+
+    return () => {
+      if (subscription?.remove) {
+        subscription.remove();
+      }
+    };
+  }, []);
+
+  return { isLandscape };
+};
 
 export default function App() {
-  const videoPlayer = useRef<any>(null);
-  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
-  const [autoTracking, setAutoTracking] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
+  const { isLandscape } = useLocalOrientation();
 
-  function createMyImage() {
-    var myImage = cld.image('sample').resize(scale().width(300)).effect(cartoonify()).roundCorners(max());
-    return myImage
-  }
-
-  function createMyVideoObject() {
-    const myVideo = cld.video('sea_turtle')
-    return myVideo
+  const navigateToScreen = (screen: CurrentScreen) => {
+    setCurrentScreen(screen);
   };
 
-  const toggleAnalytics = () => {
-    const newAnalyticsState = !analyticsEnabled;
-    setAnalyticsEnabled(newAnalyticsState);
-    
-    if (newAnalyticsState && !autoTracking) {
-      setAutoTracking(true);
-    }
-    
-    Alert.alert(
-      'Analytics', 
-      `Analytics ${newAnalyticsState ? 'enabled' : 'disabled'}.${newAnalyticsState && !autoTracking ? ' Auto tracking also enabled.' : ''} Reload the video to see changes.`
-    );
+  const navigateHome = () => {
+    setCurrentScreen('home');
   };
 
-  const toggleAutoTracking = () => {
-    setAutoTracking(!autoTracking);
-    Alert.alert(
-      'Auto Tracking', 
-      `Auto tracking ${!autoTracking ? 'enabled' : 'disabled'}. Reload the video to see changes.`
-    );
-  };
 
-  const startManualTracking = () => {
-    if (videoPlayer.current && videoPlayer.current.startAnalyticsTracking) {
-      videoPlayer.current.startAnalyticsTracking(
-        {
-          publicId: 'jnwczzoacujqb4r4loj1',
-          cloudName: 'mobiledemoapp',
-          type: 'video'
-        },
-        {
-          customData: {
-            userId: 'test-user-123',
-            sessionId: 'test-session-456',
-            category: 'demo-video'
-          }
-        }
-      );
-      Alert.alert('Manual Tracking', 'Manual analytics tracking started!');
-    } else {
-      Alert.alert('Error', 'Video ref not available or analytics not enabled');
+
+
+  const renderCurrentScreen = () => {
+    switch (currentScreen) {
+      case 'video':
+        return <AdvancedVideoDemo />;
+      case 'image':
+        return <AdvancedImageDemo />;
+      case 'videoLayer':
+        return <VideoLayerDemo onBack={navigateHome} />;
+      case 'buttonLayout':
+        return <ActiveLayerLayoutDemo onBack={navigateHome} />;
+      default:
+        return renderHomeScreen();
     }
   };
 
-  const stopManualTracking = () => {
-    if (videoPlayer.current && videoPlayer.current.stopAnalyticsTracking) {
-      videoPlayer.current.stopAnalyticsTracking();
-      Alert.alert('Manual Tracking', 'Manual analytics tracking stopped!');
-    } else {
-      Alert.alert('Error', 'Video ref not available');
-    }
-  };
-
-  const startAutoTrackingManually = () => {
-    if (videoPlayer.current && videoPlayer.current.startAutoAnalyticsTracking) {
-      videoPlayer.current.startAutoAnalyticsTracking({
-        customData: {
-          userId: 'test-user-123',
-          source: 'manual-trigger'
-        }
-      });
-      Alert.alert('Auto Tracking', 'Auto analytics tracking started manually!');
-    } else {
-      Alert.alert('Error', 'Video ref not available or analytics not enabled');
-    }
-  };
-
-  const addCustomEventToVideo = () => {
-    if (videoPlayer.current && videoPlayer.current.addCustomEvent) {
-      videoPlayer.current.addCustomEvent('user_interaction', {
-        action: 'button_clicked',
-        buttonName: 'share',
-        videoPosition: 30.5,
-        customData: {
-          userId: 'demo-user-123',
-          sessionId: 'session-456'
-        }
-      });
-      Alert.alert('Custom Event', 'Custom analytics event sent!');
-    } else {
-      Alert.alert('Error', 'Custom events not available');
-    }
-  };
-
-  return (
-    <View style={styles.safeArea}>
-      <StatusBar style="auto" />
-      <View style={styles.container}>
-        <View>
-          <AdvancedImage cldImg={createMyImage()} style={{backgroundColor:"black", width:300, height:200}}/>
+  const renderHomeScreen = () => (
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="light" backgroundColor="#000000" />
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollContainer}>
+        <View style={[styles.headerContainer, isLandscape && styles.headerContainerLandscape]}>
+          <View style={styles.titleContainer}>
+            <Text style={[styles.title, isLandscape && styles.titleLandscape]}>Cloudinary</Text>
+            <Text style={[styles.titleAccent, isLandscape && styles.titleAccentLandscape]}>Video Studio</Text>
+          </View>
+          <Text style={[styles.subtitle, isLandscape && styles.subtitleLandscape]}>
+            Professional video experiences for mobile
+          </Text>
         </View>
         
-        <View style={styles.controlsContainer}>
-          <Text style={styles.title}>Analytics Testing</Text>
-          
-          <TouchableOpacity style={styles.button} onPress={toggleAnalytics}>
-            <Text style={styles.buttonText}>
-              {analyticsEnabled ? 'Disable Analytics' : 'Enable Analytics'}
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.button} onPress={toggleAutoTracking}>
-            <Text style={styles.buttonText}>
-              {autoTracking ? 'Disable Auto Tracking' : 'Enable Auto Tracking'}
-            </Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.button} onPress={addCustomEventToVideo}>
-            <Text style={styles.buttonText}>Send Custom Event</Text>
-          </TouchableOpacity>
-          
+        <View style={[styles.featuresContainer, isLandscape && styles.featuresContainerLandscape]}>
+          {/* Main Features Grid - All 6 items with consistent large icons */}
+          <View style={[styles.mainGridContainer, isLandscape && styles.mainGridContainerLandscape]}>
+            <TouchableOpacity
+              style={[
+                styles.mainGridCard, 
+                styles.primaryCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
+              onPress={() => navigateToScreen('video')}
+              activeOpacity={0.7}
+            >
+              <View style={[
+                styles.mainIconContainer, 
+                styles.videoIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
+                <Text style={[styles.mainIconText, isLandscape && styles.mainIconTextLandscape]}>▶</Text>
+              </View>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>Advanced Video</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Native Video Player</Text>
+            </TouchableOpacity>
 
+            <TouchableOpacity
+              style={[
+                styles.mainGridCard, 
+                styles.secondaryCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
+              onPress={() => navigateToScreen('videoLayer')}
+              activeOpacity={0.7}
+            >
+              <View style={[
+                styles.mainIconContainer, 
+                styles.layerIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
+                <Text style={[styles.mainIconText, isLandscape && styles.mainIconTextLandscape]}>⚡</Text>
+              </View>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>Immersive Layer</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Cloudinary Active Layer</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.mainGridCard, 
+                styles.accentCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
+              onPress={() => navigateToScreen('buttonLayout')}
+              activeOpacity={0.7}
+            >
+              <View style={[
+                styles.mainIconContainer, 
+                styles.interactiveIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
+                <Text style={[styles.mainIconText, isLandscape && styles.mainIconTextLandscape]}>◉</Text>
+              </View>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>Interactive UI</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Dynamic controls</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.mainGridCard, 
+                styles.imageCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
+              onPress={() => navigateToScreen('image')}
+              activeOpacity={0.7}
+            >
+              <View style={[
+                styles.mainIconContainer, 
+                styles.imageIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
+                <Text style={[styles.mainIconText, isLandscape && styles.mainIconTextLandscape]}>🖼</Text>
+              </View>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>Advanced Image</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Image transformations</Text>
+            </TouchableOpacity>
+
+          </View>
         </View>
 
-        <View style={styles.videoContainer}>
-          {(() => {
-            return (
-              <AdvancedVideo
-                ref={videoPlayer}
-                videoStyle={styles.video}
-                cldVideo={createMyVideoObject()}
-                enableAnalytics={analyticsEnabled}
-                autoTrackAnalytics={autoTracking}
-                analyticsOptions={{
-                  customData: {
-                    userId: 'demo-user-123',
-                    appVersion: '1.0.0',
-                    platform: 'react-native'
-                  },
-                  videoPlayerType: 'auto-detected',
-                  videoPlayerVersion: 'auto-detected'
-                }}
-              />
-            );
-          })()}
-        </View>
-
-        <View style={styles.statusContainer}>
-          <Text style={styles.statusText}>
-            Analytics: {analyticsEnabled ? 'Enabled' : 'Disabled'}
+        <View style={[styles.footerContainer, isLandscape && styles.footerContainerLandscape]}>
+          <Text style={[styles.footerText, isLandscape && styles.footerTextLandscape]}>
+            Powered by Cloudinary React Native SDK
           </Text>
-          <Text style={styles.statusText}>
-            Auto Tracking: {autoTracking ? 'Enabled' : 'Disabled'}
+          <Text style={[styles.footerSubtext, isLandscape && styles.footerSubtextLandscape]}>
+            Built for developers, designed for users
           </Text>
         </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+
+  if (currentScreen === 'videoLayer') {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <StatusBar style="auto" />
+        <VideoLayerDemo onBack={navigateHome} />
       </View>
-    </View>
+    );
+  }
+
+  if (currentScreen === 'buttonLayout') {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <StatusBar style="auto" />
+        <ActiveLayerLayoutDemo onBack={navigateHome} />
+      </View>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar style="light" backgroundColor="#000000" />
+      {currentScreen !== 'home' && (
+        <View style={styles.backButtonContainer}>
+          <TouchableOpacity style={styles.backButton} onPress={navigateHome}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {renderCurrentScreen()}
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: getTopPadding(),
+    backgroundColor: '#000000',
+  },
+  fullScreenContainer: {
+    flex: 1,
+    backgroundColor: '#000000',
   },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
+    backgroundColor: '#000000',
   },
-  controlsContainer: {
-    width: '90%',
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
+  headerContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 40,
     alignItems: 'center',
-    marginVertical: 20,
+    backgroundColor: '#000000',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 12,
   },
   title: {
-    fontSize: 18,
+    fontSize: 36,
     fontWeight: 'bold',
-    marginBottom: 15,
+    color: '#ffffff',
+    letterSpacing: -1,
   },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginVertical: 5,
-    minWidth: 200,
-    alignItems: 'center',
+  titleAccent: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#6366f1',
+    letterSpacing: -1,
   },
-  smallButton: {
-    minWidth: 90,
-    marginHorizontal: 5,
+  subtitle: {
+    fontSize: 18,
+    color: '#94a3b8',
+    textAlign: 'center',
+    fontWeight: '500',
+    lineHeight: 24,
   },
-  buttonRow: {
+  featuresContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  // Main Grid Container & Cards - New unified design
+  mainGridContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 4,
+  },
+  mainGridCard: {
+    width: '48%',
+    marginBottom: 20,
+    padding: 24,
+    borderRadius: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 10,
+    minHeight: 160,
     justifyContent: 'center',
   },
-  buttonText: {
-    color: 'white',
+  mainIconContainer: {
+    width: 88,
+    height: 88,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  mainIconText: {
+    fontSize: 42,
+    color: '#ffffff',
+    fontWeight: '700',
+  },
+  mainTitle: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#1e293b',
+    textAlign: 'center',
+    marginBottom: 4,
+    lineHeight: 18,
+  },
+  mainSubtitle: {
+    fontSize: 11,
+    color: '#64748b',
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 14,
+  },
+  // Card Theme Colors
+  primaryCard: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  secondaryCard: {
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e0f2fe',
+  },
+  accentCard: {
+    backgroundColor: '#fefce8',
+    borderWidth: 1,
+    borderColor: '#fef3c7',
+  },
+  imageCard: {
+    backgroundColor: '#f0f9ff',
+    borderWidth: 1,
+    borderColor: '#bae6fd',
+  },
+  // Icon Colors
+  videoIcon: {
+    backgroundColor: '#6366f1',
+  },
+  layerIcon: {
+    backgroundColor: '#06b6d4',
+  },
+  interactiveIcon: {
+    backgroundColor: '#f59e0b',
+  },
+  imageIcon: {
+    backgroundColor: '#0ea5e9',
+  },
+  // Landscape-specific styles
+  headerContainerLandscape: {
+    paddingTop: 30,
+    paddingBottom: 20,
+    paddingHorizontal: 40,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  titleLandscape: {
+    fontSize: 28,
+  },
+  titleAccentLandscape: {
+    fontSize: 28,
+  },
+  subtitleLandscape: {
+    fontSize: 16,
+    maxWidth: 300,
+    textAlign: 'left',
+    marginTop: 0,
+  },
+  featuresContainerLandscape: {
+    paddingHorizontal: 32,
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
+  mainGridContainerLandscape: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+  },
+  mainGridCardLandscape: {
+    width: '30%', // 3 cards per row in landscape
+    marginBottom: 16,
+    minHeight: 140,
+    padding: 20,
+  },
+  mainIconContainerLandscape: {
+    width: 70,
+    height: 70,
+    marginBottom: 16,
+  },
+  mainIconTextLandscape: {
+    fontSize: 36,
+  },
+  mainTitleLandscape: {
     fontSize: 14,
+  },
+  mainSubtitleLandscape: {
+    fontSize: 10,
+  },
+  footerContainerLandscape: {
+    paddingHorizontal: 40,
+    paddingBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  footerTextLandscape: {
+    fontSize: 14,
+    marginBottom: 0,
+    textAlign: 'left',
+  },
+  footerSubtextLandscape: {
+    fontSize: 12,
+    textAlign: 'right',
+  },
+  footerContainer: {
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+    alignItems: 'center',
+    backgroundColor: '#000000',
+  },
+  footerText: {
+    fontSize: 16,
+    color: '#64748b',
+    textAlign: 'center',
     fontWeight: '600',
+    marginBottom: 8,
   },
-  videoContainer: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  video: {
-    width: 400,
-    height: 220,
-  },
-  statusContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  statusText: {
+  footerSubtext: {
     fontSize: 14,
-    marginVertical: 2,
+    color: '#475569',
+    textAlign: 'center',
+    fontWeight: 'normal',
+  },
+  backButtonContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    backgroundColor: '#000000',
+  },
+  backButton: {
+    backgroundColor: '#6366f1',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    shadowColor: '#6366f1',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  backButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

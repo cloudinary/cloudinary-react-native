@@ -9,18 +9,22 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@cloudinary/url-gen": "^1.21.0",
+    "@cloudinary/url-gen": "^1.22.0",
     "@expo/config": "^11.0.0",
     "@expo/metro-config": "~0.20.0",
+    "@expo/vector-icons": "^14.0.2",
     "cloudinary-react-native": "../",
     "expo": "~53.0.0",
     "expo-av": "~15.1.7",
     "expo-crypto": "~14.1.5",
+    "expo-font": "~12.0.10",
+    "expo-screen-orientation": "^8.1.7",
     "expo-status-bar": "~2.2.3",
     "expo-video": "^2.0.0",
     "isomorphic-fetch": "^3.0.0",
     "react": "19.0.0",
     "react-native": "0.79.5",
+    "react-native-svg": "15.11.2",
     "util": "^0.10.4"
   },
   "devDependencies": {
