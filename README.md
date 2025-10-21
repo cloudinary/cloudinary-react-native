@@ -39,7 +39,7 @@ yarn add cloudinary-react-native
 
 # Using pnpm
 pnpm add cloudinary-react-native
-
+```
 ### For Video Player functionality
 The SDK supports both `expo-av` and `expo-video` libraries. The appropriate library will be automatically detected and used:
 
@@ -47,10 +47,26 @@ The SDK supports both `expo-av` and `expo-video` libraries. The appropriate libr
 ```bash
 npm install expo-av
 ```
+Or
+```bash
+yarn add expo-av
+```
+Or
+```bash
+pnpm add expo-av
+```
 
 **For Expo SDK 52+ (expo-video - recommended):**
 ```bash
 npm install expo-video
+```
+Or
+```bash
+yarn add expo-av
+```
+Or
+```bash
+pnpm add expo-av
 ```
 
 **Note:** `expo-av` is deprecated in SDK 52 and removed in SDK 53. For newer Expo versions, use `expo-video`.
@@ -64,6 +80,10 @@ npm install @expo/vector-icons expo-font
 Or
 ```bash
 yarn add @expo/vector-icons expo-font
+```
+Or
+```bash
+pnpm add @expo/vector-icons expo-font
 ```
 
 ## Usage
