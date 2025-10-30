@@ -27,6 +27,16 @@ export interface VideoPlayerAdapter {
   isAvailable(): boolean;
 
   /**
+   * Get detailed availability information including error context and installation guidance
+   */
+  getAvailabilityInfo(): {
+    isAvailable: boolean;
+    error?: string;
+    installCommand?: string;
+    packageName?: string;
+  };
+
+  /**
    * Get the display name of this adapter
    */
   getAdapterName(): string;

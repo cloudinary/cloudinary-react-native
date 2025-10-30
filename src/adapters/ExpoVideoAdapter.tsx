@@ -25,14 +25,45 @@ export class ExpoVideoAdapter implements VideoPlayerAdapter {
     return !!(this.expoVideoModule && this.expoVideoModule.VideoView);
   }
 
+  getAvailabilityInfo(): { isAvailable: boolean; error?: string; installCommand?: string; packageName?: string } {
+    if (!this.expoVideoModule) {
+      return {
+        isAvailable: false,
+        error: "ExpoVideoAdapter: Module not found. Please install expo-video to enable video playback functionality.",
+        installCommand: "npx expo install expo-video",
+        packageName: "expo-video"
+      };
+    }
+    
+    if (!this.expoVideoModule.VideoView) {
+      return {
+        isAvailable: false,
+        error: "ExpoVideoAdapter: VideoView component not found in expo-video. Please ensure you have a compatible version installed.",
+        installCommand: "npx expo install expo-video",
+        packageName: "expo-video"
+      };
+    }
+    
+    if (!this.expoVideoModule.createVideoPlayer) {
+      return {
+        isAvailable: false,
+        error: "ExpoVideoAdapter: createVideoPlayer function not found in expo-video. Please ensure you have a compatible version installed.",
+        installCommand: "npx expo install expo-video",
+        packageName: "expo-video"
+      };
+    }
+    
+    return { isAvailable: true };
+  }
+
   getAdapterName(): string {
     return VideoPlayerType.EXPO_VIDEO;
   }
 
   renderVideo(props: VideoPlayerProps, ref: RefObject<VideoPlayerRef | null>): ReactElement {
-
-    if (!this.isAvailable()) {
-      throw new Error('expo-video is not available');
+    const availabilityInfo = this.getAvailabilityInfo();
+    if (!availabilityInfo.isAvailable) {
+      throw new Error(`${availabilityInfo.error}\n\nTo fix this issue, run: ${availabilityInfo.installCommand}`);
     }
 
     const { VideoView, createVideoPlayer } = this.expoVideoModule;

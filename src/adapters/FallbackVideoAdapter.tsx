@@ -10,7 +10,11 @@ export class FallbackVideoAdapter implements VideoPlayerAdapter {
   }
 
   isAvailable(): boolean {
-    return true; // Fallback is always available
+    return true; 
+  }
+
+  getAvailabilityInfo(): { isAvailable: boolean; error?: string; installCommand?: string; packageName?: string } {
+    return { isAvailable: true };
   }
 
   getAdapterName(): string {
