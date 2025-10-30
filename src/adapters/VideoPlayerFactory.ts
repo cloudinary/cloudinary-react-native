@@ -14,8 +14,8 @@ export class VideoPlayerFactory {
     if (this.initialized) return;
 
     this.adapters = [
-      new ExpoVideoAdapter(),     // Try expo-video first (newer package)
-      new ExpoAVVideoAdapter(),   // Fallback to expo-av
+      new ExpoVideoAdapter(),     // Try expo-video first (modern, recommended)
+      new ExpoAVVideoAdapter(),   // Fallback to expo-av for compatibility
     ];
 
     this.initialized = true;
@@ -29,7 +29,6 @@ export class VideoPlayerFactory {
 
     // Find the first available adapter
     for (const adapter of this.adapters) {
-      const adapterName = adapter.getAdapterName();
       const isAvailable = adapter.isAvailable();
       
       if (isAvailable) {

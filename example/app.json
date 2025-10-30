@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "example",
+    "name": "Cloudinary React Native SDK",
     "slug": "example",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -13,6 +13,14 @@
     },
     "assetBundlePatterns": [
       "**/*"
+    ],
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": ["./node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf"]
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": true

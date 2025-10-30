@@ -1,6 +1,6 @@
 {
   "name": "cloudinary-react-native",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Cloudinary React Native SDK: upload, transform, and deliver images and videos through Cloudinary's media pipeline.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -77,13 +77,14 @@
     "typescript": "^5.3.0"
   },
   "dependencies": {
-    "@cloudinary/url-gen": "^1.10.0",
+    "@cloudinary/url-gen": "^1.22.0",
     "expo-constants": "^17.0.0",
     "expo-crypto": "^14.1.5",
     "isomorphic-fetch": "^3.0.0",
     "util": "^0.10.4"
   },
   "peerDependencies": {
+    "@expo/vector-icons": "^14.0.0",
     "expo": "^50.0.0 || ^51.0.0 || ^52.0.0 || ^53.0.0",
     "expo-av": "^14.0.0 || ^15.0.0",
     "expo-constants": "^16.0.0 || ^17.0.0",
@@ -93,7 +94,13 @@
     "react-native": ">=0.79.0"
   },
   "peerDependenciesMeta": {
+    "@expo/vector-icons": {
+      "optional": true
+    },
     "expo-av": {
+      "optional": true
+    },
+    "expo-font": {
       "optional": true
     },
     "expo-video": {

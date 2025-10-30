@@ -4,13 +4,14 @@ import type { CloudinaryVideo } from '@cloudinary/url-gen';
 import { SDKAnalyticsConstants } from './internal/SDKAnalyticsConstants';
 import { VideoPlayerAdapter, VideoPlayerRef, VideoPlayerFactory } from './adapters';
 
-interface AdvancedVideoProps {
+export interface AdvancedVideoProps {
   videoUrl?: string;
   cldVideo?: CloudinaryVideo;
   videoStyle?: StyleProp<ViewStyle>;
-
   enableAnalytics?: boolean;
   autoTrackAnalytics?: boolean;
+  onPlaybackStatusUpdate?: (status: any) => void;
+  useNativeControls?: boolean;
   analyticsOptions?: {
     customData?: any;
     videoPlayerType?: string;
@@ -30,6 +31,11 @@ export interface AdvancedVideoRef {
   stopAnalyticsTracking: () => void;
   startAutoAnalyticsTracking: (options?: any) => void;
   addCustomEvent: (eventName: string, eventDetails?: any) => void;
+  playAsync: () => Promise<void>;
+  pauseAsync: () => Promise<void>;
+  setIsMutedAsync: (isMuted: boolean) => Promise<void>;
+  setPositionAsync: (positionMillis: number) => Promise<void>;
+  setStatusAsync: (status: any) => Promise<void>;
 }
 
 class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
@@ -77,12 +83,12 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   private getVideoUri = (): string => {
     if (this.props.videoUrl) {
       return this.props.videoUrl;
-      }
+    }
     if (this.props.cldVideo) {
       return this.props.cldVideo.toURL({ trackedAnalytics: SDKAnalyticsConstants });
-      }
-      return '';
-    };
+    }
+    return '';
+  };
 
   private initializeAnalytics = async () => {
     if (!this.props.enableAnalytics || !this.videoRef.current || this.state.analyticsInitialized) {
@@ -117,6 +123,7 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
   };
 
   private onPlaybackStatusUpdate = (status: any) => {
+    
     if (this.props.enableAnalytics && this.videoRef.current && this.state.analyticsInitialized) {
       if (!this.videoRef.current._currentStatus) {
         this.videoRef.current._currentStatus = {};
@@ -133,9 +140,11 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
         }
         this.setState({ previousStatus: status });
       } catch (error) {
-        // Silently fail if status processing fails
       }
     }
+
+    // Forward status updates to parent component
+        this.props.onPlaybackStatusUpdate?.(status);
   };
 
 
@@ -186,6 +195,62 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
     }
   };
 
+  // Playback control methods
+  public playAsync = async () => {
+    if (this.videoRef.current) {
+      try {
+        // expo-av uses setStatusAsync for playback control
+        await this.videoRef.current.setStatusAsync({ shouldPlay: true });
+      } catch (error) {
+        console.warn('Failed to play video:', error);
+      }
+    }
+  };
+
+  public pauseAsync = async () => {
+    if (this.videoRef.current) {
+      try {
+        // expo-av uses setStatusAsync for playback control
+        await this.videoRef.current.setStatusAsync({ shouldPlay: false });
+      } catch (error) {
+        console.warn('Failed to pause video:', error);
+      }
+    }
+  };
+
+  public setIsMutedAsync = async (isMuted: boolean) => {
+    if (this.videoRef.current) {
+      try {
+        // expo-av uses setStatusAsync for muting
+        await this.videoRef.current.setStatusAsync({ isMuted });
+      } catch (error) {
+        console.warn('Failed to set muted state:', error);
+      }
+    }
+  };
+
+  public setPositionAsync = async (positionMillis: number) => {
+    if (this.videoRef.current) {
+      try {
+        // expo-av uses setStatusAsync for seeking
+        await this.videoRef.current.setStatusAsync({ positionMillis });
+      } catch (error) {
+        console.warn('Failed to set position:', error);
+      }
+    }
+  };
+
+  public setStatusAsync = async (status: any) => {
+    if (this.videoRef.current) {
+      try {
+        // Forward to underlying video component
+        await this.videoRef.current.setStatusAsync(status);
+      } catch (error) {
+        console.warn('Failed to set status:', error);
+      }
+    }
+  };
+
   render() {
     const videoUri = this.getVideoUri();
 
@@ -200,10 +265,14 @@ class AdvancedVideo extends Component<AdvancedVideoProps, AdvancedVideoState> {
       const videoElement = this.state.videoAdapter.renderVideo({
         videoUri,
         style: this.props.videoStyle,
+        useNativeControls: this.props.useNativeControls,
         onPlaybackStatusUpdate: this.onPlaybackStatusUpdate,
-        onLoadStart: () => {},
-        onLoad: () => {},
-        onError: (_error: any) => {},
+        onLoadStart: () => {
+        },
+        onLoad: () => {
+        },
+        onError: () => {
+        },
       }, this.videoRef);
       
       return videoElement;
