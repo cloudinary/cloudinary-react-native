@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, PanResponder, ActivityIndicator, Animated, StyleSheet, Easing, Dimensions } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideo from '../../../AdvancedVideo';
 import { CLDVideoLayerProps, ButtonPosition, ButtonLayoutDirection, SubtitleOption, QualityOption } from './types';
 import { formatTime, handleDefaultShare, isHLSVideo, parseHLSManifest, parseHLSQualityLevels, getVideoUrl } from './utils';

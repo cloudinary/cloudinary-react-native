@@ -1,0 +1,14 @@
+{
+  "buildCommand": "npm install && npx expo export --platform web",
+  "outputDirectory": "dist",
+  "devCommand": "npx expo start --web",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+

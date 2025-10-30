@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, Modal, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { QualityConfig, QualityOption } from '../types';
 import { getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
@@ -53,7 +53,7 @@ export const QualityButton: React.FC<QualityButtonProps> = ({
         style={[responsiveStyles.volumeButton, styles.qualityButton]} 
         onPress={toggleMenu}
       >
-        <Ionicons 
+        <Icon 
           name="cog-outline" 
           size={ICON_SIZES.bottomVolume} 
           color="white" 
@@ -100,7 +100,7 @@ export const QualityButton: React.FC<QualityButtonProps> = ({
                   )}
                 </View>
                 {currentQuality === option.value && (
-                  <Ionicons name="checkmark" size={20} color="#007AFF" />
+                  <Icon name="checkmark" size={20} color="#007AFF" />
                 )}
               </TouchableOpacity>
             ))}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, Modal, StyleSheet, Dimensions } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { PlaybackSpeedConfig, PlaybackSpeedOption } from '../types';
 import { getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
@@ -55,7 +55,7 @@ export const PlaybackSpeedButton: React.FC<PlaybackSpeedButtonProps> = ({
         style={[responsiveStyles.volumeButton, styles.speedButton]} 
         onPress={toggleMenu}
       >
-        <Ionicons 
+        <Icon 
           name="speedometer-outline" 
           size={ICON_SIZES.bottomVolume} 
           color="white" 
@@ -95,7 +95,7 @@ export const PlaybackSpeedButton: React.FC<PlaybackSpeedButtonProps> = ({
                   {option.label}
                 </Text>
                 {currentSpeed === option.value && (
-                  <Ionicons name="checkmark" size={20} color="#007AFF" />
+                  <Icon name="checkmark" size={20} color="#007AFF" />
                 )}
               </TouchableOpacity>
             ))}

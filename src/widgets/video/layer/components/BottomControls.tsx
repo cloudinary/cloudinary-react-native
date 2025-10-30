@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { BottomControlsProps, ButtonPosition } from '../types';
 import { styles, getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
@@ -55,7 +55,7 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
           style={responsiveStyles.playPauseButton}
           onPress={onPlayPause}
         >
-          <Ionicons 
+          <Icon 
             name={status?.isPlaying ? 'pause' : 'play'} 
             size={ICON_SIZES.bottomPlayPause} 
             color="white" 
@@ -104,7 +104,7 @@ export const BottomControls: React.FC<BottomControlsProps> = ({
           style={responsiveStyles.volumeButton}
           onPress={onMuteToggle}
         >
-          <Ionicons 
+          <Icon 
             name={status?.isMuted ? 'volume-mute' : 'volume-high'} 
             size={ICON_SIZES.bottomVolume} 
             color="white" 

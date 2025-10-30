@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { ButtonConfig } from '../types';
 
 interface BottomButtonBarProps {
@@ -63,7 +63,7 @@ export function BottomButtonBar({
           }}
           onPress={button.onPress || (() => {})}
         >
-          <Ionicons 
+          <Icon 
             name={button.icon as any} 
             size={button.size || 20} 
             color={button.color || 'white'} 

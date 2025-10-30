@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { ButtonPosition, ButtonLayoutDirection } from '../types';
 import { ICON_SIZES } from '../constants';
 import { calculateButtonPosition } from '../utils';
@@ -129,7 +129,7 @@ export function AbsoluteButtons({
           style={[responsiveStyles.topButton, responsiveStyles.buttonPositionSE]} 
           onPress={onBack}
         >
-          <Ionicons name="close" size={ICON_SIZES.top} color="white" />
+          <Icon name="close" size={ICON_SIZES.top} color="white" />
         </TouchableOpacity>
       )}
       {shareButtonPosition === ButtonPosition.SE && (
@@ -137,7 +137,7 @@ export function AbsoluteButtons({
           style={[responsiveStyles.topButton, responsiveStyles.buttonPositionSE]} 
           onPress={onShare}
         >
-          <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
+          <Icon name="share-outline" size={ICON_SIZES.top} color="white" />
         </TouchableOpacity>
       )}
       {renderedButtons}

@@ -1,3 +1,4 @@
+export { Icon } from './Icon';
 export { TopControls } from './TopControls';
 export { CenterControls } from './CenterControls';
 export { BottomControls } from './BottomControls';

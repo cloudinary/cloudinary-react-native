@@ -1,6 +1,8 @@
+import { Platform } from 'react-native';
 import { VideoPlayerAdapter, VideoPlayerType } from './types';
 import { ExpoVideoAdapter } from './ExpoVideoAdapter';
 import { ExpoAVVideoAdapter } from './ExpoAVVideoAdapter';
+import { WebVideoAdapter } from './WebVideoAdapter';
 import { FallbackVideoAdapter } from './FallbackVideoAdapter';
 
 // Re-export types for external use
@@ -13,10 +15,17 @@ export class VideoPlayerFactory {
   private static initializeAdapters(): void {
     if (this.initialized) return;
 
-    this.adapters = [
-      new ExpoVideoAdapter(),     // Try expo-video first (modern, recommended)
-      new ExpoAVVideoAdapter(),   // Fallback to expo-av for compatibility
-    ];
+    // On web, prioritize WebVideoAdapter
+    if (Platform.OS === 'web') {
+      this.adapters = [
+        new WebVideoAdapter(),      // Use HTML5 video on web
+      ];
+    } else {
+      this.adapters = [
+        new ExpoVideoAdapter(),     // Try expo-video first (modern, recommended)
+        new ExpoAVVideoAdapter(),   // Fallback to expo-av for compatibility
+      ];
+    }
 
     this.initialized = true;
   }

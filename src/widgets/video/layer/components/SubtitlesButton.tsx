@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, Modal, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { SubtitlesConfig, SubtitleOption } from '../types';
 import { getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
@@ -54,7 +54,7 @@ export const SubtitlesButton: React.FC<SubtitlesButtonProps> = ({
         style={[responsiveStyles.volumeButton, styles.subtitlesButton]} 
         onPress={toggleMenu}
       >
-        <Ionicons 
+        <Icon 
           name="chatbox-outline" 
           size={ICON_SIZES.bottomVolume} 
           color="white" 
@@ -94,7 +94,7 @@ export const SubtitlesButton: React.FC<SubtitlesButtonProps> = ({
                   {option.label}
                 </Text>
                 {currentSubtitle === option.code && (
-                  <Ionicons name="checkmark" size={20} color="#007AFF" />
+                  <Icon name="checkmark" size={20} color="#007AFF" />
                 )}
               </TouchableOpacity>
             ))}

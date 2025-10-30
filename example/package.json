@@ -25,7 +25,10 @@
     "react": "19.0.0",
     "react-native": "0.79.5",
     "react-native-svg": "15.11.2",
-    "util": "^0.10.4"
+    "util": "^0.10.4",
+    "react-dom": "19.0.0",
+    "react-native-web": "^0.20.0",
+    "@expo/metro-runtime": "~5.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

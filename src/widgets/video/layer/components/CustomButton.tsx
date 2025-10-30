@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { ButtonConfig } from '../types';
 import { styles, getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
@@ -41,7 +41,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
       style={buttonStyle} 
       onPress={handlePress}
     >
-      <Ionicons 
+      <Icon 
         name={config.icon as any} 
         size={config.size || ICON_SIZES.top} 
         color={config.color || 'white'} 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { TopControlsProps, ButtonPosition, ButtonLayoutDirection } from '../types';
 import { styles, getResponsiveStyles } from '../styles';
 import { ICON_SIZES } from '../constants';
@@ -105,7 +105,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               style={responsiveStyles.topButton} 
               onPress={onBack}
             >
-              <Ionicons name="close" size={ICON_SIZES.top} color="white" />
+              <Icon name="close" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
           {shareButtonPosition === ButtonPosition.NW && (
@@ -113,7 +113,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               style={responsiveStyles.topButton} 
               onPress={onShare}
             >
-              <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
+              <Icon name="share-outline" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
           {processedButtonGroups[ButtonPosition.NW]?.buttons.map((button, index) => (
@@ -133,7 +133,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               style={responsiveStyles.topButton} 
               onPress={onBack}
             >
-              <Ionicons name="close" size={ICON_SIZES.top} color="white" />
+              <Icon name="close" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
           {shareButtonPosition === ButtonPosition.N && (
@@ -141,7 +141,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               style={responsiveStyles.topButton} 
               onPress={onShare}
             >
-              <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
+              <Icon name="share-outline" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
           {processedButtonGroups[ButtonPosition.N]?.buttons.map((button, index) => (
@@ -161,7 +161,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               style={responsiveStyles.topButton} 
               onPress={onBack}
             >
-              <Ionicons name="close" size={ICON_SIZES.top} color="white" />
+              <Icon name="close" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
           {shareButtonPosition === ButtonPosition.NE && (
@@ -169,7 +169,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               style={responsiveStyles.topButton} 
               onPress={onShare}
             >
-              <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
+              <Icon name="share-outline" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
           {processedButtonGroups[ButtonPosition.NE]?.buttons.map((button, index) => (
@@ -191,11 +191,11 @@ export const TopControls: React.FC<TopControlsProps> = ({
       <View style={responsiveStyles.topControlsBar}>
         {onBack && (
           <TouchableOpacity style={responsiveStyles.topButton} onPress={onBack}>
-            <Ionicons name="close" size={ICON_SIZES.top} color="white" />
+            <Icon name="close" size={ICON_SIZES.top} color="white" />
           </TouchableOpacity>
         )}
         <TouchableOpacity style={responsiveStyles.topButton} onPress={onShare}>
-          <Ionicons name="share-outline" size={ICON_SIZES.top} color="white" />
+          <Icon name="share-outline" size={ICON_SIZES.top} color="white" />
         </TouchableOpacity>
       </View>
     );

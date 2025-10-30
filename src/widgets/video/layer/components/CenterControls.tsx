@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from './Icon';
 import { CenterControlsProps } from '../types';
 import { styles } from '../styles';
 import { ICON_SIZES } from '../constants';
@@ -12,7 +12,7 @@ export const CenterControls: React.FC<CenterControlsProps> = ({ status, onPlayPa
         style={styles.centerPlayButton}
         onPress={onPlayPause}
       >
-        <Ionicons 
+        <Icon 
           name={status?.isPlaying ? 'pause' : 'play'} 
           size={ICON_SIZES.center} 
           color="#1a1a1a"
