@@ -17,6 +17,7 @@ import {
   SEEKBAR_ALIGNMENT_OFFSET,
   SE_BUTTON_RIGHT_OFFSET,
   SE_BUTTON_BOTTOM_OFFSET,
+  getSafeAreaBottomInset,
 } from './constants';
 import {
   getTopPadding,
@@ -87,8 +88,11 @@ export const styles = StyleSheet.create({
   },
   timeText: {
     color: COLORS.text.white,
-    fontSize: 12,
-    opacity: 0.8,
+    fontSize: Platform.select({ web: 11, default: 12 }),
+    opacity: 0.9,
+    textShadowColor: COLORS.text.shadow,
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   // Legacy styles (keeping for backward compatibility)
   topRow: {
@@ -110,6 +114,7 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
   const bottomPadding = getBottomControlsPadding(isLandscape);
   const seekbarOffset = getSeekbarAlignmentOffset(isLandscape);
   const seButtonBottomOffset = getSEButtonBottomOffset(isLandscape);
+  const safeAreaBottom = getSafeAreaBottomInset();
 
   return StyleSheet.create({
     // Top Controls
@@ -150,19 +155,19 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
     },
     buttonPositionSE: {
       position: 'absolute',
-      bottom: seButtonBottomOffset,
+      bottom: (seButtonBottomOffset || 0) + safeAreaBottom,
       right: SE_BUTTON_RIGHT_OFFSET,
       zIndex: 10,
     },
     buttonPositionSW: {
       position: 'absolute',
-      bottom: seButtonBottomOffset,
+      bottom: (seButtonBottomOffset || 0) + safeAreaBottom,
       left: SE_BUTTON_RIGHT_OFFSET,
       zIndex: 10,
     },
     buttonPositionS: {
       position: 'absolute',
-      bottom: seButtonBottomOffset,
+      bottom: (seButtonBottomOffset || 0) + safeAreaBottom,
       alignSelf: 'center',
       zIndex: 10,
     },
@@ -185,8 +190,9 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingHorizontal: 20,
-      paddingVertical: bottomPadding,
+      paddingHorizontal: Platform.OS === 'web' ? 16 : 20,
+      paddingTop: bottomPadding,
+      paddingBottom: (bottomPadding || 0) + safeAreaBottom, // Include safe area inset (no extra padding needed)
       backgroundColor: COLORS.bottomControlsBackground,
       zIndex: 10, // Ensure bottom controls appear above button bar
     },
@@ -206,12 +212,12 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
       backgroundColor: 'transparent',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: 12,
+      marginRight: Platform.OS === 'web' ? 12 : 16,
       marginBottom: seekbarOffset,
     },
     playPauseIcon: {
       color: COLORS.text.white,
-      fontSize: isLandscape ? 20 : 22,
+      fontSize: Platform.OS === 'web' ? (isLandscape ? 18 : 20) : (isLandscape ? 20 : 22),
       fontWeight: '500',
       textShadowColor: COLORS.text.shadow,
       textShadowOffset: { width: 0, height: 1 },
@@ -224,12 +230,12 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
       backgroundColor: 'transparent',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: 8,
+      marginLeft: Platform.OS === 'web' ? 6 : 8,
       marginBottom: seekbarOffset,
     },
     volumeIcon: {
       color: COLORS.text.white,
-      fontSize: isLandscape ? 18 : 20,
+      fontSize: Platform.OS === 'web' ? (isLandscape ? 16 : 18) : (isLandscape ? 18 : 20),
       fontWeight: '500',
       textShadowColor: COLORS.text.shadow,
       textShadowOffset: { width: 0, height: 1 },
@@ -238,8 +244,8 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
     // Seekbar
     seekbarContainer: {
       flex: 1,
-      marginRight: 18,
-      marginLeft: 8,
+      marginRight: Platform.OS === 'web' ? 12 : 16,
+      marginLeft: 0,
     },
     seekbar: {
       height: SEEKBAR_HEIGHT,
@@ -272,11 +278,11 @@ export const getResponsiveStyles = (isLandscape: boolean = false) => {
       height: SEEKBAR_HANDLE_SIZE,
       borderRadius: BORDER_RADIUS.seekbarHandle,
       backgroundColor: COLORS.seekbarHandle,
-      top: 2, // Center within the 20px height
-      marginLeft: -8, // Half of width to center properly
+      top: Platform.OS === 'web' ? 1 : 2, // Center within the 20px height
+      marginLeft: -(SEEKBAR_HANDLE_SIZE / 2), // Half of width to center properly
       shadowColor: '#000',
       ...SHADOW_VALUES.seekbarHandle,
-      borderWidth: 2,
+      borderWidth: Platform.OS === 'web' ? 2.5 : 2,
       borderColor: COLORS.seekbarHandleBorder,
     },
   });

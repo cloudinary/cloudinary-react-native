@@ -129,7 +129,7 @@ export function AbsoluteButtons({
           style={[responsiveStyles.topButton, responsiveStyles.buttonPositionSE]} 
           onPress={onBack}
         >
-          <Icon name="close" size={ICON_SIZES.top} color="white" />
+          <Icon name="arrow-back" size={ICON_SIZES.top} color="white" />
         </TouchableOpacity>
       )}
       {shareButtonPosition === ButtonPosition.SE && (

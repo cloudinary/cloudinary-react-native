@@ -8,13 +8,18 @@ import {
   Dimensions,
   ScrollView,
   SafeAreaView,
-  Image
+  Image,
+  ActivityIndicator
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
 import AdvancedVideoDemo from './AdvancedVideoDemo';
 import AdvancedImageDemo from './AdvancedImageDemo';
 import VideoLayerDemo from './VideoLayerDemo';
 import { ActiveLayerLayoutDemo } from './ActiveLayerLayoutDemo';
+import VideoFeedDemo from './VideoFeedDemo';
+import MobileWrapper from './MobileWrapper';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -28,7 +33,7 @@ const getTopPadding = () => {
   return 35;
 };
 
-type CurrentScreen = 'home' | 'video' | 'image' | 'videoLayer' | 'buttonLayout';
+type CurrentScreen = 'home' | 'video' | 'image' | 'videoLayer' | 'buttonLayout' | 'videoFeed';
 
 // Local orientation hook to avoid import path issues
 const useLocalOrientation = () => {
@@ -58,7 +63,25 @@ const useLocalOrientation = () => {
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<CurrentScreen>('home');
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const { isLandscape } = useLocalOrientation();
+
+  // Load fonts on mount
+  useEffect(() => {
+    async function loadFonts() {
+      try {
+        await Font.loadAsync({
+          ...Ionicons.font,
+        });
+        setFontsLoaded(true);
+      } catch (e) {
+        console.warn('Error loading fonts:', e);
+        // Set fontsLoaded to true anyway to not block the app
+        setFontsLoaded(true);
+      }
+    }
+    loadFonts();
+  }, []);
 
   const navigateToScreen = (screen: CurrentScreen) => {
     setCurrentScreen(screen);
@@ -67,6 +90,15 @@ export default function App() {
   const navigateHome = () => {
     setCurrentScreen('home');
   };
+
+  // Show loading screen while fonts are loading
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
 
 
 
@@ -183,6 +215,26 @@ export default function App() {
               <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Image transformations</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity
+              style={[
+                styles.mainGridCard, 
+                styles.feedCard,
+                isLandscape && styles.mainGridCardLandscape
+              ]}
+              onPress={() => navigateToScreen('videoFeed')}
+              activeOpacity={0.7}
+            >
+              <View style={[
+                styles.mainIconContainer, 
+                styles.feedIcon,
+                isLandscape && styles.mainIconContainerLandscape
+              ]}>
+                <Text style={[styles.mainIconText, isLandscape && styles.mainIconTextLandscape]}>📱</Text>
+              </View>
+              <Text style={[styles.mainTitle, isLandscape && styles.mainTitleLandscape]}>Video Feed</Text>
+              <Text style={[styles.mainSubtitle, isLandscape && styles.mainSubtitleLandscape]}>Social video experience</Text>
+            </TouchableOpacity>
+
           </View>
         </View>
 
@@ -200,38 +252,59 @@ export default function App() {
 
   if (currentScreen === 'videoLayer') {
     return (
-      <View style={styles.fullScreenContainer}>
-        <StatusBar style="auto" />
-        <VideoLayerDemo onBack={navigateHome} />
-      </View>
+      <MobileWrapper>
+        <View style={styles.fullScreenContainer}>
+          <StatusBar style="auto" />
+          <VideoLayerDemo onBack={navigateHome} />
+        </View>
+      </MobileWrapper>
     );
   }
 
   if (currentScreen === 'buttonLayout') {
     return (
-      <View style={styles.fullScreenContainer}>
-        <StatusBar style="auto" />
-        <ActiveLayerLayoutDemo onBack={navigateHome} />
-      </View>
+      <MobileWrapper>
+        <View style={styles.fullScreenContainer}>
+          <StatusBar style="auto" />
+          <ActiveLayerLayoutDemo onBack={navigateHome} />
+        </View>
+      </MobileWrapper>
+    );
+  }
+
+  // Render VideoFeed outside of SafeAreaView to use full screen dimensions
+  if (currentScreen === 'videoFeed') {
+    return (
+      <MobileWrapper>
+        <VideoFeedDemo onBack={navigateHome} />
+      </MobileWrapper>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="light" backgroundColor="#000000" />
-      {currentScreen !== 'home' && (
-        <View style={styles.backButtonContainer}>
-          <TouchableOpacity style={styles.backButton} onPress={navigateHome}>
-            <Text style={styles.backButtonText}>← Back</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-      {renderCurrentScreen()}
-    </SafeAreaView>
+    <MobileWrapper>
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar style="light" backgroundColor="#000000" />
+        {currentScreen !== 'home' && (
+          <View style={styles.backButtonContainer}>
+            <TouchableOpacity style={styles.backButton} onPress={navigateHome}>
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        )}
+        {renderCurrentScreen()}
+      </SafeAreaView>
+    </MobileWrapper>
   );
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000000',
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#000000',
@@ -245,7 +318,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   scrollContainer: {
-    flex: 1,
     backgroundColor: '#000000',
   },
   headerContainer: {
@@ -364,6 +436,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#bae6fd',
   },
+  feedCard: {
+    backgroundColor: '#fef3c7',
+    borderWidth: 1,
+    borderColor: '#fcd34d',
+  },
   // Icon Colors
   videoIcon: {
     backgroundColor: '#6366f1',
@@ -376,6 +453,9 @@ const styles = StyleSheet.create({
   },
   imageIcon: {
     backgroundColor: '#0ea5e9',
+  },
+  feedIcon: {
+    backgroundColor: '#f59e0b',
   },
   // Landscape-specific styles
   headerContainerLandscape: {
@@ -447,19 +527,20 @@ const styles = StyleSheet.create({
   },
   footerContainer: {
     paddingHorizontal: 24,
-    paddingBottom: 40,
+    paddingBottom: 60, // Increased to avoid bottom notch/home indicator area
+    paddingTop: 20, // Add some top padding for better spacing
     alignItems: 'center',
     backgroundColor: '#000000',
   },
   footerText: {
-    fontSize: 16,
+    fontSize: 14, // Slightly smaller to fit better
     color: '#64748b',
     textAlign: 'center',
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   footerSubtext: {
-    fontSize: 14,
+    fontSize: 12, // Slightly smaller to fit better
     color: '#475569',
     textAlign: 'center',
     fontWeight: 'normal',
@@ -470,23 +551,42 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   backButton: {
-    backgroundColor: '#6366f1',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-    shadowColor: '#6366f1',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  backButtonText: {
+  emptyScreen: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyScreenTitle: {
+    fontSize: 36,
+    fontWeight: 'bold',
     color: '#ffffff',
-    fontSize: 16,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  emptyScreenSubtitle: {
+    fontSize: 24,
     fontWeight: '600',
+    color: '#6366f1',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  emptyScreenDescription: {
+    fontSize: 16,
+    color: '#a0a0d4',
+    textAlign: 'center',
+    lineHeight: 24,
   },
 });

@@ -43,6 +43,7 @@ class WebVideoComponent extends Component<VideoPlayerProps & { videoRef: RefObje
           isMuted: false,
           positionMillis: 0,
           durationMillis: 0,
+          rate: 1.0,
         },
         setStatusAsync: async (status: any) => {
           if (!this.videoElementRef) return;
@@ -66,6 +67,10 @@ class WebVideoComponent extends Component<VideoPlayerProps & { videoRef: RefObje
           if (status.positionMillis !== undefined) {
             this.videoElementRef.currentTime = status.positionMillis / 1000;
           }
+          
+          if (status.rate !== undefined) {
+            this.videoElementRef.playbackRate = status.rate;
+          }
         },
         getStatusAsync: async () => {
           if (!this.videoElementRef) {
@@ -73,6 +78,7 @@ class WebVideoComponent extends Component<VideoPlayerProps & { videoRef: RefObje
               uri: this.props.videoUri,
               isPlaying: false,
               isLoaded: false,
+              rate: 1.0,
             };
           }
           
@@ -83,6 +89,7 @@ class WebVideoComponent extends Component<VideoPlayerProps & { videoRef: RefObje
             isMuted: this.videoElementRef.muted,
             positionMillis: this.videoElementRef.currentTime * 1000,
             durationMillis: this.videoElementRef.duration * 1000,
+            rate: this.videoElementRef.playbackRate || 1.0,
           };
         },
       };
@@ -95,6 +102,18 @@ class WebVideoComponent extends Component<VideoPlayerProps & { videoRef: RefObje
         duration: this.videoElementRef?.duration || 0,
       });
     }
+    
+    // Emit playback status update to indicate video is loaded
+    if (this.props.onPlaybackStatusUpdate && this.videoElementRef) {
+      this.props.onPlaybackStatusUpdate({
+        isPlaying: !this.videoElementRef.paused,
+        isLoaded: true,
+        positionMillis: this.videoElementRef.currentTime * 1000,
+        durationMillis: this.videoElementRef.duration * 1000,
+        isMuted: this.videoElementRef.muted,
+        rate: this.videoElementRef.playbackRate || 1.0,
+      });
+    }
   };
 
   handleTimeUpdate = () => {
@@ -105,6 +124,7 @@ class WebVideoComponent extends Component<VideoPlayerProps & { videoRef: RefObje
         positionMillis: this.videoElementRef.currentTime * 1000,
         durationMillis: this.videoElementRef.duration * 1000,
         isMuted: this.videoElementRef.muted,
+        rate: this.videoElementRef.playbackRate || 1.0,
       });
     }
   };
@@ -121,6 +141,20 @@ class WebVideoComponent extends Component<VideoPlayerProps & { videoRef: RefObje
     }
   };
 
+  handleCanPlayThrough = () => {
+    // Emit status when video can play through without buffering
+    if (this.props.onPlaybackStatusUpdate && this.videoElementRef) {
+      this.props.onPlaybackStatusUpdate({
+        isPlaying: !this.videoElementRef.paused,
+        isLoaded: true,
+        positionMillis: this.videoElementRef.currentTime * 1000,
+        durationMillis: this.videoElementRef.duration * 1000,
+        isMuted: this.videoElementRef.muted,
+        rate: this.videoElementRef.playbackRate || 1.0,
+      });
+    }
+  };
+
   render() {
     return React.createElement(View, { style: this.props.style }, 
       React.createElement('video', {
@@ -131,8 +165,10 @@ class WebVideoComponent extends Component<VideoPlayerProps & { videoRef: RefObje
           width: '100%',
           height: '100%',
           backgroundColor: '#000',
+          objectFit: 'contain',
         },
         onLoadedMetadata: this.handleLoadedMetadata,
+        onCanPlayThrough: this.handleCanPlayThrough,
         onTimeUpdate: this.handleTimeUpdate,
         onError: this.handleError,
         onLoadStart: this.handleLoadStart,

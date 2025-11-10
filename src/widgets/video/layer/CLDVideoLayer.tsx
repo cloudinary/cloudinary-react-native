@@ -268,10 +268,10 @@ export class CLDVideoLayer extends React.Component<CLDVideoLayerProps, CLDVideoL
       >
         <AdvancedVideo
           ref={this.videoRef}
-          cldVideo={undefined}
-          videoUrl={effectiveVideoUrl}
+          cldVideo={cldVideo}
           videoStyle={StyleSheet.absoluteFill}
           onPlaybackStatusUpdate={this.handleStatusUpdate}
+          useNativeControls={false}
         />
 
         {/* Loading Spinner */}

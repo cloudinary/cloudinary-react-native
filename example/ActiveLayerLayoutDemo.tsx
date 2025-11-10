@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar, Dimensions } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, StatusBar, Dimensions, Platform } from 'react-native';
 import { CLDVideoLayer } from '../src/widgets/video/layer/CLDVideoLayer';
 import { ButtonPosition, ButtonLayoutDirection } from '../src/widgets/video/layer/types';
 import { Cloudinary } from '@cloudinary/url-gen';
+import { Ionicons } from '@expo/vector-icons';
 
 interface ActiveLayerLayoutDemoProps {
   onNavigateToYouTube?: () => void;
@@ -11,6 +12,56 @@ interface ActiveLayerLayoutDemoProps {
 
 export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ onNavigateToYouTube, onBack }) => {
   const [currentExample, setCurrentExample] = useState('horizontal');
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  // Add mouse drag scrolling for web
+  useEffect(() => {
+    if (Platform.OS === 'web' && scrollViewRef.current) {
+      const scrollElement = (scrollViewRef.current as any).getScrollableNode?.();
+      if (scrollElement) {
+        let isDown = false;
+        let startX = 0;
+        let scrollLeft = 0;
+
+        const handleMouseDown = (e: MouseEvent) => {
+          isDown = true;
+          scrollElement.style.cursor = 'grabbing';
+          startX = e.pageX - scrollElement.offsetLeft;
+          scrollLeft = scrollElement.scrollLeft;
+        };
+
+        const handleMouseLeave = () => {
+          isDown = false;
+          scrollElement.style.cursor = 'grab';
+        };
+
+        const handleMouseUp = () => {
+          isDown = false;
+          scrollElement.style.cursor = 'grab';
+        };
+
+        const handleMouseMove = (e: MouseEvent) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - scrollElement.offsetLeft;
+          const walk = (x - startX) * 2;
+          scrollElement.scrollLeft = scrollLeft - walk;
+        };
+
+        scrollElement.addEventListener('mousedown', handleMouseDown);
+        scrollElement.addEventListener('mouseleave', handleMouseLeave);
+        scrollElement.addEventListener('mouseup', handleMouseUp);
+        scrollElement.addEventListener('mousemove', handleMouseMove);
+
+        return () => {
+          scrollElement.removeEventListener('mousedown', handleMouseDown);
+          scrollElement.removeEventListener('mouseleave', handleMouseLeave);
+          scrollElement.removeEventListener('mouseup', handleMouseUp);
+          scrollElement.removeEventListener('mousemove', handleMouseMove);
+        };
+      }
+    }
+  }, []);
 
   // Create a sample video
   const cld = new Cloudinary({
@@ -246,25 +297,32 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
       {/* Professional Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
+          {onBack && (
+            <TouchableOpacity style={styles.backButton} onPress={onBack}>
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+          )}
+          
           <View style={styles.brandSection}>
             <Text style={styles.brandTitle}>Cloudinary Video SDK</Text>
             <Text style={styles.brandSubtitle}>Interactive Button Layout Showcase</Text>
           </View>
-          
-          {onBack && (
-            <TouchableOpacity style={styles.backButton} onPress={onBack}>
-              <Text style={styles.backButtonText}>← Back</Text>
-            </TouchableOpacity>
-          )}
         </View>
         
         {/* Professional Example Selector */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          style={styles.examplesContainer}
-          contentContainerStyle={styles.examplesContent}
-        >
+        <View style={styles.scrollViewWrapper}>
+          <ScrollView 
+            ref={scrollViewRef}
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.examplesContainer}
+            contentContainerStyle={styles.examplesContent}
+            scrollEnabled={true}
+            nestedScrollEnabled={true}
+            {...(Platform.OS === 'web' && {
+              dataSet: { scrollable: 'true' }
+            })}
+          >
           {examples.map((example, index) => (
             <TouchableOpacity
               key={example.id}
@@ -298,7 +356,8 @@ export const ActiveLayerLayoutDemo: React.FC<ActiveLayerLayoutDemoProps> = ({ on
               </View>
             </TouchableOpacity>
           ))}
-        </ScrollView>
+          </ScrollView>
+        </View>
       </View>
 
       {/* Enhanced Video Player */}
@@ -351,9 +410,9 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 24,
+    gap: 16,
   },
   brandSection: {
     flex: 1,
@@ -374,34 +433,63 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   backButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  backButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
+  scrollViewWrapper: {
+    width: '100%',
+    ...(Platform.OS === 'web' && {
+      overflow: 'visible' as any,
+    }),
   },
   examplesContainer: {
     flexGrow: 0,
+    height: 160,
+    ...(Platform.OS === 'web' ? {
+      overflowX: 'auto' as any,
+      overflowY: 'hidden' as any,
+      WebkitOverflowScrolling: 'touch' as any,
+      scrollbarWidth: 'thin' as any,
+      scrollbarColor: 'rgba(255, 255, 255, 0.3) transparent' as any,
+      cursor: 'grab' as any,
+      userSelect: 'none' as any,
+      touchAction: 'pan-x' as any,
+    } : {
+      flex: 1,
+    }),
   },
   examplesContent: {
     paddingLeft: 4,
+    paddingRight: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    ...(Platform.OS === 'web' && {
+      display: 'flex' as any,
+      width: 'auto' as any,
+      minWidth: '100%' as any,
+    }),
   },
   exampleCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 16,
     padding: 16,
     marginRight: 16,
-    width: SCREEN_WIDTH * 0.7,
+    width: Platform.OS === 'web' ? 320 : SCREEN_WIDTH * 0.7,
+    minWidth: Platform.OS === 'web' ? 320 : undefined,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 0,
   },
   activeExampleCard: {
     backgroundColor: 'rgba(99, 102, 241, 0.2)',

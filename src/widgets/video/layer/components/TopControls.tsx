@@ -105,7 +105,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               style={responsiveStyles.topButton} 
               onPress={onBack}
             >
-              <Icon name="close" size={ICON_SIZES.top} color="white" />
+              <Icon name="arrow-back" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
           {shareButtonPosition === ButtonPosition.NW && (
@@ -133,7 +133,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               style={responsiveStyles.topButton} 
               onPress={onBack}
             >
-              <Icon name="close" size={ICON_SIZES.top} color="white" />
+              <Icon name="arrow-back" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
           {shareButtonPosition === ButtonPosition.N && (
@@ -161,7 +161,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
               style={responsiveStyles.topButton} 
               onPress={onBack}
             >
-              <Icon name="close" size={ICON_SIZES.top} color="white" />
+              <Icon name="arrow-back" size={ICON_SIZES.top} color="white" />
             </TouchableOpacity>
           )}
           {shareButtonPosition === ButtonPosition.NE && (
@@ -191,7 +191,7 @@ export const TopControls: React.FC<TopControlsProps> = ({
       <View style={responsiveStyles.topControlsBar}>
         {onBack && (
           <TouchableOpacity style={responsiveStyles.topButton} onPress={onBack}>
-            <Icon name="close" size={ICON_SIZES.top} color="white" />
+            <Icon name="arrow-back" size={ICON_SIZES.top} color="white" />
           </TouchableOpacity>
         )}
         <TouchableOpacity style={responsiveStyles.topButton} onPress={onShare}>
