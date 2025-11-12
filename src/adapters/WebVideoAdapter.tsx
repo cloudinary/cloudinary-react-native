@@ -161,6 +161,7 @@ class WebVideoComponent extends Component<VideoPlayerProps & { videoRef: RefObje
         ref: (el: any) => { this.videoElementRef = el; },
         src: this.props.videoUri,
         controls: this.props.useNativeControls !== false,
+        playsInline: true,
         style: {
           width: '100%',
           height: '100%',
