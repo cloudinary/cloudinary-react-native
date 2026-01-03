@@ -10,27 +10,28 @@
   },
   "dependencies": {
     "@cloudinary/url-gen": "^1.22.0",
-    "@expo/config": "^11.0.0",
-    "@expo/metro-config": "~0.20.0",
-    "@expo/vector-icons": "^14.0.2",
+    "@expo/config": "~12.0.7",
+    "@expo/metro-config": "~54.0.2",
+    "@expo/vector-icons": "^14.1.0",
     "cloudinary-react-native": "../",
-    "expo": "~53.0.0",
-    "expo-av": "~15.1.7",
-    "expo-crypto": "~14.1.5",
-    "expo-font": "~12.0.10",
-    "expo-screen-orientation": "^8.1.7",
-    "expo-status-bar": "~2.2.3",
-    "expo-video": "^2.0.0",
+    "expo": "~54.0.0",
+    "expo-constants": "~18.0.9",
+    "expo-crypto": "~15.0.7",
+    "expo-font": "~13.3.0",
+    "expo-modules-core": "~3.0.20",
+    "expo-screen-orientation": "^9.0.0",
+    "expo-status-bar": "~3.0.8",
+    "expo-video": "~3.0.11",
     "isomorphic-fetch": "^3.0.0",
-    "react": "19.0.0",
-    "react-native": "0.79.5",
+    "react": "19.1.0",
+    "react-native": "0.81.4",
     "react-native-svg": "15.11.2",
     "util": "^0.10.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "@types/react": "~19.0.10",
-    "typescript": "~5.8.3"
+    "@babel/core": "^7.26.0",
+    "@types/react": "~19.1.10",
+    "typescript": "~5.9.2"
   },
   "expo": {
     "autolinking": {

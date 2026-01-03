@@ -24,7 +24,8 @@ Transform and optimize assets. Visit our documentation to learn more about [medi
 | SDK Version   | React Native Version | Expo SDK Version | Video Library |
 |---------------|----------------------|---------------|---------|
 | 1.0.0 - 1.1.0 | >= 0.72              | 50            | expo-av |
-| 1.2.x >       | >= 0.72              | 50-53         | expo-av / expo-video |
+| 1.2.x         | >= 0.72              | 50-53         | expo-av / expo-video |
+| 1.3.x         | >= 0.79              | 50-54         | expo-av / expo-video |
 
 ## Installation
 
@@ -48,12 +49,19 @@ The SDK supports both `expo-av` and `expo-video` libraries. The appropriate libr
 npm install expo-av
 ```
 
-**For Expo SDK 52+ (expo-video - recommended):**
+**For Expo SDK 52-53 (expo-video - recommended):**
+```bash
+npm install expo-video  # Recommended
+# or
+npm install expo-av     # Still works but deprecated
+```
+
+**For Expo SDK 54+ (expo-video - required):**
 ```bash
 npm install expo-video
 ```
 
-**Note:** `expo-av` is deprecated in SDK 52 and removed in SDK 53. For newer Expo versions, use `expo-video`.
+**Note:** `expo-av` is deprecated in SDK 52 and removed in SDK 54. For Expo SDK 52 and newer, use `expo-video`.
 
 ### For Video Layer with Controls (CLDVideoLayer)
 If you want to use the `CLDVideoLayer` component with UI controls, you need to install additional dependencies:
@@ -102,7 +110,7 @@ export default function App() {
 ```
 
 ### Video Player
-The `AdvancedVideo` component provides video playback capabilities with optional analytics tracking. **Note: This requires either `expo-av` (SDK 50-51) or `expo-video` (SDK 52+) to be installed.**
+The `AdvancedVideo` component provides video playback capabilities with optional analytics tracking. **Note: This requires either `expo-av` (SDK 50-53) or `expo-video` (SDK 52+, required for SDK 54+) to be installed.**
 
 ```tsx
 import { AdvancedVideo } from 'cloudinary-react-native';
